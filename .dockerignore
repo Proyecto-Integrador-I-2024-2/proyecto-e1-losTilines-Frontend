@@ -1,0 +1,30 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.env
+.git
+.dockerignore
+
+# Local dependencies
+node_modules/
+dist/
+build/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# logs and cache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE 
+.vscode/
+.idea/
+*.swp  # Archivos swap (por ejemplo, de Vim)
+
+# Local configuration
+.env
+

@@ -1,0 +1,65 @@
+version: '3'
+
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - db
+    volumes:
+      - ./backend/freelancenowbackend:/app
+
+    ports:
+      - 8000:8000
+
+  frontend:
+    build:
+      context: ./frontend  
+      dockerfile: Dockerfile.dev  
+    command: npm run dev
+    volumes:
+      - ./frontend:/usr/src/app  
+      - /usr/src/app/node_modules  
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development  
+    stdin_open: true  
+
+  db:
+    image: postgres:16
+    container_name: postgres_dev
+    restart: always
+    environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: postgres
+        PGDATA: /var/lib/postgresql/data
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '8083:5432'
+
+  pgadmin4:
+    image: elestio/pgadmin:latest
+    container_name: pgadmin_dev
+    environment:
+      PGADMIN_DEFAULT_EMAIL: dev@dev.com
+      PGADMIN_DEFAULT_PASSWORD: dev
+      PGADMIN_LISTEN_PORT: 8080
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./servers.json:/pgadmin4/servers.json
+    depends_on:
+      - db
+volumes:
+  postgres_data:
+
+
+
+
+
+    
