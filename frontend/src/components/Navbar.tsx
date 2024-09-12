@@ -104,7 +104,7 @@ export default function Navbar() {
           </Popover>
 
           <a href="#" className="text-sm font-semibold leading-6 text-gray-900">
-            Features
+            Prueba de cambios
           </a>
           <a href="#" className="text-sm font-semibold leading-6 text-gray-900">
             Marketplace

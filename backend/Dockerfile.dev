@@ -1,5 +1,5 @@
 # Base image Python 3.11 (For Django 5.1.1)
-FROM python:3.11-slim
+FROM python:3.10
 
 WORKDIR /app
 
@@ -21,8 +21,6 @@ RUN /py/bin/pip install --upgrade pip && \
     rm -rf /tmp 
 
 COPY ./freelancenowbackend /app/
-
-EXPOSE 8000
 
 ENV PATH="/py/bin:$PATH"
 
