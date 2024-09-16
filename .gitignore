@@ -29,6 +29,7 @@ package-lock.json
 
 # Archivos de configuración local
 .env
+venv
 
 # Archivos de sistema
 .DS_Store
