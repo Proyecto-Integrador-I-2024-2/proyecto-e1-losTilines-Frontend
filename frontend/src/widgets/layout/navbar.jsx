@@ -18,7 +18,7 @@ import {
   XMarkIcon,
   ChevronUpIcon,
 } from "@heroicons/react/24/outline";
- 
+
 const nestedMenuItems = [
   {
     title: "Hero",
@@ -33,20 +33,20 @@ const nestedMenuItems = [
     title: "Ecommerce",
   },
 ];
- 
+
 function NavListMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [openNestedMenu, setopenNestedMenu] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
- 
+
   const renderItems = nestedMenuItems.map(({ title }, key) => (
     <a href="#" key={key}>
       <MenuItem>{title}</MenuItem>
     </a>
   ));
- 
+
   return (
-    <React.Fragment>    
+    <React.Fragment>
       <Menu
         open={isMenuOpen}
         handler={setIsMenuOpen}
@@ -128,11 +128,11 @@ function NavListMenu() {
           <MenuItem>React</MenuItem>
           <MenuItem>TailwindCSS</MenuItem>
         </Collapse>
-      </div>
+      </div>  
     </React.Fragment>
   );
 }
- 
+
 function NavList() {
   return (
     <List className="mb-6 mt-4 p-0 lg:mb-0 lg:mt-0 lg:flex-row lg:p-1">
@@ -169,17 +169,17 @@ function NavList() {
     </List>
   );
 }
- 
-export function   NavigationbarWithDropdownMultilevelMenu() {
+
+export function NavigationbarWithDropdownMultilevelMenu() {
   const [openNav, setOpenNav] = React.useState(false);
- 
+
   React.useEffect(() => {
     window.addEventListener(
       "resize",
-      () => window.innerWidth >= 960 && setOpenNav(false),
+      () => window.innerWidth >= 960 && setOpenNav(false)
     );
   }, []);
- 
+
   return (
     <Navbar className="mx-auto max-w-full px-4 py-2">
       <div className="flex items-center justify-between text-blue-gray-900">

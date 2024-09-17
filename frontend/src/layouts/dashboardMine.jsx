@@ -1,6 +1,6 @@
 import { NavigationbarWithDropdownMultilevelMenu } from "@/widgets/layout";
-import { ListCard } from "@/widgets/area";
-import ListRowStructure from "@/widgets/area/listRowStructure";
+import { ListCard } from "@/widgets/list";
+import ListRowStructure from "@/widgets/list/listRowStructure";
 import { Button } from "@material-tailwind/react";
 
 export function DashboardMine() {
@@ -21,39 +21,31 @@ export function DashboardMine() {
             addDescription={"New Area"}
           >
             <ListRowStructure rowName={"Area 1"} statistics={10}>
-              
               <p>15 Proyectos</p>
             </ListRowStructure>
             <ListRowStructure rowName={"Area 1"} statistics={10}>
-              
-              <p>15 Proyectos</p>
-            </ListRowStructure><ListRowStructure rowName={"Area 1"} statistics={10}>
-              
               <p>15 Proyectos</p>
             </ListRowStructure>
             <ListRowStructure rowName={"Area 1"} statistics={10}>
-              
-              <p>15 Proyectos</p>
-            </ListRowStructure>
-            
-            <ListRowStructure rowName={"Area 1"} statistics={10}>
-              
               <p>15 Proyectos</p>
             </ListRowStructure>
             <ListRowStructure rowName={"Area 1"} statistics={10}>
-              
+              <p>15 Proyectos</p>
+            </ListRowStructure>
+
+            <ListRowStructure rowName={"Area 1"} statistics={10}>
               <p>15 Proyectos</p>
             </ListRowStructure>
             <ListRowStructure rowName={"Area 1"} statistics={10}>
-              
-              <p>15 Proyectos</p> 
-            </ListRowStructure>
-            <ListRowStructure rowName={"Area 1"} statistics={10}>
-              
               <p>15 Proyectos</p>
             </ListRowStructure>
             <ListRowStructure rowName={"Area 1"} statistics={10}>
-              
+              <p>15 Proyectos</p>
+            </ListRowStructure>
+            <ListRowStructure rowName={"Area 1"} statistics={10}>
+              <p>15 Proyectos</p>
+            </ListRowStructure>
+            <ListRowStructure rowName={"Area 1"} statistics={10}>
               <p>15 Proyectos</p>
             </ListRowStructure>
           </ListCard>

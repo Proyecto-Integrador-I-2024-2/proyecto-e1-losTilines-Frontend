@@ -1,1 +1,1 @@
-export * from "@/widgets/layout/navbarMine"
+export * from "@/widgets/layout/navbar"
