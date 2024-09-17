@@ -28,7 +28,7 @@ export function MessageCard({ img, name, message, action }) {
     </div>
   );
 }
-
+  
 MessageCard.defaultProps = {
   action: null,
 };
