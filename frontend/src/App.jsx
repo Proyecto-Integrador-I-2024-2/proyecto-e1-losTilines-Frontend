@@ -1,13 +1,10 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { Dashboard, Auth } from "@/layouts";
-import { DashboardMine } from "@/layouts";
+import { DashboardMine } from "@/layouts/dashboardMine"
 
 function App() {
   return (
 
     <DashboardMine />
-
-    
   );
 }
 
