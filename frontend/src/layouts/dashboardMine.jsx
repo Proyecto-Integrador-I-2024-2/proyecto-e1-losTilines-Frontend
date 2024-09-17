@@ -46,7 +46,7 @@ export function DashboardMine() {
             </ListRowStructure>
             <ListRowStructure rowName={"Area 1"} statistics={10}>
               
-              <p>15 Proyectos</p>
+              <p>15 Proyectos</p> 
             </ListRowStructure>
             <ListRowStructure rowName={"Area 1"} statistics={10}>
               
