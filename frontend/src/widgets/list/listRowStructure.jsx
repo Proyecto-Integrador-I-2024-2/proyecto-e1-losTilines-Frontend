@@ -8,7 +8,7 @@ import {
   Chip,
 } from "@material-tailwind/react";
 
-export function ListRowStructure({ rowName, statistics, children }) {
+export function ListRowStructure({ rowName, statistics, chipValue }) {
   return (
     <ListItem className="flex-row justify-between">
       <div className="flex flex-col justify-start">
@@ -18,9 +18,7 @@ export function ListRowStructure({ rowName, statistics, children }) {
         </Typography>
       </div>
       <div>
-        <Chip variant="ghost" size="chip small" value = {children} />
-
-        
+        <Chip variant="ghost" className="w-28 flex items-center justify-center" size="lg" value = {chipValue} />
       </div>
     </ListItem>
   );

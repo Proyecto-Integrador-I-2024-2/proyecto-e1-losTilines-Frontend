@@ -1,3 +1,4 @@
+import Dashboard from "./pages/dashboard/dashboard";
 
 export const routes = [
   {
@@ -5,10 +6,11 @@ export const routes = [
     pages: [
       {
         name: "dashboard",
-        path: "/home",
-        element: <div></div>,
+        path: "/",
+        element: <Dashboard />,
       },
-    ],
+      
+    ],  
   },
   {
     layout: "auth",
