@@ -1,1 +1,1 @@
-export * from "@/layouts/dashboardMine"
+export * from "@/pages/dashboard/dashboard";

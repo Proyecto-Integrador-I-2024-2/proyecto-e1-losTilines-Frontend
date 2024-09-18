@@ -23,14 +23,12 @@ export function ListCard({
   return (
     <Card className="w-full h-full flex flex-col">
       <div className="mx-auto sticky my-4">
-        <Typography variant="h2" color="black">
+        <Typography variant="h3" color="black">
           {title}
         </Typography>
       </div>
-      <div className="h-5/6 overflow-auto">
-        <List>
+      <div className="h-96 md:h-full overflow-auto">
           {children}
-        </List>
       </div>
 
       <div className="flex flex-row justify-center space-x-4 my-4">

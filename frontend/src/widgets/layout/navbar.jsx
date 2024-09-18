@@ -128,7 +128,7 @@ function NavListMenu() {
           <MenuItem>React</MenuItem>
           <MenuItem>TailwindCSS</MenuItem>
         </Collapse>
-      </div>  
+      </div>
     </React.Fragment>
   );
 }
@@ -170,7 +170,7 @@ function NavList() {
   );
 }
 
-export function NavigationbarWithDropdownMultilevelMenu() {
+export function NavigationTopBar() {
   const [openNav, setOpenNav] = React.useState(false);
 
   React.useEffect(() => {
@@ -227,4 +227,4 @@ export function NavigationbarWithDropdownMultilevelMenu() {
   );
 }
 
-export default NavigationbarWithDropdownMultilevelMenu;
+export default NavigationTopBar;
