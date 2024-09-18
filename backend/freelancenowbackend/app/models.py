@@ -19,7 +19,6 @@ class User(models.Model):
     
     def clean(self):
         super().clean()
-
         if len(self.password) < 8:
             raise ValidationError('Password must be at least 8 characters long.')
     
@@ -35,15 +34,20 @@ class User(models.Model):
         ]
         
 class Role(models.Model):
-    name = models.CharField(max_length=100, validators=[
-        RegexValidator(regex='^[\w\s]+$', message='Name can only contain alphanumeric characters and spaces.')
-    ])
+    name = models.CharField(max_length=100, validators=[RegexValidator(regex='^[\w\s]+$', message='Name can only contain alphanumeric characters and spaces.')])
     description = models.CharField(max_length=2000)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
+    
+class UserRole(models.Model):
+    role = models.ForeignKey(Role, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.user)
 
 class Permission(models.Model):
     name = models.CharField(max_length=50)
@@ -52,19 +56,29 @@ class Permission(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Notification(models.Model):
+    message = models.CharField(max_length=2000)
+    created_at = models.DateField()
+
+    def __str__(self):
+        return self.message
+
+class UserNotification(models.Model):
+    notification = models.ForeignKey(Notification, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.id)
 
 # ---------------------- COMPANIES ---------------------- #
 class Company(models.Model):
-    company_id = models.CharField(max_length=30, unique=True, validators=[
-        RegexValidator(regex=r'^[A-Z0-9]{1,30}$', message='Company ID must be alphanumeric and up to 30 characters.')
-    ])
+    company_id = models.CharField(max_length=30, unique=True, validators=[RegexValidator(regex=r'^[A-Z0-9]{1,30}$', message='Company ID must be alphanumeric and up to 30 characters.')])
     name = models.CharField(max_length=100, unique=True)
     country = models.CharField(max_length=50)
     address = models.CharField(max_length=200)
     city = models.CharField(max_length=50)
-    telephone = models.CharField(max_length=20, validators=[
-        RegexValidator(regex=r'^\+?\d{7,15}$', message='Telephone number must be between 7 and 15 digits.')
-    ])
+    telephone = models.CharField(max_length=20, validators=[RegexValidator(regex=r'^\+?\d{7,15}$', message='Telephone number must be between 7 and 15 digits.')])
     email = models.EmailField(max_length=100, validators=[EmailValidator()])
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
@@ -124,16 +138,18 @@ class Experience(models.Model):
 
     def __str__(self):
         return f'{self.occupation} at {self.company}'
+    
+class Portfolio(models.Model):
+    date = models.DateField()
+    project_name = models.CharField(max_length=100)
+    description = models.CharField(max_length=255)
+    url = models.URLField()
+    freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
 
 class Comment(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-    stars = models.FloatField(
-        validators=[
-            MinValueValidator(0.0),
-            MaxValueValidator(5.0)
-        ]
-    )
+    stars = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(5.0)])
     freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -145,13 +161,25 @@ class Project(models.Model):
     description = models.CharField(max_length=2000)
     start_date = models.DateField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    budget = models.DecimalField(max_digits=10, decimal_places=2, validators=[
-        MinValueValidator(0.00)  # Ensure budget is non-negative
-    ])
+    budget = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.00)])
     area = models.ForeignKey(Area, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
+
+class ProjectFreelancer(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.freelancer} working on {self.project}'
+    
+class ProjectSkill(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.skill} required for {self.project}'
     
 class Milestone(models.Model):
     name = models.CharField(max_length=100)
@@ -170,7 +198,7 @@ class Milestone(models.Model):
 class Deliverable(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=255, blank=True)
-    attachment = models.FileField(upload_to='deliverables/', blank=True, null=True)  # Use FileField for handling files
+    attachment = models.FileField(upload_to='deliverables/', blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -184,9 +212,7 @@ class Payment(models.Model):
 
     date = models.DateField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-    amount = models.DecimalField(max_digits=10, decimal_places=3, validators=[
-        MinValueValidator(0.00) 
-    ])
+    amount = models.DecimalField(max_digits=10, decimal_places=3, validators=[MinValueValidator(0.00)])
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
 
