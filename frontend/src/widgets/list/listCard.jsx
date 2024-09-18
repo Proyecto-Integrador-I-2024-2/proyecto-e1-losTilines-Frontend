@@ -11,7 +11,7 @@ export function ListCard({
   numberOfItems,
   title,
   hasSeeAll,
-  hasAdd, 
+  hasAdd,
   addDescription,
   children
 }) {
