@@ -14,6 +14,11 @@ function Dashboard() {
     },
     { rowName: "John Doe", description: "Developer", area: "Area 2" },
     { rowName: "Jane Smith", description: "Designer", area: "Area 3" },
+    { rowName: "Jane Smith", description: "Designer", area: "Area 3" },
+    { rowName: "Jane Smith", description: "Designer", area: "Area 3" },
+    { rowName: "Jane Smith", description: "Designer", area: "Area 3" },
+
+    { rowName: "Jane Smith", description: "Designer", area: "Area 3" },
   ];
 
   const areas = [
@@ -41,10 +46,10 @@ function Dashboard() {
   ];
 
   return (
-    <div className="md:flex h-full md:flex-row w-full  my-2 px-2 min-h-0 ">
+    <div className="h-full md:flex  md:flex-row w-full  my-2 px-2 min-h-0 ">
       {/* Columna izquierda */}
-      <div className="w-full max-h-96 flex flex-col min-h-0 md:h-full md:max-h-none md:w-1/3 md:mr-6">
-        <ListCard 
+      <div className="w-full h-96 flex flex-col md:w-1/3 md:h-full md:max-h-none  md:mr-6">
+        <ListCard
           numberOfItems={33}
           title={"Areas"}
           hasAdd={true}
@@ -63,60 +68,57 @@ function Dashboard() {
       </div>
 
       {/* Columna derecha */}
-      <div className="flex flex-col h-auto md:h-full w-full md:w-2/3 min-h-0  ">
-        <div className="mb-2 space-y-2 h flex flex-col w-full md:space-x-6 md:space-y-0 md:flex-row md:h-1/2 min-h-0">
+      <div className="flex flex-col md:w-2/3  ">
+        <div className="flex flex-col h-auto min-h-0 w-full mb-2 md:space-y-0 md:flex-row md:h-1/2  ">
           {/* Aquí iría el contenido para trabajadores y finanzas */}
-          <ListCard
-            title={"Workers"}
-            hasAdd={true}
-            hasSeeAll={false}
-            addDescription={"New worker"}
-          >
-            {workers.map((worker, index) => (
-              <ListRowWithImage
-                key={index}
-                rowName={worker.rowName}
-                description={worker.description}
-                chipValue={worker.area}
+
+          <div className="flex flex-col h-auto w-full md:space-x-6  md:flex-row  md:h-full">
+           
+            <div className="h-96 md:h-full md:w-full">
+            <ListCard
+              title={"Workers"}
+              hasAdd={true}
+              hasSeeAll={false}
+              addDescription={"New worker"}
+            >
+              {workers.map((worker, index) => (
+                <ListRowWithImage
+                  key={index}
+                  rowName={worker.rowName}
+                  description={worker.description}
+                  chipValue={worker.area}
+                />
+              ))}
+            </ListCard>
+            </div>
+            <ListCard title={"Finance"} hasAdd={false} hasSeeAll={true}>
+              <NumberInfo
+                description={"Total investment in projects"}
+                number={"$2.500.000"}
               />
-            ))}
-          </ListCard>
+            </ListCard>
+          </div>  
+        </div>
 
-          <ListCard title={"Finance"} hasAdd={false} hasSeeAll={true}>
-            <NumberInfo
-              description={"Total investment in projects"}
-              number={"$2.500.000"}
+        {/* Aquí iría el contenido para estadísticas */}
+
+        <Card className="flex w-full flex-col h-auto items-center md:h-1/2 md:mt-2 
+        
+            ">
+          <div className="flex h-auto w-full flex-col md:flex-row md:h-full justify-center items-center">
+            <Chart description={"Monthly expenses for 2024"} type={"pie"} />
+
+            <Chart description={"Percentage of budget by area"} type={"bar"} />
+            <Chart
+              description={"Percentage of projects by status"}
+              type={"pie"}
             />
-          </ListCard>
-        </div>
-        <div className="flex flex-col h-96 md:h-1/2 md:mt-2 ">
-          {/* Aquí iría el contenido para estadísticas */}
-
-          <div className="flex flex-col h-full w-full  ">
-            <Card className="flex h-full w-full flex-col justify-center items-center">
-              <div className="flex h-auto w-full flex-col md:flex-row md:h-full justify-center items-center">
-                <Chart
-                  description={"Percentage of budget by area"}
-                  type={"bar"}
-                />
-                <Chart description={"Monthly expenses for 2024"} type={"pie"} />
-                <Chart
-                  description={"Percentage of projects by status"}
-                  type={"pie"}
-                />
-              </div>
-
-              <Button
-                color="gray"
-                size="sm"
-                variant="outlined"
-                className="mb-4"
-              >
-                See all
-              </Button>
-            </Card>
           </div>
-        </div>
+
+          <Button color="gray" size="sm" variant="outlined" className="w-32">
+            See all
+          </Button>
+        </Card>
       </div>
     </div>
   );
