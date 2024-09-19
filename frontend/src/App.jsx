@@ -3,18 +3,12 @@ import { DashboardLayout } from "./layouts/dashboardLayout";
 import { ProfileLayout } from "./layouts";
 
 function App() {
-  return(
-
+  return (
     <Routes>
-
       <Route path="/dashboard/*" element={<DashboardLayout />} />
       <Route path="/profile/*" element={<ProfileLayout />} />
-      
     </Routes>
-
-
-  ); 
-  
+  );
 }
 
 export default App;

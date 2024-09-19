@@ -27,7 +27,7 @@ export function ListCard({
           {title}
         </Typography>
       </div>
-      <div className="h-96 md:h-full overflow-auto">
+      <div className="h-full overflow-auto">
           {children}
       </div>
 
