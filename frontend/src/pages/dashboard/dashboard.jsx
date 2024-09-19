@@ -48,7 +48,7 @@ function Dashboard() {
   return (
     <div className="h-full md:flex  md:flex-row w-full  my-2 px-2 min-h-0 ">
       {/* Columna izquierda */}
-      <div className="w-full h-96 flex flex-col md:w-1/3 md:h-full md:max-h-none  md:mr-6">
+      <div className="w-full h-96 flex flex-col mb-4 md:mb-0 md:w-1/3 md:h-full md:max-h-none  md:mr-6">
         <ListCard
           numberOfItems={33}
           title={"Areas"}
@@ -68,13 +68,13 @@ function Dashboard() {
       </div>
 
       {/* Columna derecha */}
-      <div className="flex flex-col md:w-2/3  ">
-        <div className="flex flex-col h-auto min-h-0 w-full mb-2 md:space-y-0 md:flex-row md:h-1/2  ">
+      <div className="flex flex-col  md:w-2/3  ">
+        <div className="flex flex-col h-auto min-h-0 w-full mb-2 my-4 md:my-0 md:flex-row md:h-1/2  ">
           {/* Aquí iría el contenido para trabajadores y finanzas */}
 
           <div className="flex flex-col h-auto w-full md:space-x-6  md:flex-row  md:h-full">
            
-            <div className="h-96 md:h-full md:w-full">
+            <div className="h-96 my-4 md:my-0 md:h-full md:w-full">
             <ListCard
               title={"Workers"}
               hasAdd={true}
