@@ -15,12 +15,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, re_path
-from appAuth.views import login, register, profile
+from django.urls import path, include
+from rest_framework.authtoken import views as auth_views
+from appAuth.views import CustomAuthToken
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    re_path('login', login),
-    re_path('register', register),
-    re_path('profile', profile)
+    path('api/auth/', CustomAuthToken.as_view(), name='auth-token'),  # Login y autenticación por token
+    path('api/users/', include('appAuth.urls')),  # Incluir las URLs de la aplicación "app"
 ]

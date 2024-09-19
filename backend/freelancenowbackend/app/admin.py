@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ProjectSkill, Payment, Comment, Experience, FreelancerSkill, Portfolio, User, Company, Area, Project, Freelancer, Milestone, Deliverable, Role, Permission, Notification, UserRole, ProjectFreelancer, UserNotification
+from .models import Skill, ProjectSkill, Payment, Comment, Experience, FreelancerSkill, Portfolio, User, Company, Area, Project, Freelancer, Milestone, Deliverable, Role, Permission, Notification, UserRole, ProjectFreelancer, UserNotification
 
 admin.site.register(User)
 admin.site.register(Role)
@@ -12,6 +12,7 @@ admin.site.register(Area)
 admin.site.register(Freelancer)
 admin.site.register(FreelancerSkill)
 admin.site.register(Experience)
+admin.site.register(Skill)
 admin.site.register(Portfolio)
 admin.site.register(Comment)
 admin.site.register(Project)
