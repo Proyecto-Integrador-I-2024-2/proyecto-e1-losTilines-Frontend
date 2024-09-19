@@ -5,33 +5,45 @@ from django.db.models import CheckConstraint, Q
 from django.core.validators import RegexValidator, EmailValidator, MinValueValidator, MaxValueValidator
 
 # ---------------------- USERS ---------------------- #
-class User(models.Model):
-    username = models.CharField(max_length=50, unique=True)
-    email = models.EmailField(max_length=100, unique=True)
-    password = models.CharField(max_length=128)
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    phone_number = models.CharField(max_length=20)
-    created_at = models.DateTimeField(auto_now_add=True)
+# app/models.py
+
+from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.utils import timezone
+
+class CustomUserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('El email es requerido')
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        return self.create_user(email, password, **extra_fields)
+
+class User(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(unique=True)
+    first_name = models.CharField(max_length=30, blank=True)
+    last_name = models.CharField(max_length=30, blank=True)
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['first_name', 'last_name']  # Campos que también son requeridos al crear un superusuario
 
     def __str__(self):
         return self.email
-    
-    def clean(self):
-        super().clean()
-        if len(self.password) < 8:
-            raise ValidationError('Password must be at least 8 characters long.')
-    
-    def set_password(self, raw_password):
-        self.password = make_password(raw_password)
-        
-    def check_password(self, raw_password):
-        return check_password(raw_password, self.password)
-    
-    class Meta:
-        constraints = [
-            CheckConstraint(check=Q(phone_number__regex=r'^\+?\d{7,15}$'), name='valid_phone_number')
-        ]
+
         
 class Role(models.Model):
     name = models.CharField(max_length=100, validators=[RegexValidator(regex='^[\w\s]+$', message='Name can only contain alphanumeric characters and spaces.')])

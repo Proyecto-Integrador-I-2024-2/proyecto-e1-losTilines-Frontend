@@ -17,10 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.authtoken import views as auth_views
-from appAuth.views import CustomAuthToken
+from appAuth.views import LoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/auth/', CustomAuthToken.as_view(), name='auth-token'),  # Login y autenticación por token
+    path('api/auth/', LoginView.as_view(), name='login'),  # Login y autenticación por token
     path('api/users/', include('appAuth.urls')),  # Incluir las URLs de la aplicación "app"
 ]

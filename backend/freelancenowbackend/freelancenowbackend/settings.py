@@ -117,6 +117,31 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Añade el backend personalizado
+AUTHENTICATION_BACKENDS = [
+    'appAuth.backends.EmailBackend',  # Asegúrate de que la ruta sea correcta
+    'django.contrib.auth.backends.ModelBackend',  # Backend por defecto
+]
+
+# Asegúrate de que el modelo de usuario personalizado esté correctamente referenciado
+AUTH_USER_MODEL = 'app.User'
+
+# Configuración de logging para depuración
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'appAuth': {  # Ajusta esto al nombre de tu app
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
