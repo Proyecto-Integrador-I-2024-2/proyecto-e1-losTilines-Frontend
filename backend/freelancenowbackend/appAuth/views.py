@@ -4,8 +4,9 @@ from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
-from app.models import User, Role, UserRole
+from app.models import User, UserRole, Group
 from .serializers import UserSerializer
+from rest_framework import serializers
 import logging
 
 logger = logging.getLogger(__name__)
@@ -19,7 +20,7 @@ class FreelancerRegisterView(generics.CreateAPIView):
         user = serializer.save()  # Guarda el usuario
         # La contraseña ya se maneja en el serializador
         # Asigna el rol de Freelancer
-        role, created = Role.objects.get_or_create(name='Freelancer')
+        role, created = Group.objects.get_or_create(name='Freelancer')
         UserRole.objects.create(user=user, role=role)
 
 
@@ -32,7 +33,7 @@ class BusinessManagerRegisterView(generics.CreateAPIView):
         user = serializer.save()  # Guarda el usuario
         # La contraseña ya se maneja en el serializador
         # Asigna el rol de Business Manager
-        role, created = Role.objects.get_or_create(name='Business Manager')
+        role, created = Group.objects.get_or_create(name='Business Manager')
         UserRole.objects.create(user=user, role=role)
 
 
@@ -54,7 +55,7 @@ class RegisterCompanyUsersView(generics.CreateAPIView):
 
         # Crea el usuario y asocia el rol
         user = serializer.save()  # Guarda el usuario
-        role, created = Role.objects.get_or_create(name=role_name)
+        role, created = Group.objects.get_or_create(name=role_name)
         UserRole.objects.create(user=user, role=role)
 
 
