@@ -1,4 +1,6 @@
+import { element } from "prop-types";
 import Dashboard from "./pages/dashboard/dashboard";
+import Profile from "./pages/profile/profile";
 
 export const routes = [
   {
@@ -26,6 +28,18 @@ export const routes = [
         element: <div></div>,
       },
     ],
+  },
+  {
+    layout: "profile",
+    pages: [
+      {
+      name: "profile",
+      path: "/",
+      element: <Profile/>
+      },
+    ],
+
+
   },
 ];
 
