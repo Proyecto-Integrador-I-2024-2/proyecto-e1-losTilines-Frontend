@@ -8,7 +8,7 @@ from django.core.validators import RegexValidator, EmailValidator, MinValueValid
 class User(models.Model):
     username = models.CharField(max_length=50, unique=True)
     email = models.EmailField(max_length=100, unique=True)
-    password = models.CharField(max_length=100)
+    password = models.CharField(max_length=128)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=20)
