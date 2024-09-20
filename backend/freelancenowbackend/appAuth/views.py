@@ -7,9 +7,6 @@ from rest_framework.views import APIView
 from app.models import User, UserRole, Group
 from .serializers import UserSerializer
 from rest_framework import serializers
-import logging
-
-logger = logging.getLogger(__name__)
 
 class FreelancerRegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -17,12 +14,10 @@ class FreelancerRegisterView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
-        user = serializer.save()  # Guarda el usuario
-        # La contraseña ya se maneja en el serializador
-        # Asigna el rol de Freelancer
+        user = serializer.save()  
         role, created = Group.objects.get_or_create(name='Freelancer')
+        user.groups.add(role)
         UserRole.objects.create(user=user, role=role)
-
 
 class BusinessManagerRegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -30,12 +25,10 @@ class BusinessManagerRegisterView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
-        user = serializer.save()  # Guarda el usuario
-        # La contraseña ya se maneja en el serializador
-        # Asigna el rol de Business Manager
+        user = serializer.save()  
         role, created = Group.objects.get_or_create(name='Business Manager')
+        user.groups.add(role)
         UserRole.objects.create(user=user, role=role)
-
 
 class RegisterCompanyUsersView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -45,25 +38,21 @@ class RegisterCompanyUsersView(generics.CreateAPIView):
     def perform_create(self, serializer):
         role_name = self.request.data.get('role')
 
-        # Validar que sea un rol permitido
         if role_name not in ['Area Admin', 'Project Manager']:
             raise serializers.ValidationError({"error": "Invalid role"})
 
-        # Asegurarse que el que hace la solicitud es un Business Manager
         if not UserRole.objects.filter(user=self.request.user, role__name='Business Manager').exists():
             raise serializers.ValidationError({"error": "Unauthorized"}, code=403)
 
-        # Crea el usuario y asocia el rol
-        user = serializer.save()  # Guarda el usuario
+        user = serializer.save() 
         role, created = Group.objects.get_or_create(name=role_name)
+        user.groups.add(role)
         UserRole.objects.create(user=user, role=role)
-
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        logger.debug(f"Request data: {request.data}")
         email = request.data.get('email')
         password = request.data.get('password')
 

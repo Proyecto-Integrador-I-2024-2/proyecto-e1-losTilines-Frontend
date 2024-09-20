@@ -7,9 +7,18 @@ class SkillSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'is_predefined']
 
 class FreelancerSkillSerializer(serializers.ModelSerializer):
+    skill = serializers.CharField()  # Usa CharField para recibir el nombre de la habilidad como cadena
+
     class Meta:
         model = FreelancerSkill
-        fields = ['id', 'freelancer','skill', 'level']
+        fields = ['id', 'skill', 'level']
+
+    def validate_skill(self, value):
+        # Convierte el nombre de habilidad en un objeto Skill
+        if isinstance(value, str):
+            skill, created = Skill.objects.get_or_create(name=value)
+            return skill
+        return value
 
 class ExperienceSerializer(serializers.ModelSerializer):
     class Meta:
