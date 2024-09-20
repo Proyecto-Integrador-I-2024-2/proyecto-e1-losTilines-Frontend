@@ -24,4 +24,6 @@ urlpatterns = [
     path('api/auth/', LoginView.as_view(), name='login'),  # Login y autenticación por token
     path('api/users/', include('appAuth.urls')),
     path('api/profile/', include('appProfile.urls')),
+    path('api/users/', include('appAuth.urls')),  # Incluir las URLs de la aplicación "app"
+    path('api/company/', include('appCompany.urls')),
 ]

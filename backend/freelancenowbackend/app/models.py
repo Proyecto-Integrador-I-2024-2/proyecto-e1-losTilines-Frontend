@@ -99,7 +99,7 @@ class UserCompany(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)  
 
     def __str__(self):
-        return self.user
+        return str(self.user)
     
     def save(self, *args, **kwargs):
         if self.user.groups.filter(name="Freelancer").exists():
@@ -120,8 +120,8 @@ class Area(models.Model):
             models.UniqueConstraint(fields=['name', 'company'], name='unique_area_name_per_company')
         ]
     def save(self, *args, **kwargs):
-        if not self.user.groups.filter(name="Admin area").exists() or not self.user.groups.filter(name="Business Manager").exists():
-            raise ValueError("The user must be part of the company and not be project manager.")
+        #if not self.user.groups.filter(name="Area Admin").exists() or not self.user.groups.filter(name="Business Manager").exists():
+            #raise ValueError("The user must be part of the company and not be project manager.")
         super().save(*args, **kwargs)
 # ---------------------- FREELANCERS ---------------------- #
 
@@ -213,6 +213,7 @@ class Project(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     budget = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.00)])
     area = models.ForeignKey(Area, on_delete=models.CASCADE)
+    file = models.FileField(upload_to='uploads/')
 
     def __str__(self):
         return self.name
@@ -246,6 +247,8 @@ class Milestone(models.Model):
     due_date = models.DateField()
     freelancer = models.ForeignKey(User, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    file = models.FileField(upload_to='uploads/', blank=True, null=True)
+
 
     def __str__(self):
         return self.name
@@ -261,7 +264,7 @@ class Milestone(models.Model):
 class Deliverable(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=255, blank=True)
-    attachment = models.FileField(upload_to='deliverables/', blank=True, null=True)
+    attachment = models.FileField(upload_to='uploads/', blank=True, null=True)
 
     def __str__(self):
         return self.name
