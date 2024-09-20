@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'app',
     'appAuth',
     'appProfile',
+    'appCompany',
 ]
 
 MIDDLEWARE = [
@@ -123,6 +124,9 @@ AUTHENTICATION_BACKENDS = [
     'appAuth.backends.EmailBackend',  # Asegúrate de que la ruta sea correcta
     'django.contrib.auth.backends.ModelBackend',  # Backend por defecto
 ]
+
+
+
 
 # Asegúrate de que el modelo de usuario personalizado esté correctamente referenciado
 AUTH_USER_MODEL = 'app.User'
