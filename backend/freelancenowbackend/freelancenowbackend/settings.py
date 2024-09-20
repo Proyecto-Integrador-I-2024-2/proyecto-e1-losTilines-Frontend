@@ -124,6 +124,9 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # Backend por defecto
 ]
 
+
+
+
 # Asegúrate de que el modelo de usuario personalizado esté correctamente referenciado
 AUTH_USER_MODEL = 'app.User'
 

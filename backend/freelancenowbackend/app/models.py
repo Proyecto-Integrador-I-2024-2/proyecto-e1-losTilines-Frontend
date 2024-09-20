@@ -214,6 +214,7 @@ class Project(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     budget = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.00)])
     area = models.ForeignKey(Area, on_delete=models.CASCADE)
+    file = models.FileField(upload_to='uploads/', blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -247,6 +248,8 @@ class Milestone(models.Model):
     due_date = models.DateField()
     freelancer = models.ForeignKey(User, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    file = models.FileField(upload_to='uploads/', blank=True, null=True)
+
 
     def __str__(self):
         return self.name
@@ -262,7 +265,7 @@ class Milestone(models.Model):
 class Deliverable(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=255, blank=True)
-    attachment = models.FileField(upload_to='deliverables/', blank=True, null=True)
+    attachment = models.FileField(upload_to='uploads/', blank=True, null=True)
 
     def __str__(self):
         return self.name
