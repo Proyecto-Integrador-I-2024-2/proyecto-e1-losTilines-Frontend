@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'app',
     'appAuth',
     'appProfile',
+    'appCompany',
 ]
 
 MIDDLEWARE = [
