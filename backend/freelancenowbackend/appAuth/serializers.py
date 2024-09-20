@@ -28,3 +28,17 @@ class CompanySerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # El usuario será asignado en la vista, no aquí
         return super().create(validated_data)
+
+from rest_framework import serializers
+from app.models import UserCompany, User, Company
+
+class UserCompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserCompany
+        fields = ['company', 'user']
+
+    def validate_user(self, value):
+        """Verifica que el usuario no pertenezca al grupo 'Freelancer'."""
+        if value.groups.filter(name="Freelancer").exists():
+            raise serializers.ValidationError("Este tipo de usuario no puede estar en una compañía.")
+        return value
