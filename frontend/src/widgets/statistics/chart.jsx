@@ -118,11 +118,11 @@ const chartConfigPie = {
   },
 };
 
-function ChartCustom({ description, type }) {
+export function ChartCustom({ description, type }) {
   const chartConfig = type === "bar" ? chartConfigBar : chartConfigPie;
 
   return (
-    <div className="flex flex-col items-center justify-center h-full space-y-8">
+    <div className="flex flex-col items-center justify-center h-full space-y-2">
       <Typography color="blue-gray" variant="small">
         {description}
       </Typography>

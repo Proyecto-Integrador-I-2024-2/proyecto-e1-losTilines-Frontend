@@ -48,7 +48,7 @@ function Dashboard() {
   return (
     <div className="h-full md:flex  md:flex-row w-full  my-2 px-2 min-h-0 ">
       {/* Columna izquierda */}
-      <div className="w-full h-96 flex flex-col  md:mb-0 md:w-1/3 md:h-full md:max-h-none  md:mr-6">
+      <section className="w-full h-96 flex flex-col  md:mb-0 md:w-1/3 md:h-full md:max-h-none  md:mr-6">
         <ListCard
           numberOfItems={33}
           title={"Areas"}
@@ -65,10 +65,10 @@ function Dashboard() {
             />
           ))}
         </ListCard>
-      </div>
+      </section>
 
       {/* Columna derecha */}
-      <div className="flex flex-col  md:w-2/3  ">
+      <section className="flex flex-col  md:w-2/3  ">
         <div className="flex flex-col h-auto min-h-0 w-full mb-2 my-4 md:my-0 md:flex-row md:h-1/2  ">
           {/* Aquí iría el contenido para trabajadores y finanzas */}
 
@@ -120,7 +120,7 @@ function Dashboard() {
             See all
           </Button>
         </Card>
-      </div>
+      </section>
     </div>
   );
 }
