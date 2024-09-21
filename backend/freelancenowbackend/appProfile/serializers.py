@@ -2,20 +2,17 @@ from rest_framework import serializers
 from app.models import FreelancerSkill, Experience, Portfolio, Skill, SkillType
 
 class SkillSerializer(serializers.ModelSerializer):
-    type = serializers.CharField()  # Acepta el nombre del SkillType
+    type = serializers.CharField()
 
     class Meta:
         model = Skill
         fields = ['id', 'name', 'is_predefined', 'type']
 
     def create(self, validated_data):
-        # Extraer el tipo de habilidad del validated_data
         skill_type_name = validated_data.pop('type')
         
-        # Buscar o crear el SkillType basado en el nombre
         skill_type, created = SkillType.objects.get_or_create(name=skill_type_name)
         
-        # Crear la Skill utilizando el tipo de habilidad encontrado o creado
         skill = Skill.objects.create(type=skill_type, **validated_data)
         return skill
 
@@ -36,7 +33,25 @@ class ExperienceSerializer(serializers.ModelSerializer):
         model = Experience
         fields = ['id', 'start_date', 'final_date', 'occupation', 'company']
 
+    def create(self, validated_data):
+        validated_data['freelancer'] = self.context['request'].user
+        return super().create(validated_data)
+    
+    def validate(self, attrs):
+        if attrs['final_date'] and attrs['final_date'] < attrs['start_date']:
+            raise serializers.ValidationError("Final date cannot be before start date.")
+        return attrs
+    
 class PortfolioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Portfolio
         fields = ['id', 'date', 'project_name', 'description', 'url']
+
+    def create(self, validated_data):
+        validated_data['freelancer'] = self.context['request'].user
+        return super().create(validated_data)
+
+    def validate_freelancer(self, value):
+        if not value.groups.filter(name="Freelancer").exists():
+            raise serializers.ValidationError("The user must be part of the 'freelancer' group.")
+        return value
