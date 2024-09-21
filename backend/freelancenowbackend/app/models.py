@@ -124,23 +124,16 @@ class Area(models.Model):
             #raise ValueError("The user must be part of the company and not be project manager.")
         super().save(*args, **kwargs)
 # ---------------------- FREELANCERS ---------------------- #
+class SkillType(models.Model):
+    name = models.CharField(max_length=30, unique=True)
 
+    def __str__(self):
+        return self.name
 
 class Skill(models.Model):
-    SOFT = 'soft'
-    HARD = 'hard'
-    LANGUAGE = 'language'
-
-    SKILL_TYPE_CHOICES = [
-        (SOFT, 'Soft'),
-        (HARD, 'Hard'),
-        (LANGUAGE, 'Language'),
-    ]
-
-    name = models.CharField(max_length=15, unique=True)
+    name = models.CharField(max_length=30, unique=True)
     is_predefined = models.BooleanField(default=False)
-    type = models.CharField(max_length=15, choices=SKILL_TYPE_CHOICES, default=SOFT)
-    
+    type = models.ForeignKey(SkillType, on_delete=models.CASCADE)   
 
     def __str__(self):
         return self.name
