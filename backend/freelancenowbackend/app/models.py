@@ -144,7 +144,7 @@ class FreelancerSkill(models.Model):
     level = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
 
     def __str__(self):
-        return f'{self.freelancer.username} - {self.skill.name}'
+        return f'{self.freelancer.first_name} - {self.skill.name}'
     def save(self, *args, **kwargs):
         if not self.freelancer.groups.filter(name="Freelancer").exists():
             raise ValueError("The user must be part of the 'freelancer' group.")
@@ -174,7 +174,7 @@ class Portfolio(models.Model):
     freelancer = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.project_name} by {self.freelancer.username}'
+        return f'{self.project_name} by {self.freelancer.first_name}'
 
     def save(self, *args, **kwargs):
         if not self.freelancer.groups.filter(name="Freelancer").exists():

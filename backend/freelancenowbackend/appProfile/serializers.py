@@ -20,16 +20,15 @@ class SkillSerializer(serializers.ModelSerializer):
         return skill
 
 class FreelancerSkillSerializer(serializers.ModelSerializer):
-    skill = serializers.CharField()  
+    skill = serializers.PrimaryKeyRelatedField(queryset=Skill.objects.all(), required=False) 
 
     class Meta:
         model = FreelancerSkill
         fields = ['id', 'skill', 'level']
 
-    def validate_skill(self, value):
-        if isinstance(value, str):
-            skill, created = Skill.objects.get_or_create(name=value)
-            return skill
+    def validate_level(self, value):
+        if value < 0 or value > 100:
+            raise serializers.ValidationError("Skill level must be between 0 and 100.")
         return value
 
 class ExperienceSerializer(serializers.ModelSerializer):
