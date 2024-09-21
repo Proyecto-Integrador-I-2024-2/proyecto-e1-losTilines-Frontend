@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import FreelancerSkillView, FreelancerSkillAddView, SkillCreateView, FreelancerSkillEditView, FreelancerSkillDeleteView
+from .views import FreelancerSkillView, FreelancerSkillAddView, SkillCreateView, FreelancerSkillEditView, FreelancerSkillDeleteView, ExperienceDetailView,PortfolioDetailView, ExperienceListCreateView, PortfolioListCreateView
 
 urlpatterns = [
     path('skills/', FreelancerSkillView.as_view(), name='skill-list'),
@@ -7,4 +7,8 @@ urlpatterns = [
     path('skills/add/<int:pk>/', FreelancerSkillAddView.as_view(), name='skill-add'),  
     path('skills/edit/<int:pk>/', FreelancerSkillEditView.as_view(), name='skill-edit'),
     path('skills/delete/<int:pk>/', FreelancerSkillDeleteView.as_view(), name='skill-delete'),
+    path('experiences/', ExperienceListCreateView.as_view(), name='experience-list-create'),
+    path('experiences/<int:pk>/', ExperienceDetailView.as_view(), name='experience-detail'),
+    path('portfolios/', PortfolioListCreateView.as_view(), name='portfolio-list-create'),
+    path('portfolios/<int:pk>/', PortfolioDetailView.as_view(), name='portfolio-detail'),
 ]

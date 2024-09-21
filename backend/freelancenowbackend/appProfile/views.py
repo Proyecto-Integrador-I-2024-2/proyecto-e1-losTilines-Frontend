@@ -1,10 +1,11 @@
 from django.forms import ValidationError
 from rest_framework import generics
-from app.models import Skill, FreelancerSkill, SkillType
+from app.models import Skill, FreelancerSkill, SkillType, Experience, Portfolio
 from rest_framework import serializers
-from .serializers import SkillSerializer, FreelancerSkillSerializer
+from .serializers import SkillSerializer, FreelancerSkillSerializer, ExperienceSerializer, PortfolioSerializer
 from rest_framework.permissions import IsAuthenticated
 from appAuth.permission import IsFreelancer
+from rest_framework.exceptions import PermissionDenied
 
 class FreelancerSkillView(generics.ListAPIView):
     queryset = Skill.objects.all()
@@ -85,3 +86,41 @@ class FreelancerSkillDeleteView(generics.DestroyAPIView):
         except FreelancerSkill.DoesNotExist:
             raise ValidationError({"error": "You do not have permission to delete this skill."})
         return freelancer_skill
+
+class ExperienceListCreateView(generics.ListCreateAPIView):
+    queryset = Experience.objects.all()
+    serializer_class = ExperienceSerializer
+    permission_classes = [IsAuthenticated, IsFreelancer]
+
+    def perform_create(self, serializer):
+        serializer.save(freelancer=self.request.user)
+
+class ExperienceDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Experience.objects.all()
+    serializer_class = ExperienceSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        obj = super().get_object()
+        if obj.freelancer != self.request.user:
+            raise ValidationError("You do not have permission to access this experience.")
+        return obj
+
+class PortfolioListCreateView(generics.ListCreateAPIView):
+    queryset = Portfolio.objects.all()
+    serializer_class = PortfolioSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(freelancer=self.request.user)
+
+class PortfolioDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Portfolio.objects.all()
+    serializer_class = PortfolioSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        obj = super().get_object()
+        if obj.freelancer != self.request.user:
+            raise ValidationError("You do not have permission to access this portfolio.")
+        return obj
