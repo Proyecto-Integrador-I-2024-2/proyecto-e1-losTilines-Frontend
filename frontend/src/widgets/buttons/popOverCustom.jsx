@@ -5,13 +5,13 @@ import {
     Button,
   } from "@material-tailwind/react";
    
-function PopoverCustom({title, content}) {
+export function PopoverCustom({title, content}) {
     return (
     <Popover placement="bottom">
         <PopoverHandler>
           <Button variant="text">{title}</Button>
         </PopoverHandler>
-        <PopoverContent>
+        <PopoverContent className=" w-auto">
             {content}
         </PopoverContent>
       </Popover>
