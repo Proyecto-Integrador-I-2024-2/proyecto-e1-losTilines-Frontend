@@ -1,18 +1,24 @@
 import { element } from "prop-types";
 import Dashboard from "./pages/dashboard/dashboard";
 import Profile from "./pages/profile/profile";
+import Workers from "./pages/dashboard/workers";
 
 export const routes = [
   {
     layout: "dashboard",
     pages: [
       {
-        name: "dashboard",
+        name: "dashboard main",
         path: "/",
         element: <Dashboard />,
       },
-      
-    ],  
+
+      {
+        name: "workers",
+        path: "/workers",
+        element: <Workers />,
+      },
+    ],
   },
   {
     layout: "auth",
@@ -33,13 +39,11 @@ export const routes = [
     layout: "profile",
     pages: [
       {
-      name: "profile",
-      path: "/",
-      element: <Profile/>
+        name: "profile",
+        path: "/",
+        element: <Profile />,
       },
     ],
-
-
   },
 ];
 

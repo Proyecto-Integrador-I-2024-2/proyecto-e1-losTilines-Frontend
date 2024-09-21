@@ -48,7 +48,7 @@ function Dashboard() {
   return (
     <div className="h-full md:flex  md:flex-row w-full  my-2 px-2 min-h-0 ">
       {/* Columna izquierda */}
-      <div className="w-full h-96 flex flex-col mb-4 md:mb-0 md:w-1/3 md:h-full md:max-h-none  md:mr-6">
+      <div className="w-full h-96 flex flex-col  md:mb-0 md:w-1/3 md:h-full md:max-h-none  md:mr-6">
         <ListCard
           numberOfItems={33}
           title={"Areas"}
@@ -102,7 +102,8 @@ function Dashboard() {
 
         {/* Aquí iría el contenido para estadísticas */}
 
-        <Card className="flex w-full flex-col h-auto items-center md:h-1/2 md:mt-2 
+        <Card className="flex w-full flex-col  mb-2 p-4 
+         h-auto items-center md:h-1/2 md:mt-2 md:mb-0 
         
             ">
           <div className="flex h-auto w-full flex-col md:flex-row md:h-full justify-center items-center">
