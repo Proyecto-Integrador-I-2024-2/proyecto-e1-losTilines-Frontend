@@ -129,12 +129,17 @@ export function ProjectDetail() {
                 </MenuList>
               </Menu>
             </CardHeader>
-            <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
-
+            <CardBody className="px-8 pt-0 pb-2">
+              <Typography variant="lead">
+                Material Tailwind is an easy to use components library for Tailwind CSS
+                and Material Design. It provides a simple way to customize your
+                components, you can change the colors, fonts, breakpoints and everything
+                you need.
+              </Typography>
             </CardBody>
           </Card>
           <Card className="border border-blue-gray-100 shadow-sm max-h-full">
-            <CardBody className="my-4  pt-0 h-116">
+            <CardBody className="my-4 h-108 pt-0 pb-10">
               <SkillsSection sectionName={"Skills needed"} />
             </CardBody>
           </Card>
