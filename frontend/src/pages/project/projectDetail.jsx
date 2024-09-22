@@ -32,11 +32,16 @@ import {
   HomeIcon,
   ChatBubbleLeftEllipsisIcon,
   Cog6ToothIcon,
+  CurrencyDollarIcon
 } from "@heroicons/react/24/solid";
 import { SkillsSection } from "@/widgets/custom";
 
 
 export function ProjectDetail() {
+
+
+
+
   return (
     <div className="w-full h-full">
       <div className="mx-3 mt-4 mb-4 lg:mx-4">
@@ -98,18 +103,18 @@ export function ProjectDetail() {
               floated={false}
               shadow={false}
               color="transparent"
-              className="m-0 flex items-center justify-between p-6"
+              className="m-0 flex items-center justify-between px-6 pt-6 pb-0"
             >
               <div>
-                <Typography variant="h6" color="blue-gray" className="mb-1">
-                  Projects
+                <Typography variant="h4" color="blue-gray" className="mb-1">
+                  Docker design project
                 </Typography>
                 <Typography
-                  variant="small"
+                  variant="h6"
                   className="flex items-center gap-1 font-normal text-blue-gray-600"
                 >
-                  <CheckCircleIcon strokeWidth={3} className="h-4 w-4 text-blue-gray-200" />
-                  <strong>30 done</strong> this month
+                  <CurrencyDollarIcon strokeWidth={5} className="h-6 w-6 text-light-green-600" />
+                  <strong>30.000.000</strong>
                 </Typography>
               </div>
               <Menu placement="left-start">
@@ -124,23 +129,34 @@ export function ProjectDetail() {
                 </MenuHandler>
                 <MenuList>
                   <MenuItem>Edit project information</MenuItem>
-                  <MenuItem>Another Action</MenuItem>
-                  <MenuItem>Something else here</MenuItem>
+                  <MenuItem>Add section</MenuItem>
+                  <MenuItem>Add something here</MenuItem>
                 </MenuList>
               </Menu>
             </CardHeader>
-            <CardBody className="px-8 pt-0 pb-2">
-              <Typography variant="lead">
-                Material Tailwind is an easy to use components library for Tailwind CSS
-                and Material Design. It provides a simple way to customize your
-                components, you can change the colors, fonts, breakpoints and everything
-                you need.
+            <CardBody className="flex flex-col items-start justify-between">
+              <Typography variant="paragraph" color="black" className="text-lg">
+                The "Docker Design Project" at Facebook aimed to overhaul their deployment process by implementing
+                Docker's containerization technology. Confronted with inconsistent environments and deployment
+                inefficiencies, the project sought to standardize and streamline operations.
+                The team, guided by DevOps engineer Alex, crafted a comprehensive Docker strategy that included custom Docker
+                images, Docker Compose for multi-container management, and Docker Swarm for scalable orchestration.
+                The project involved designing, testing, and integrating Docker into their CI/CD pipeline,
+                leading to reduced deployment times and enhanced consistency across environments.
+              </Typography>
+
+              <Typography variant="h3" color="light-blue" textGradient className="my-2"> Facebook </Typography>
+              <Typography variant="paragraph" color="black" className="text-lg">
+                Facebook is a social networking platform that allows users to connect
+                communities through posts, photos, and messages.Launched in 2004, it offers features like news
+                feeds, events, and groups, enabling users to share updates and interact with others globally.
               </Typography>
             </CardBody>
           </Card>
           <Card className="border border-blue-gray-100 shadow-sm max-h-full">
-            <CardBody className="my-4 h-108 pt-0 pb-10">
-              <SkillsSection sectionName={"Skills needed"} />
+            <CardBody className="my-6 h-104 pt-0 pb-10">
+              <Typography variant="h5" color="black"> Skills needed </Typography>
+              <SkillsSection sectionName={""} />
             </CardBody>
           </Card>
         </div>
