@@ -10,8 +10,12 @@ import {
 } from "@material-tailwind/react";
 import { useState } from "react";
 
-
-export function ListRowCollapse({ rowName, chipValue1, chipValue2, children }) {
+export function ListWorkersCollapse({
+  rowName,
+  chipValue1,
+  chipValue2,
+  children,
+}) {
   const [open, setOpen] = useState(false);
 
   const toggleOpen = () => {
@@ -31,12 +35,10 @@ export function ListRowCollapse({ rowName, chipValue1, chipValue2, children }) {
             className="border-2 border-white hover:z-10 focus:z-10"
             src="/img/people/persona1.jpg"
           />
-          <Typography  >
-            {rowName}
-          </Typography>
+          <Typography>{rowName}</Typography>
         </section>
 
-        <section className="flex flex-row h-full w-full mt-1 space-x-2 md:mt-0  md:justify-end items-center md:w-1/3    ">
+        <section className="flex flex-row h-full w-full mt-1 space-x-2 md:mt-0  md:justify-between items-center md:w-1/3    ">
           <Chip
             variant="ghost"
             className="flex items-center justify-center"
@@ -58,4 +60,4 @@ export function ListRowCollapse({ rowName, chipValue1, chipValue2, children }) {
   );
 }
 
-export default ListRowCollapse;
+export default ListWorkersCollapse;

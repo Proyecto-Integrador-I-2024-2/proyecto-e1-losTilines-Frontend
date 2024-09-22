@@ -2,6 +2,8 @@ import { element } from "prop-types";
 import Dashboard from "./pages/dashboard/dashboard";
 import Profile from "./pages/profile/profile";
 import Workers from "./pages/dashboard/workers";
+import Areas from "./pages/dashboard/areas";
+import Projects from "./pages/dashboard/projects";
 
 export const routes = [
   {
@@ -18,6 +20,16 @@ export const routes = [
         path: "/workers",
         element: <Workers />,
       },
+      {
+        name: "areas",
+        path: "/areas",
+        element: <Areas />,
+      },
+      {
+        name: "projects",
+        path: "/projects",
+        element: <Projects />,
+      }
     ],
   },
   {

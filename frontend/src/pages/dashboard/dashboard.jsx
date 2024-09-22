@@ -53,7 +53,7 @@ function Dashboard() {
           numberOfItems={33}
           title={"Areas"}
           hasAdd={true}
-          hasSeeAll={false}
+          hasSeeAll={true}
           addDescription={"New Area"}
         >
           {areas.map((area, index) => (
@@ -77,8 +77,8 @@ function Dashboard() {
             <div className="h-96 my-4 md:my-0 md:h-full md:w-full">
             <ListCard
               title={"Workers"}
-              hasAdd={true}
-              hasSeeAll={false}
+              hasAdd={false}
+              hasSeeAll={true}
               addDescription={"New worker"}
             >
               {workers.map((worker, index) => (
