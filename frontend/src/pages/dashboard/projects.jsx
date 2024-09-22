@@ -1,28 +1,25 @@
 import { CollapseCustom, PopoverCustom, SelectCustom } from "@/widgets/buttons";
-import { ListWorkersCollapse } from "@/widgets/list";
-import { ChartCustom } from "@/widgets/statistics";
-import { TableTwoColums } from "@/widgets/tables";
-import { workerData } from "@/data";
+import { TableProjects } from "@/widgets/tables";
+import { projectsDataDashboard } from "@/data";
 import { Card, Input } from "@material-tailwind/react";
 
-import { TrashIcon } from "@heroicons/react/24/solid";
+import { TrashIcon, BookmarkSquareIcon } from "@heroicons/react/24/solid";
+import { ListProjectCollapse } from "@/widgets/list";
 
-function Workers() {
+function Projects() {
   //Info for collapse buttons.
 
   const addContent =
     "Give this code to your workers to add them to your team #42123";
 
   //Info for select buttons.
-  const sortContent = ["name", "area"];
-
-  const roleInfo = ["Area admin", "Project maanger"];
+  const sortContent = ["name"];
 
   const areaInfo = ["Area1", "Area2", "Area3", "Area4"];
 
   //Info for table creation.
 
-  const TABLE_HEAD = ["Project Name", "Status"];
+  const TABLE_HEAD = ["Worker", "Milestone", "Status"];
 
   return (
     <Card
@@ -50,49 +47,32 @@ function Workers() {
               options={areaInfo}
             />
           </CollapseCustom>
-
           <PopoverCustom title={"Add"} content={addContent} />
         </section>
       </header>
 
       <main className="flex flex-col h-full w-full mt-2   overflow-y-auto">
-        {workerData.map((worker) => (
-          <ListWorkersCollapse
-            key={worker.id}
-            rowName={worker.name}
-            chipValue1={worker.role}
-            chipValue2={worker.area}
+        {projectsDataDashboard.map((project) => (
+          <ListProjectCollapse
+            AreasCollapse
+            key={project.id}
+            title={project.project}
+            chipValue1={project.quantity}
+            chipValue2={project.budget}
           >
-            <div className="flex flex-col w-full p-4 space-y-2">
-              <div className="flex flex-col w-full space-y-2 md:flex-row md:items-center md:justify-evenly mb-5 ">
-                <SelectCustom
-                  description={"Assign area"}
-                  options={areaInfo}
-                  label={"area"}
-                />
-                <SelectCustom
-                  description={"Assign role"}
-                  options={roleInfo}
-                  label={"role"}
-                />
-              </div>
+            <div className="flex flex-col w-full  space-y-2">
               <div className="flex flex-col w-full space-y-6  md:flex-row md:space-y-0 ">
-                <TableTwoColums titles={TABLE_HEAD} content={worker.projects} />
-
-                <div className="flex flex-row">
-                  <ChartCustom description={"Project status distribution"} />
-
-                  <div className="flex flex-col justify-end mb-6">
-                    <TrashIcon className="h-6 w-6 text-gray-800 cursor-pointer" />
-                  </div>
-                </div>
+                <TableProjects
+                  titles={TABLE_HEAD}
+                  content={project.milestones}
+                />
               </div>
             </div>
-          </ListWorkersCollapse>
+          </ListProjectCollapse>
         ))}
       </main>
     </Card>
   );
 }
 
-export default Workers;
+export default Projects;

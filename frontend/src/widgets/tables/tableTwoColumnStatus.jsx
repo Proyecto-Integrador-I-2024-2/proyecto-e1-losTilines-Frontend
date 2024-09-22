@@ -48,7 +48,7 @@ export function TableTwoColums({titles, content}) {
                         variant="small"
                         color="blue-gray"
                         className="font-normal"
-                      >
+                      > 
                         {projectName}
                       </Typography>
                     </td>
