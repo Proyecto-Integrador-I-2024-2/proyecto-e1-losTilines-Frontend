@@ -24,5 +24,19 @@ module.exports = withMT({
       }
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }) {
+      addUtilities({
+        '.no-scrollbar': {
+          /* Ocultar scrollbar para Chrome, Safari y Opera */
+          '-webkit-overflow-scrolling': 'touch',
+          'scrollbar-width': 'none', /* Firefox */
+          '-ms-overflow-style': 'none', /* IE y Edge */
+        },
+        '.no-scrollbar::-webkit-scrollbar': {
+          display: 'none',
+        },
+      });
+    },
+  ],
 });
