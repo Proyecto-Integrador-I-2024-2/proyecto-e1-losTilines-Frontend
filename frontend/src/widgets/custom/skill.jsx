@@ -14,13 +14,13 @@ const skills = [
 
 
 
-export function SkillsSection() {
+export function SkillsSection({ sectionName }) {
     return (
-        <div>
+        <div className="h-full">
             <Typography variant="h6" color="blue-gray" className="mb-6 font-bold">
-                Skills
+                {sectionName}
             </Typography>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-h-80 overflow-y-auto p-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 h-full overflow-y-auto p-2">
                 {skills.map((skill, index) => (
                     <Card key={index} shadow={true} className="p-6 flex items-center">
                         <div className="text-blue-500 text-3xl mr-4 pb-4">{skill.icon}</div>

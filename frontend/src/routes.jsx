@@ -4,6 +4,7 @@ import Profile from "./pages/profile/profile";
 import Workers from "./pages/dashboard/workers";
 import Areas from "./pages/dashboard/areas";
 import Projects from "./pages/dashboard/projects";
+import { SignIn, SignUp } from "./pages/auth";
 
 export const routes = [
   {
@@ -38,12 +39,12 @@ export const routes = [
       {
         name: "sign in",
         path: "/sign-in",
-        element: <div></div>,
+        element: <SignIn />,
       },
       {
         name: "sign up",
         path: "/sign-up",
-        element: <div></div>,
+        element: <SignUp />,
       },
     ],
   },
