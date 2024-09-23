@@ -1,18 +1,11 @@
 from django.db import models
-from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group
 from django.forms import ValidationError
-from django.db.models import CheckConstraint, Q
 from django.core.validators import RegexValidator, EmailValidator, MinValueValidator, MaxValueValidator
 from cities_light.models import Country, City
-
-# ---------------------- USERS ---------------------- #
-# app/models.py
-
-from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group
 from django.utils import timezone
 
-
+# ---------------------- USERS ---------------------- #
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -41,12 +34,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name']  # Campos que también son requeridos al crear un superusuario
+    REQUIRED_FIELDS = ['first_name', 'last_name'] 
 
     def __str__(self):
         return self.email
-
-
     
 class UserRole(models.Model):
     role = models.ForeignKey(Group, on_delete=models.CASCADE)
@@ -54,7 +45,6 @@ class UserRole(models.Model):
     
     def __str__(self):
         return str(self.user)
-
 
 class Notification(models.Model):
     message = models.CharField(max_length=2000)
@@ -72,7 +62,7 @@ class UserNotification(models.Model):
 
 # ---------------------- COMPANIES ---------------------- #
 class Company(models.Model):
-    company_id = models.CharField(max_length=30, unique=True, validators=[RegexValidator(regex=r'^[A-Z0-9]{1,30}$', message='Company ID must be alphanumeric and up to 30 characters.')])
+    tax_id = models.CharField(max_length=30, unique=True, validators=[RegexValidator(regex=r'^[A-Z0-9]{1,30}$', message='Company ID must be alphanumeric and up to 30 characters.')])
     name = models.CharField(max_length=100, unique=True)
     country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True, blank=True)
     city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True)
@@ -80,6 +70,9 @@ class Company(models.Model):
     telephone = models.CharField(max_length=20, validators=[RegexValidator(regex=r'^\+?\d{7,15}$', message='Telephone number must be between 7 and 15 digits.')])
     email = models.EmailField(max_length=100, validators=[EmailValidator()])
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    description = models.CharField(max_length=300, null=True,blank=True)
+    profile_picture = models.ImageField(upload_to='uploads/', blank=True, null=True)
+    industry = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return self.name
@@ -92,20 +85,6 @@ class Company(models.Model):
         if not self.user.groups.filter(name="Business Manager").exists():
             raise ValueError("Only business manager can be in a company register")
         super().save(*args, **kwargs)
-
-class UserCompany(models.Model):
-
-    company = models.ForeignKey(Company, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  
-
-    def __str__(self):
-        return str(self.user)
-    
-    def save(self, *args, **kwargs):
-        if self.user.groups.filter(name="Freelancer").exists():
-            raise ValueError("This user type cannot be in a company")
-        super().save(*args, **kwargs)
-
 
 class Area(models.Model):
     name = models.CharField(max_length=20)
@@ -123,6 +102,20 @@ class Area(models.Model):
         #if not self.user.groups.filter(name="Area Admin").exists() or not self.user.groups.filter(name="Business Manager").exists():
             #raise ValueError("The user must be part of the company and not be project manager.")
         super().save(*args, **kwargs)
+
+class UserCompany(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  
+    area = models.ForeignKey(Area, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return str(self.user)
+    
+    def save(self, *args, **kwargs):
+        if self.user.groups.filter(name="Freelancer").exists():
+            raise ValueError("This user type cannot be in a company")
+        super().save(*args, **kwargs)
+
 # ---------------------- FREELANCERS ---------------------- #
 class SkillType(models.Model):
     name = models.CharField(max_length=30, unique=True)
@@ -197,15 +190,21 @@ class Comment(models.Model):
         super().save(*args, **kwargs)
 
 # ---------------------- PROJECTS ---------------------- #
-class Project(models.Model):
+class ProjectStatus(models.Model):
+    name = models.CharField(max_length=20, unique=True)
 
+    def __str__(self):
+        return self.name
+
+class Project(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=2000)
     start_date = models.DateField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     budget = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.00)])
     area = models.ForeignKey(Area, on_delete=models.CASCADE)
-    file = models.FileField(upload_to='uploads/')
+    file = models.FileField(upload_to='uploads/', blank=True, null=True)
+    status = models.ForeignKey(ProjectStatus, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -213,7 +212,7 @@ class Project(models.Model):
         if self.user.groups.filter(name="freelancer").exists():
             raise ValueError("This user type cannot contain a project")
         super().save(*args, **kwargs)
-
+    
 class ProjectFreelancer(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     freelancer = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -225,10 +224,10 @@ class ProjectFreelancer(models.Model):
             raise ValueError("The user must be part of the 'freelancer' group.")
         super().save(*args, **kwargs)
     
-    
 class ProjectSkill(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
+    level = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
 
     def __str__(self):
         return f'{self.skill} required for {self.project}'
@@ -240,7 +239,6 @@ class Milestone(models.Model):
     freelancer = models.ForeignKey(User, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     file = models.FileField(upload_to='uploads/', blank=True, null=True)
-
 
     def __str__(self):
         return self.name
