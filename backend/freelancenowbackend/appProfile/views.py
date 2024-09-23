@@ -1,26 +1,29 @@
 from django.forms import ValidationError
 from rest_framework import generics
-from app.models import Skill, FreelancerSkill, SkillType, Experience, Portfolio, Company, UserCompany
+from app.models import Company, Skill, FreelancerSkill, SkillType, Experience, Portfolio, UserCompany
 from rest_framework import serializers, permissions
-from .serializers import SkillSerializer, FreelancerSkillSerializer, ExperienceSerializer, PortfolioSerializer
 from appAuth.serializers import CompanySerializer
-from rest_framework.permissions import IsAuthenticated
+from .serializers import SkillSerializer, FreelancerSkillSerializer, ExperienceSerializer, PortfolioSerializer
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from appAuth.permission import IsFreelancer
 from rest_framework.exceptions import PermissionDenied
 
 # ------------ FREELANCER VIEWS ------------
 
-# List all skills
+# List all skills of the logged-in freelancer
 class FreelancerSkillView(generics.ListAPIView):
-    queryset = Skill.objects.all()
     serializer_class = SkillSerializer
     permission_classes = [IsAuthenticated, IsFreelancer]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Skill.objects.filter(freelancerskill__freelancer=user)
 
 # Create a new skill
 class SkillCreateView(generics.CreateAPIView):
     queryset = Skill.objects.all()
     serializer_class = SkillSerializer
-    permission_classes = [IsAuthenticated, IsFreelancer]
+    permission_classes = [IsAdminUser]  # Cambiado a IsAdminUser
 
     def perform_create(self, serializer):
         skill_name = self.request.data.get('name')
@@ -28,7 +31,7 @@ class SkillCreateView(generics.CreateAPIView):
         skill_type_name = self.request.data.get('type')
 
         skill_type, created = SkillType.objects.get_or_create(name=skill_type_name)
-        
+
         if Skill.objects.filter(name=skill_name).exists():
             raise ValidationError({"error": f"Skill with name '{skill_name}' already exists."})
 
@@ -97,9 +100,12 @@ class FreelancerSkillDeleteView(generics.DestroyAPIView):
 
 # List and create experience
 class ExperienceListCreateView(generics.ListCreateAPIView):
-    queryset = Experience.objects.all()
     serializer_class = ExperienceSerializer
     permission_classes = [IsAuthenticated, IsFreelancer]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Experience.objects.filter(freelancer=user)
 
     def perform_create(self, serializer):
         serializer.save(freelancer=self.request.user)
@@ -118,9 +124,12 @@ class ExperienceDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 # List and create portfolio
 class PortfolioListCreateView(generics.ListCreateAPIView):
-    queryset = Portfolio.objects.all()
     serializer_class = PortfolioSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsFreelancer]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Portfolio.objects.filter(freelancer=user)
 
     def perform_create(self, serializer):
         serializer.save(freelancer=self.request.user)
