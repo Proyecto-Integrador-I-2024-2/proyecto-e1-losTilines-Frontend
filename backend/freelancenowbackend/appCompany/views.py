@@ -1,9 +1,40 @@
 from rest_framework import generics, permissions
-from app.models import Area, User, Company, UserCompany
+from app.models import Area, User, UserCompany
 from .serializers import AreaSerializer
-from rest_framework.response import Response
-from rest_framework import status
 from rest_framework.exceptions import PermissionDenied, ValidationError
+
+class WorkingAreaListView(generics.ListAPIView):
+    queryset = Area.objects.all()
+    serializer_class = AreaSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        business_manager = self.request.user
+        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
+
+        if user_company_instance is None:
+            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
+
+        return Area.objects.filter(company=user_company_instance.company)
+
+class WorkingAreaDetailView(generics.RetrieveAPIView):
+    queryset = Area.objects.all()
+    serializer_class = AreaSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        business_manager = self.request.user
+        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
+
+        if user_company_instance is None:
+            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
+
+        # Asegurarse de que el área pertenece a la compañía del Business Manager
+        area = super().get_object()
+        if area.company != user_company_instance.company:
+            raise PermissionDenied("No tienes permiso para ver esta área de trabajo.")
+
+        return area
 
 class WorkingAreaCreationView(generics.CreateAPIView):
     queryset = Area.objects.all()
@@ -12,39 +43,61 @@ class WorkingAreaCreationView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         business_manager = self.request.user
-        print(business_manager)
-
-    # Obtener la primera instancia de UserCompany para el Business Manager
         user_company_instance = UserCompany.objects.filter(user=business_manager).first()
-    
+
         if user_company_instance is None:
             raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
 
-    # Imprimir la compañía
-        print(user_company_instance.company)
-
-    # Verificar si el usuario pertenece al grupo "Business Manager"
-        if not business_manager.groups.filter(name='Business Manager').exists():
-            raise PermissionDenied("No tienes permiso para crear un área de trabajo.")
-
-    # Obtener la compañía
         company = user_company_instance.company
-    
-    # Asegurarse de que el 'user' que se va a asignar pertenece al grupo "Admin Area"
         user_id = self.request.data.get("user")
-        print(user_id)
-        user = User.objects.get(id=user_id)
-        print(user)
         if user_id:
             try:
                 user = User.objects.get(id=user_id)
                 if not user.groups.filter(name='Area Admin').exists():
-                    print(user.groups)
-                    raise ValidationError("El usuario debe pertenecer al grupo 'Admin Area'.")
+                    raise ValidationError("El usuario debe pertenecer al grupo 'Area Admin'.")
+
+                if Area.objects.filter(user=user, company=company).exists():
+                    raise ValidationError("El usuario ya está administrando un área en esta compañía.")
+
             except User.DoesNotExist:
                 raise ValidationError("El usuario especificado no existe.")
         else:
             raise ValidationError("Se debe proporcionar un usuario.")
 
-    # Crear el área de trabajo con la compañía y el usuario especificado
         serializer.save(company=company, user=user)
+
+class WorkingAreaUpdateView(generics.UpdateAPIView):
+    queryset = Area.objects.all()
+    serializer_class = AreaSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_update(self, serializer):
+        business_manager = self.request.user
+        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
+
+        if user_company_instance is None:
+            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
+
+        company = user_company_instance.company
+        area = self.get_object()
+
+        if area.company != company:
+            raise PermissionDenied("No tienes permiso para actualizar esta área de trabajo.")
+
+        serializer.save(company=company)
+
+class WorkingAreaDeleteView(generics.DestroyAPIView):
+    queryset = Area.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_destroy(self, instance):
+        business_manager = self.request.user
+        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
+
+        if user_company_instance is None:
+            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
+
+        if instance.company != user_company_instance.company:
+            raise PermissionDenied("No tienes permiso para eliminar esta área de trabajo.")
+
+        instance.delete()
