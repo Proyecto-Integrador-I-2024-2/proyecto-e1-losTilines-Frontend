@@ -254,6 +254,7 @@ class Milestone(models.Model):
 class Deliverable(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=255, blank=True)
+    milestone = models.ForeignKey(Milestone, on_delete=models.CASCADE)
     attachment = models.FileField(upload_to='uploads/', blank=True, null=True)
 
     def __str__(self):
