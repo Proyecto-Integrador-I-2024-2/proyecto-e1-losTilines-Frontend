@@ -3,11 +3,28 @@ services:
     build: 
       context: ./backend
       dockerfile: Dockerfile.dev
-    command: python manage.py runserver 0.0.0.0:8000
+    command: sh -c "
+      echo 'Waiting DB...' && 
+      while ! nc -z db 5432; do 
+        sleep 1; 
+      done && 
+      echo 'Date base available!' && 
+      python manage.py makemigrations && 
+      python manage.py migrate && 
+      echo 'Creating django admin...' && 
+      python manage.py create_superuser_if_not_exists &&
+      echo 'Django admin created' && 
+      echo 'Turn on server process:' && 
+      python manage.py runserver 0.0.0.0:8000"
     depends_on:
       - db
     volumes:
       - ./backend/freelancenowbackend:/app
+    environment:
+      - DJANGO_SUPERUSER_EMAIL=admin@example.com
+      - DJANGO_SUPERUSER_PASSWORD=admin123
+      - DJANGO_SUPERUSER_FIRST_NAME=Admin
+      - DJANGO_SUPERUSER_LAST_NAME=User
 
     ports:
       - 29000:8000
