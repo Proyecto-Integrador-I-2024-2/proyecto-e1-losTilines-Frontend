@@ -38,6 +38,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
+    'cities_light',
+    'app',
+    'appAuth',
+    'appProfile',
+    'appCompany',
+    'appProject',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -48,7 +56,24 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:29002",  # Development
+    "https://tu-dominio.com",  # Deployed
+]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
 
 ROOT_URLCONF = 'freelancenowbackend.urls'
 
@@ -104,6 +129,34 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Añade el backend personalizado
+AUTHENTICATION_BACKENDS = [
+    'appAuth.backends.EmailBackend',  # Asegúrate de que la ruta sea correcta
+    'django.contrib.auth.backends.ModelBackend',  # Backend por defecto
+]
+
+
+
+
+# Asegúrate de que el modelo de usuario personalizado esté correctamente referenciado
+AUTH_USER_MODEL = 'app.User'
+
+# Configuración de logging para depuración
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'appAuth': {  # Ajusta esto al nombre de tu app
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
