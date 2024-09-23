@@ -24,7 +24,6 @@ class FreelancerRegisterView(generics.CreateAPIView):
         UserRole.objects.create(user=user, role=role)
         user.groups.add(role)
 
-
 class BusinessManagerRegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -37,9 +36,6 @@ class BusinessManagerRegisterView(generics.CreateAPIView):
         UserRole.objects.create(user=user, role=role)
         user.groups.add(role)
 
-
-
-
 class CreateCompanyView(generics.CreateAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
@@ -48,20 +44,14 @@ class CreateCompanyView(generics.CreateAPIView):
     def perform_create(self, serializer):
         user = self.request.user
 
-        # Verificar si el usuario tiene el rol de 'Business Manager'
         if not user.groups.filter(name='Business Manager').exists():
             raise PermissionDenied("You must be a Business Manager to create a company.")
             
-
-        # Si pasa la verificación, guarda la compañía con el usuario autenticado
         serializer.save(user=user)
 
         company = serializer.save()
 
-        # Agregar el usuario a la tabla UserCompany
         UserCompany.objects.create(company=company, user=user)
-
-
 
 class RegisterAreaAdminView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -73,14 +63,7 @@ class RegisterAreaAdminView(generics.CreateAPIView):
         user_company_instance = UserCompany.objects.filter(user=businessmanager).first()
         # Asegurarse que el que hace la solicitud es un Business Manager
         if not businessmanager.groups.filter(name='Business Manager').exists():
-            raise serializers.ValidationError({"error": "Unauthorized"}, code=403)
-        
-        print(businessmanager)
-        print("Usuario actual:", businessmanager.id, businessmanager.email)
-        print("UserCompany instance:", user_company_instance)
-
-        #user_company_instance = UserCompany.objects.filter(user=user).first()
-        
+            raise serializers.ValidationError({"error": "Unauthorized"}, code=403)        
     
         if user_company_instance is None:
             raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
@@ -94,25 +77,27 @@ class RegisterAreaAdminView(generics.CreateAPIView):
         # Asocia el nuevo área admin con la compañía
         UserCompany.objects.create(company=user_company_instance.company, user=area_admin_user)
 
-
 class RegisterProjectManagerView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        user = self.request.user
-        # Asegurarse que el que hace la solicitud es un Business Manager
-        if not user.groups.filter(name='Business Manager').exists():
-            raise serializers.ValidationError({"error": "Unauthorized"}, code=403)
-        # Crea el usuario y asocia el rol "Area Admin"
-        user = serializer.save()  # Guarda el usuario
+        businessmanager = self.request.user
+        user_company_instance = UserCompany.objects.filter(user=businessmanager).first()
+
+        if not businessmanager.groups.filter(name='Business Manager').exists():
+            raise serializers.ValidationError({"error": "Unauthorized"}, code=403)        
+    
+        if user_company_instance is None:
+            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
+
+        area_admin_user = serializer.save()
         role, created = Group.objects.get_or_create(name='Project Manager')
-        UserRole.objects.create(user=user, role=role)
-        user.groups.add(role)
+        UserRole.objects.create(user=area_admin_user, role=role)
+        area_admin_user.groups.add(role)
 
-
-
+        UserCompany.objects.create(company=user_company_instance.company, user=area_admin_user)
 
 class LoginView(APIView):
     permission_classes = [AllowAny]

@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from app.models import User, Company
+from app.models import User, Company, UserCompany
 from cities_light.models import Country, City
-
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
@@ -23,14 +22,10 @@ class CompanySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Company
-        fields = ['company_id', 'name', 'country', 'city', 'address', 'telephone', 'email']  # No incluimos el campo 'user'
+        fields = ['tax_id', 'name', 'country', 'city', 'address', 'telephone', 'email']  # No incluimos el campo 'user'
 
     def create(self, validated_data):
-        # El usuario será asignado en la vista, no aquí
         return super().create(validated_data)
-
-from rest_framework import serializers
-from app.models import UserCompany, User, Company
 
 class UserCompanySerializer(serializers.ModelSerializer):
     class Meta:
