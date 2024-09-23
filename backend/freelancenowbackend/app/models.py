@@ -190,13 +190,15 @@ class Comment(models.Model):
         super().save(*args, **kwargs)
 
 # ---------------------- PROJECTS ---------------------- #
-class ProjectStatus(models.Model):
-    name = models.CharField(max_length=20, unique=True)
-
-    def __str__(self):
-        return self.name
 
 class Project(models.Model):
+    statusproject = [
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+        ('rejected', 'Rejected'),
+        ('in course', 'In course'),
+    ]
+
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=2000)
     start_date = models.DateField()
@@ -204,7 +206,8 @@ class Project(models.Model):
     budget = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.00)])
     area = models.ForeignKey(Area, on_delete=models.CASCADE)
     file = models.FileField(upload_to='uploads/', blank=True, null=True)
-    status = models.ForeignKey(ProjectStatus, on_delete=models.CASCADE)
+    status = models.CharField(choices=statusproject, default="pending")
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="owner_project")
 
     def __str__(self):
         return self.name

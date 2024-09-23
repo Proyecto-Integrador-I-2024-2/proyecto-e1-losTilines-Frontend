@@ -26,4 +26,5 @@ urlpatterns = [
     path('api/profile/', include('appProfile.urls')),
     path('api/users/', include('appAuth.urls')),  # Incluir las URLs de la aplicación "app"
     path('api/company/', include('appCompany.urls')),
+    path('api/projects/', include('appProject.urls')),
 ]
