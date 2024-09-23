@@ -1,17 +1,22 @@
 from django.forms import ValidationError
 from rest_framework import generics
-from app.models import Skill, FreelancerSkill, SkillType, Experience, Portfolio
-from rest_framework import serializers
+from app.models import Skill, FreelancerSkill, SkillType, Experience, Portfolio, Company, UserCompany
+from rest_framework import serializers, permissions
 from .serializers import SkillSerializer, FreelancerSkillSerializer, ExperienceSerializer, PortfolioSerializer
+from appAuth.serializers import CompanySerializer
 from rest_framework.permissions import IsAuthenticated
 from appAuth.permission import IsFreelancer
 from rest_framework.exceptions import PermissionDenied
 
+# ------------ FREELANCER VIEWS ------------
+
+# List all skills
 class FreelancerSkillView(generics.ListAPIView):
     queryset = Skill.objects.all()
     serializer_class = SkillSerializer
     permission_classes = [IsAuthenticated, IsFreelancer]
 
+# Create a new skill
 class SkillCreateView(generics.CreateAPIView):
     queryset = Skill.objects.all()
     serializer_class = SkillSerializer
@@ -29,6 +34,7 @@ class SkillCreateView(generics.CreateAPIView):
 
         serializer.save(name=skill_name, is_predefined=is_predefined, type=skill_type)
 
+# Add a skill to logged in freelancer
 class FreelancerSkillAddView(generics.CreateAPIView):
     queryset = FreelancerSkill.objects.all()
     serializer_class = FreelancerSkillSerializer
@@ -52,6 +58,7 @@ class FreelancerSkillAddView(generics.CreateAPIView):
 
         serializer.save(freelancer=user, skill=skill, level=level)
 
+# Edit a skill of logged in freelancer
 class FreelancerSkillEditView(generics.UpdateAPIView):
     queryset = FreelancerSkill.objects.all()
     serializer_class = FreelancerSkillSerializer
@@ -74,6 +81,7 @@ class FreelancerSkillEditView(generics.UpdateAPIView):
 
         serializer.save()
 
+# Delete a skill of logged in freelancer
 class FreelancerSkillDeleteView(generics.DestroyAPIView):
     queryset = FreelancerSkill.objects.all()
     permission_classes = [IsAuthenticated, IsFreelancer]
@@ -87,6 +95,7 @@ class FreelancerSkillDeleteView(generics.DestroyAPIView):
             raise ValidationError({"error": "You do not have permission to delete this skill."})
         return freelancer_skill
 
+# List and create experience
 class ExperienceListCreateView(generics.ListCreateAPIView):
     queryset = Experience.objects.all()
     serializer_class = ExperienceSerializer
@@ -95,6 +104,7 @@ class ExperienceListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(freelancer=self.request.user)
 
+# Retrieve, update and delete experience
 class ExperienceDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Experience.objects.all()
     serializer_class = ExperienceSerializer
@@ -106,6 +116,7 @@ class ExperienceDetailView(generics.RetrieveUpdateDestroyAPIView):
             raise ValidationError("You do not have permission to access this experience.")
         return obj
 
+# List and create portfolio
 class PortfolioListCreateView(generics.ListCreateAPIView):
     queryset = Portfolio.objects.all()
     serializer_class = PortfolioSerializer
@@ -114,6 +125,7 @@ class PortfolioListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(freelancer=self.request.user)
 
+# Retrieve, update and delete portfolio
 class PortfolioDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Portfolio.objects.all()
     serializer_class = PortfolioSerializer
@@ -124,3 +136,29 @@ class PortfolioDetailView(generics.RetrieveUpdateDestroyAPIView):
         if obj.freelancer != self.request.user:
             raise ValidationError("You do not have permission to access this portfolio.")
         return obj
+    
+# ------------ COMPANY VIEWS ------------
+
+# Show and update company information 
+class CompanyRetrieveUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        user = self.request.user
+
+        if not user.groups.filter(name='Business Manager').exists():
+            raise PermissionDenied({"error": "You are not authorized to update company information."})
+
+        user_company_instance = UserCompany.objects.filter(user=user).first()
+
+        if user_company_instance is None:
+            raise serializers.ValidationError("No company associated with this Business Manager.")
+
+        return user_company_instance.company
+
+    def update(self, request, *args, **kwargs):
+        company = self.get_object()
+
+        return super().update(request, *args, **kwargs)
