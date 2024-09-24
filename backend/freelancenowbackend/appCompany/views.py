@@ -1,10 +1,19 @@
 from rest_framework import generics, permissions, status
 from app.models import Area, User, UserCompany, Project
-from .serializers import AreaSerializer 
+from .serializers import AreaSerializer, GroupSerializer
 from appAuth.serializers import UserSerializer
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from django.contrib.auth.models import Group
+
+
+class ListGroupsView(generics.ListAPIView):
+    serializer_class = GroupSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        return Group.objects.all()
 
 class WorkingAreaListView(generics.ListAPIView):
     queryset = Area.objects.all()

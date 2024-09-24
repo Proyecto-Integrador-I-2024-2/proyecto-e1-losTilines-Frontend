@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from app.models import Area, User, UserCompany
+from django.contrib.auth.models import Group
 
 class AreaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -22,3 +23,8 @@ class AreaSerializer(serializers.ModelSerializer):
         if value and not value.groups.filter(name='Area Admin').exists():
             raise serializers.ValidationError("El usuario debe pertenecer al grupo 'Area Admin'.")
         return value
+    
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ['id', 'name']  
