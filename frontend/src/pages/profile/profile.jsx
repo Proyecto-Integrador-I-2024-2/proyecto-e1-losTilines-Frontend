@@ -45,6 +45,8 @@ function Profile() {
     const { data: skillsData, isLoading: isSkillsLoading } = useSkills(userData.id);
     const { data: experiencesData, isLoading: isExperiencesLoading } = useExperiences(userData.id);
 
+    console.log(experiencesData)
+
     const [isFreelancer, setIsFreelancer] = useState(false);
 
 

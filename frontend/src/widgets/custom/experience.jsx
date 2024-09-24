@@ -33,7 +33,7 @@ const defaultExperiences = [
 
 export function ExperienceSection({ experiences }) {
 
-    const experiencesToUse = defaultExperiences || experiences;
+    const experiencesToUse = experiences && experiences.length > 0 ? experiences : defaultExperiences;
 
     return (
         <div className="h-full">
@@ -46,10 +46,10 @@ export function ExperienceSection({ experiences }) {
                         <div className="flex justify-between items-center">
                             <div>
                                 <Typography variant="h5" className="text-blue-gray-800">
-                                    {exp.role}
+                                    {exp.occupation}
                                 </Typography>
                                 <Typography className="text-blue-gray-600">
-                                    {exp.company} &bull; {exp.duration || `${exp.start_date} to ${exp.end_date}`}
+                                    {exp.company} &bull; {exp.duration || `${exp.start_date} to ${exp.final_date}`}
                                 </Typography>
                             </div>
                             <IconButton size="sm" className="bg-blue-500">
