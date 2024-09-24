@@ -181,6 +181,22 @@ class PortfolioDetailView(generics.RetrieveUpdateDestroyAPIView):
     
 # ------------ COMPANY VIEWS ------------
 
+# List all companies
+class ListCompanyView(generics.ListAPIView):
+    serializer_class = CompanySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Company.objects.all()
+
+# Detail company by id
+class DetailCompanyView(generics.RetrieveAPIView):
+    serializer_class = CompanySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Company.objects.all()
+
 # Show and update company information 
 class CompanyRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     queryset = Company.objects.all()

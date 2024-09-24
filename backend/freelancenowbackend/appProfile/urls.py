@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import FreelancerSkillView, FreelancerSkillAddView, SkillCreateView, FreelancerSkillEditView, FreelancerSkillDeleteView, ExperienceDetailView,PortfolioDetailView, ExperienceListCreateView, PortfolioListCreateView, CompanyRetrieveUpdateView, UserInfoView
+from .views import FreelancerSkillView, FreelancerSkillAddView, SkillCreateView, FreelancerSkillEditView, FreelancerSkillDeleteView, ExperienceDetailView,PortfolioDetailView, ExperienceListCreateView, PortfolioListCreateView, CompanyRetrieveUpdateView, UserInfoView, ListCompanyView, DetailCompanyView
 
 urlpatterns = [
     path('info/', UserInfoView.as_view(), name = "user-info"),
@@ -13,4 +13,6 @@ urlpatterns = [
     path('portfolios/', PortfolioListCreateView.as_view(), name='portfolio-list-create'),
     path('portfolios/<int:pk>/', PortfolioDetailView.as_view(), name='portfolio-detail'),
     path('company/', CompanyRetrieveUpdateView.as_view(), name='company-retrieve-update'),
+    path('companies/', ListCompanyView.as_view(), name='list-companies'),
+    path('companies/<int:pk>/', DetailCompanyView.as_view(), name='detail-company')
 ]
