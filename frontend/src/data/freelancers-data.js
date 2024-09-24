@@ -36,12 +36,12 @@ export const freelancersData = [
   },
   {
     img: "/img/team-3.jpeg",
-    name: "",
+    name: "Viejo Rau",
     message: "Frontend developer skilled in React, Vue, and HTML.",
   },
   {
-    img: "/img/team-.jpeg",
-    name: "Bruce Mars",
+    img: "/img/team-1.jpeg",
+    name: "Bruno Mars",
     message: "Backend developer skilled in Python, Django, and PostgreSQL.",
   },
 ];

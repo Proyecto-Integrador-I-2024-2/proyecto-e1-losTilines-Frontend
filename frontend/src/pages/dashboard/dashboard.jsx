@@ -4,10 +4,12 @@ import { NumberInfo } from "@/widgets/statistics/numberInfo";
 import Chart from "@/widgets/statistics/chart";
 import { Button, Card, Typography } from "@material-tailwind/react";
 import { useUser } from "@/hooks";
+
+
 function Dashboard() {
 
   const user = useUser();
-
+  console.log(user.data)
   console.log(sessionStorage.getItem("token"));
 
 
@@ -78,23 +80,23 @@ function Dashboard() {
           {/* Aquí iría el contenido para trabajadores y finanzas */}
 
           <div className="flex flex-col h-auto w-full md:space-x-6  md:flex-row  md:h-full">
-           
+
             <div className="h-96 my-4 md:my-0 md:h-full md:w-full">
-            <ListCard
-              title={"Workers"}
-              hasAdd={false}
-              hasSeeAll={true}
-              addDescription={"New worker"}
-            >
-              {workers.map((worker, index) => (
-                <ListRowWithImage
-                  key={index}
-                  rowName={worker.rowName}
-                  description={worker.description}
-                  chipValue={worker.area}
-                />
-              ))}
-            </ListCard>
+              <ListCard
+                title={"Workers"}
+                hasAdd={false}
+                hasSeeAll={true}
+                addDescription={"New worker"}
+              >
+                {workers.map((worker, index) => (
+                  <ListRowWithImage
+                    key={index}
+                    rowName={worker.rowName}
+                    description={worker.description}
+                    chipValue={worker.area}
+                  />
+                ))}
+              </ListCard>
             </div>
             <ListCard title={"Finance"} hasAdd={false} hasSeeAll={true}>
               <NumberInfo
@@ -102,7 +104,7 @@ function Dashboard() {
                 number={"$2.500.000"}
               />
             </ListCard>
-          </div>  
+          </div>
         </div>
 
         {/* Aquí iría el contenido para estadísticas */}
