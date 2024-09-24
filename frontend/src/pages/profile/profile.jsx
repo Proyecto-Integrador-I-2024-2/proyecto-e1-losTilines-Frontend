@@ -35,26 +35,33 @@ import { ExperienceSection } from "@/widgets/custom";
 import { SkillsSection } from "@/widgets/custom";
 import { GitButton } from "@/widgets/custom";
 import { useUser } from "@/hooks";
+import useSkills from "@/hooks/useSkills";
+import useExperiences from "@/hooks/useExperiences";
 
 
 
 function Profile() {
-    const { data, isLoading } = useUser();
+    const { data: userData, isLoading: isUserLoading } = useUser();
+    const { data: skillsData, isLoading: isSkillsLoading } = useSkills(userData.id);
+    const { data: experiencesData, isLoading: isExperiencesLoading } = useExperiences(userData.id);
+
     const [isFreelancer, setIsFreelancer] = useState(false);
-    // const { skills } = useSkills(id); -> Sacar skills del usuario de la base de datos
+
+
+    console.log(skillsData)
 
     useEffect(() => {
-        if (data && data.role) {
-            setIsFreelancer(data.role === "Freelancer");
+        if (userData && userData.role) {
+            setIsFreelancer(userData.role === "Freelancer");
         }
-    }, [data]);
+    }, [userData]);
 
-    console.log(data)
+    console.log(userData)
 
     const imgSrc = "/img/company/icesi.png";
     const imgFreeSrc = "/img/bruce-mars.jpeg"
 
-    const { id, email, first_name, last_name, phone_number, role } = data;
+    const { id, email, first_name, last_name, phone_number, role } = userData;
 
 
 
@@ -79,13 +86,13 @@ function Profile() {
                                 />
                                 <div>
                                     <Typography variant="h5" color="blue-gray" className="mb-1">
-                                        {isLoading ? "Loading..." : `${first_name} ${last_name}`}
+                                        {isUserLoading ? "Loading..." : `${first_name} ${last_name}`}
                                     </Typography>
                                     <Typography
                                         variant="small"
                                         className="font-normal text-blue-gray-600"
                                     >
-                                        {!isLoading && role}
+                                        {!isUserLoading && role}
                                     </Typography>
                                     <Rating value={4} />
                                 </div>
@@ -115,7 +122,7 @@ function Profile() {
                         {/* Aquí va la fila de cards tipo columna --->*/}
                         <div className="grid-cols-1 mb-12 grid gap-12 px-4 lg:grid-cols-2 xl:grid-cols-3 h-2/3">
                             <div>
-                                {!isLoading && <ProfileInfoCard
+                                {!isUserLoading && <ProfileInfoCard
                                     title="Profile Information"
                                     description="Happy to find a new job using Freelance Now!"
                                     details={{
@@ -143,7 +150,7 @@ function Profile() {
 
                             <div className="h-96 mb-2">
                                 {isFreelancer ?
-                                    <ExperienceSection />
+                                    isExperiencesLoading ? "Loading.." : <ExperienceSection experiences={experiencesData} />
                                     :
                                     <div className="h-full">
                                         <Typography variant="h6" color="blue-gray" className="mb-4">
@@ -166,7 +173,8 @@ function Profile() {
 
                             <div className="h-96">
                                 {isFreelancer ?
-                                    <SkillsSection sectionName={"Skills"} /> :
+                                    (isSkillsLoading ? "Loading..." :
+                                        <SkillsSection sectionName={"Skills"} skills={skillsData} />) :
                                     <SkillsSection sectionName={"Tech Stack"} />
                                 }
                             </div>
