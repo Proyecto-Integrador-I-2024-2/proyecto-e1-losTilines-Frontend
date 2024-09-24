@@ -43,6 +43,14 @@ class UserInfoView(APIView):
 
 # ------------ FREELANCER VIEWS ------------
 
+class AllSkillView(generics.ListAPIView):
+    serializer_class = SkillSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Skill.objects.all()
+
 # List all skills of the logged-in freelancer
 class FreelancerSkillView(generics.ListAPIView):
     serializer_class = SkillSerializer
