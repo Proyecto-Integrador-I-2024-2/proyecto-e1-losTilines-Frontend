@@ -174,6 +174,15 @@ class FreelancerSkillDeleteView(generics.DestroyAPIView):
             raise ValidationError({"error": "You do not have permission to delete this skill."})
         return freelancer_skill
 
+# List experience by freelancer ID
+class ExperienceListByFreelancerIdView(generics.ListAPIView):
+    serializer_class = ExperienceSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        freelancer_id = self.kwargs['freelancer_id']
+        return Experience.objects.filter(freelancer_id=freelancer_id)
+
 # List and create experience
 class ExperienceListCreateView(generics.ListCreateAPIView):
     serializer_class = ExperienceSerializer
@@ -197,6 +206,15 @@ class ExperienceDetailView(generics.RetrieveUpdateDestroyAPIView):
         if obj.freelancer != self.request.user:
             raise ValidationError("You do not have permission to access this experience.")
         return obj
+
+# List portfolio by freelancer ID
+class PortfolioListByFreelancerIdView(generics.ListAPIView):
+    serializer_class = PortfolioSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        freelancer_id = self.kwargs['freelancer_id']
+        return Portfolio.objects.filter(freelancer_id=freelancer_id)
 
 # List and create portfolio
 class PortfolioListCreateView(generics.ListCreateAPIView):
