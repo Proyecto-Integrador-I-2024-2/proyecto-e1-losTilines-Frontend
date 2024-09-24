@@ -1,10 +1,8 @@
 import { Input, Checkbox, Button, Typography } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useMutation } from '@tanstack/react-query'; 
-import apiClient from "@/services/apiClient";
-import {useLogin} from "@/hooks/useLogin";
 import { useNavigate } from "react-router-dom";
+import useLogin from "@/hooks/useLogin";
 
 export function SignIn() {
 
@@ -15,16 +13,22 @@ export function SignIn() {
   const [password, setPassword] = useState("");
 
 
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await login.
+    try {
 
-    mutation.mutate({ email, password });
+      console.log("Entrando en el login.")
+      await login.mutateAsync({email, password});
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Login failed:', error.response.data);
+      alert('Login failed! Check your credentials.');
+    }
+    
   };
 
-
+/*
   const loginUser = async (credentials) => {
     const response = await apiClient.post("/auth/", credentials);
     return response.data;
@@ -40,7 +44,7 @@ export function SignIn() {
       alert('Login failed! Check your credentials.');
     },
   });
-
+*/
 
   return (
     <section className="m-8 flex gap-4">
@@ -80,11 +84,12 @@ export function SignIn() {
             }
             containerProps={{ className: "-ml-2.5" }}
           />
+
           <Button className="mt-6" fullWidth color="blue" type="submit">
-            Sign In
-          </Button>
-          {mutation.isLoading && <p>Loading...</p>}
-          {mutation.isError && <p>Error: {mutation.error.message}</p>}
+          {login.isLoading ? 'Iniciando...' : 'Entrar'}         
+          
+           </Button>
+
 
           <div className="flex items-center justify-between gap-2 mt-6">
             <Typography variant="small" className="font-medium text-gray-900">
