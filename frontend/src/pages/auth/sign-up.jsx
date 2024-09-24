@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 import { TextInputLabel } from "@/widgets/textInputs";
 import { GoogleButton } from "@/widgets/buttons";
 import { useState } from "react";
-import { useRegister } from "../../hooks/useRegister";
+import { useRegister } from "../../hooks/useRegisterFreelancer";
 
 export function SignUp() {
   const [error, setError] = useState(null);
@@ -30,23 +30,31 @@ export function SignUp() {
   const [address, setAddress] = useState("");
   const [companyTelephone, setCompanyTelephone] = useState("");
 
+  const userGeneral = {  
+    firstName,
+    lastName,
+    username,
+    email,
+    phone,
+  };
 
+  const companyData = {
+
+    companyTaxId,
+    companyName,
+    city,
+    address,
+    companyTelephone
+  }
 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const userData = {
-      firstName,
-      lastName,
-      username,
-      email,
-      phone,
-      role: isFreelancer ? "freelancer" : "worker", // Agrega el rol según el tipo de usuario
-    };
+    const userData = isFreelancer ? userGeneral : {...userGeneral, ...companyData};
 
+    console.log(userData);
     try {
       await registerMutation.mutateAsync(userData);
-
     } catch (err) {
       setError("Registration failed! Please check your input.");
     }
@@ -62,40 +70,105 @@ export function SignUp() {
       </div>
       <div className="w-full lg:w-3/5 flex flex-col items-center justify-center">
         <div className="flex flex-col items-center m-4">
-          <Typography variant="h2" color="blue" className="font-bold mb-4">Join Us Today</Typography>
-          <Typography variant="h5" color="blue-gray">How do you want to register?</Typography>
+          <Typography variant="h2" color="blue" className="font-bold mb-4">
+            Join Us Today
+          </Typography>
+          <Typography variant="h5" color="blue-gray">
+            How do you want to register?
+          </Typography>
         </div>
         <Tabs value="Freelancer">
           <TabsHeader>
-            <Tab key={"Freelancer"} value={"Freelancer"} onClick={() => setIsFreelancer(true)}>
+            <Tab
+              key={"Freelancer"}
+              value={"Freelancer"}
+              onClick={() => setIsFreelancer(true)}
+            >
               Freelancer
             </Tab>
-            <Tab key={"Client"} value={"Client"} onClick={() => setIsFreelancer(false)}>
+            <Tab
+              key={"Client"}
+              value={"Client"}
+              onClick={() => setIsFreelancer(false)}
+            >
               Client
             </Tab>
           </TabsHeader>
         </Tabs>
         <div className="flex flex-col items-center mt-4">
-          <Typography variant="h5" color="blue-gray">Fill the following fields to register.</Typography>
+          <Typography variant="h5" color="blue-gray">
+            Fill the following fields to register.
+          </Typography>
         </div>
-        <form className="mt-8 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2" onSubmit={handleSubmit}>
+        <form
+          className="mt-8 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2"
+          onSubmit={handleSubmit}
+        >
           <div className="mb-1 flex flex-col gap-6">
-            <TextInputLabel label="First name" placeholder="First name" value={firstName} onValueChange={setFirstName} />
-            <TextInputLabel label="Last name" placeholder="Last name" value={lastName} onValueChange={setLastName} />
-            <TextInputLabel label="Username" placeholder="Username" value={username} onValueChange={setUsername} />
-            <TextInputLabel label="Email" placeholder="email@example.com" value={email} onValueChange={setEmail} />
-            <TextInputLabel label="Phone number" placeholder="Phone number" value={phone} onValueChange={setPhone} />
-            {
-              !isFreelancer && (
-                <>
-                  <TextInputLabel label="Company tax id" placeholder="Company tax id" value={companyTaxId} onValueChange={setCompanyTaxId} />
-                  <TextInputLabel label="Company name" placeholder="Company name" value={companyName} onValueChange={setCompanyName} />
-                  <TextInputLabel label="City" placeholder="City" value={city} onValueChange={setCity} />
-                  <TextInputLabel label="Address" placeholder="Address" value={address} onValueChange={setAddress} />
-                  <TextInputLabel label="Company telephone" placeholder="Company telephone" value={companyTelephone} onValueChange={setCompanyTelephone} />
-                </>
-              )
-            }
+            <TextInputLabel
+              label="First name"
+              placeholder="First name"
+              value={firstName}
+              onValueChange={setFirstName}
+            />
+            <TextInputLabel
+              label="Last name"
+              placeholder="Last name"
+              value={lastName}
+              onValueChange={setLastName}
+            />
+            <TextInputLabel
+              label="Username"
+              placeholder="Username"
+              value={username}
+              onValueChange={setUsername}
+            />
+            <TextInputLabel
+              label="Email"
+              placeholder="email@example.com"
+              value={email}
+              onValueChange={setEmail}
+            />
+            <TextInputLabel
+              label="Phone number"
+              placeholder="Phone number"
+              value={phone}
+              onValueChange={setPhone}
+            />
+            {!isFreelancer && (
+              <>
+                <TextInputLabel
+                  label="Company tax id"
+                  placeholder="Company tax id"
+                  value={companyTaxId}
+                  onValueChange={setCompanyTaxId}
+                />
+                <TextInputLabel
+                  label="Company name"
+                  placeholder="Company name"
+                  value={companyName}
+                  onValueChange={setCompanyName}
+                />
+                <TextInputLabel
+                  label="City"
+                  placeholder="City"
+                  value={city}
+                  onValueChange={setCity}
+                />
+                <TextInputLabel
+                  label="Address"
+                  placeholder="Address"
+                  value={address}
+                  onValueChange={setAddress}
+                />
+                <TextInputLabel
+                  label="Company telephone"
+                  placeholder="Company telephone"
+                  value={companyTelephone}
+                  onValueChange={setCompanyTelephone}
+                />
+              </>
+            )}
           </div>
           <Checkbox
             label={
@@ -115,16 +188,31 @@ export function SignUp() {
             }
             containerProps={{ className: "-ml-2.5" }}
           />
-          <Button className="mt-6" fullWidth color="blue" type="submit" disabled={registerMutation.isLoading}>
+          <Button
+            className="mt-6"
+            fullWidth
+            color="blue"
+            type="submit"
+            disabled={registerMutation.isLoading}
+          >
             {registerMutation.isLoading ? "Registering..." : "Register Now"}
           </Button>
-          {error && <Typography variant="small" color="red" className="mt-2">{error}</Typography>}
+          {error && (
+            <Typography variant="small" color="red" className="mt-2">
+              {error}
+            </Typography>
+          )}
           <div className="space-y-4 mt-8">
             <GoogleButton />
           </div>
-          <Typography variant="paragraph" className="text-center text-blue-gray-500 font-medium mt-4">
+          <Typography
+            variant="paragraph"
+            className="text-center text-blue-gray-500 font-medium mt-4"
+          >
             Already have an account?
-            <Link to="/auth/sign-in" className="text-gray-900 ml-1">Sign in</Link>
+            <Link to="/auth/sign-in" className="text-gray-900 ml-1">
+              Sign in
+            </Link>
           </Typography>
         </form>
       </div>

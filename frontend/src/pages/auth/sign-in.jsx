@@ -17,7 +17,6 @@ export function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-
       console.log("Entrando en el login.")
       await login.mutateAsync({email, password});
       navigate('/dashboard');
@@ -28,23 +27,6 @@ export function SignIn() {
     
   };
 
-/*
-  const loginUser = async (credentials) => {
-    const response = await apiClient.post("/auth/", credentials);
-    return response.data;
-  };
-
-  const mutation = useMutation(loginUser, {
-    onSuccess: (data) => {
-      sessionStorage.setItem('token', data.token);
-      alert('Login successful!');
-    },
-    onError: (error) => {
-      console.error('Login failed:', error.response.data);
-      alert('Login failed! Check your credentials.');
-    },
-  });
-*/
 
   return (
     <section className="m-8 flex gap-4">

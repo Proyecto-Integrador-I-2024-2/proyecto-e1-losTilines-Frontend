@@ -3,13 +3,21 @@ import ListRowStructure from "@/widgets/list/listRowStructure";
 import { NumberInfo } from "@/widgets/statistics/numberInfo";
 import Chart from "@/widgets/statistics/chart";
 import { Button, Card, Typography } from "@material-tailwind/react";
-import { useUser } from "@/hooks";
+import { useUser, useAreas } from "@/hooks";
+import useWorkers from "@/hooks/useWorkers";
 function Dashboard() {
-
   const user = useUser();
 
-  console.log(sessionStorage.getItem("token"));
+  const { data: areas, isLoading: areasLoading } = useAreas();
 
+  const { data: workersData, isLoading: workersLoading } = useWorkers();
+
+  console.log("WORKERS: ", workersData);
+  console.log("USUARIO: ", user.data);
+
+  console.log("AREAS IDENTIFICADAS", areas);
+
+  console.log(sessionStorage.getItem("token"));
 
   const workers = [
     {
@@ -22,12 +30,16 @@ function Dashboard() {
     { rowName: "Jane Smith", description: "Designer", area: "Area 3" },
     { rowName: "Jane Smith", description: "Designer", area: "Area 3" },
     { rowName: "Jane Smith", description: "Designer", area: "Area 3" },
+  ];
 
-    ]
-
+  {
+    /*
   if (workersLoading || areasLoading) {
     return <div>Cargando...</div>; 
     }
+
+    */
+  }
 
   return (
     <div className="h-full md:flex md:flex-row w-full my-2 px-2 min-h-0">
@@ -40,14 +52,18 @@ function Dashboard() {
           hasSeeAll={true}
           addDescription={"New Area"}
         >
-          {areas.map((area, index) => (
-            <ListRowStructure
-              key={index}
-              rowName={area.rowName}
-              statistics={area.statistics}
-              chipValue={area.projects}
-            />
-          ))}
+          {areas != undefined ? (
+            areas.map((area, index) => (
+              <ListRowStructure
+                key={index}
+                rowName={area.name}
+                statistics={""}
+                chipValue={"$1.500.230"}
+              />
+            ))
+          ) : (
+            <div>Cargando...</div>
+          )}
         </ListCard>
       </section>
 
@@ -62,14 +78,18 @@ function Dashboard() {
                 hasSeeAll={true}
                 addDescription={"New worker"}
               >
-                {workers.map((worker, index) => (
-                  <ListRowWithImage
-                    key={index}
-                    rowName={worker.rowName}
-                    description={worker.description}
-                    chipValue={worker.area}
-                  />
-                ))}
+                {workersData != undefined ? (
+                  workersData.map((worker, index) => (
+                    <ListRowWithImage
+                      key={index}
+                      rowName={`${worker.first_name}  ${worker.last_name}` }
+                      description={worker.email  }
+                      chipValue={worker.phone_number}
+                    />
+                  ))
+                ) : (
+                  <div>Cargando...</div>
+                )}
               </ListCard>
             </div>
             <ListCard title={"Finance"} hasAdd={false} hasSeeAll={true}>
