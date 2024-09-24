@@ -18,6 +18,7 @@ import {
   XMarkIcon,
   ChevronUpIcon,
 } from "@heroicons/react/24/outline";
+import { useNavigate } from "react-router-dom"; // Importa useNavigate
 
 const nestedMenuItems = [
   {
@@ -60,7 +61,7 @@ function NavListMenu() {
               selected={isMenuOpen || isMobileMenuOpen}
               onClick={() => setIsMobileMenuOpen((cur) => !cur)}
             >
-              Blocks
+              Options
               <ChevronDownIcon
                 strokeWidth={2.5}
                 className={`hidden h-3 w-3 transition-transform lg:block ${
@@ -86,7 +87,7 @@ function NavListMenu() {
           >
             <MenuHandler className="flex items-center justify-between">
               <MenuItem>
-                Figma
+                Projects
                 <ChevronUpIcon
                   strokeWidth={2.5}
                   className={`h-3.5 w-3.5 transition-transform ${
@@ -98,7 +99,7 @@ function NavListMenu() {
             <MenuList className="rounded-xl">{renderItems}</MenuList>
           </Menu>
           <MenuItem>React</MenuItem>
-          <MenuItem>TailwindCSS</MenuItem>
+          <MenuItem>Freelance Now</MenuItem>
         </MenuList>
       </Menu>
       <div className="block lg:hidden">
@@ -134,26 +135,28 @@ function NavListMenu() {
 }
 
 function NavList() {
+  const navigate = useNavigate(); // Obtén la función navigate
+
   return (
     <List className="mb-6 mt-4 p-0 lg:mb-0 lg:mt-0 lg:flex-row lg:p-1">
       <Typography
         as="a"
-        href="#"
         variant="small"
         color="blue-gray"
-        className="font-medium"
+        className="font-medium cursor-pointer"
+        onClick={() => navigate('/home')} // Redirige a la URL de Home
       >
-        <ListItem className="flex items-center gap-2 py-2 pr-4">Pages</ListItem>
+        <ListItem className="flex items-center gap-2 py-2 pr-4">Home</ListItem>
       </Typography>
       <Typography
         as="a"
-        href="#"
         variant="small"
         color="blue-gray"
-        className="font-medium"
+        className="font-medium cursor-pointer"
+        onClick={() => navigate('/dashboard')} // Redirige a la URL de Dashboard
       >
-        <ListItem className="flex items-center gap-2 py-2 pr-4">
-          Account
+        <ListItem className="flex items-center gap-2 py-2 pr-4" >
+          Dashboard
         </ListItem>
       </Typography>
       <NavListMenu />
@@ -164,7 +167,6 @@ function NavList() {
         color="blue-gray"
         className="font-medium"
       >
-        <ListItem className="flex items-center gap-2 py-2 pr-4">Docs</ListItem>
       </Typography>
     </List>
   );
@@ -172,6 +174,7 @@ function NavList() {
 
 export function NavigationTopBar() {
   const [openNav, setOpenNav] = React.useState(false);
+  const navigate = useNavigate(); // Obtén la función navigate
 
   React.useEffect(() => {
     window.addEventListener(
@@ -189,16 +192,13 @@ export function NavigationTopBar() {
           variant="h6"
           className="mr-4 cursor-pointer py-1.5 lg:ml-2"
         >
-          Material Tailwind
+          Freelance Now
         </Typography>
         <div className="hidden lg:block">
           <NavList />
         </div>
         <div className="hidden gap-2 lg:flex">
-          <Button size="sm">Get Started</Button>
-          <Button variant="outlined" size="sm">
-            Log In
-          </Button>
+          <Button variant="outlined" size="sm" onClick={() => navigate('/auth/sign-in/')}>Log out</Button> {/* Redirige a /login */}
         </div>
         <IconButton
           variant="text"
@@ -215,12 +215,8 @@ export function NavigationTopBar() {
       <Collapse open={openNav}>
         <NavList />
         <div className="flex w-full flex-nowrap items-center gap-2 lg:hidden">
-          <Button size="sm" fullWidth>
-            Get Started
-          </Button>
-          <Button variant="outlined" size="sm" fullWidth>
-            Log In
-          </Button>
+          <Button size="sm" fullWidth onClick={() => navigate('/signup')}>Get Started</Button> {/* Redirige a /signup */}
+          <Button variant="outlined" size="sm" fullWidth onClick={() => navigate('/login')}>Log In</Button> {/* Redirige a /login */}
         </div>
       </Collapse>
     </Navbar>

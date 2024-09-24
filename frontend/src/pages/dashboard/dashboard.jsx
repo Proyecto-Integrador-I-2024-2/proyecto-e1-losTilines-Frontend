@@ -19,28 +19,6 @@ function Dashboard() {
 
   console.log(sessionStorage.getItem("token"));
 
-  const workers = [
-    {
-      rowName: "Kevin Nieto Curaca",
-      description: "Project Manager",
-      area: "Area 1",
-    },
-    { rowName: "John Doe", description: "Developer", area: "Area 2" },
-    { rowName: "Jane Smith", description: "Designer", area: "Area 3" },
-    { rowName: "Jane Smith", description: "Designer", area: "Area 3" },
-    { rowName: "Jane Smith", description: "Designer", area: "Area 3" },
-    { rowName: "Jane Smith", description: "Designer", area: "Area 3" },
-  ];
-
-  {
-    /*
-  if (workersLoading || areasLoading) {
-    return <div>Cargando...</div>; 
-    }
-
-    */
-  }
-
   return (
     <div className="h-full md:flex md:flex-row w-full my-2 px-2 min-h-0">
       {/* Columna izquierda */}
