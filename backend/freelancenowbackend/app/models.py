@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.forms import ValidationError
 from django.core.validators import RegexValidator, EmailValidator, MinValueValidator, MaxValueValidator
 from django.utils import timezone
+from cities_light.models import Country, City
 
 # ---------------------- USERS ---------------------- #
 class CustomUserManager(BaseUserManager):
@@ -27,7 +28,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=30, blank=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now)
-    profile_picture = models.ImageField(upload_to='uploads/', blank=True, null=True)
+    profile_picture = models.URLField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
@@ -64,8 +65,8 @@ class UserNotification(models.Model):
 class Company(models.Model):
     tax_id = models.CharField(max_length=30, unique=True, validators=[RegexValidator(regex=r'^[A-Z0-9]{1,30}$', message='Company ID must be alphanumeric and up to 30 characters.')])
     name = models.CharField(max_length=100, unique=True)
-    country = models.CharField(max_length=100, null=True, blank=True)
-    city = models.CharField(max_length=100, null=True, blank=True)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, null=True, blank=True)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, null=True, blank=True)
     address = models.CharField(max_length=200)
     telephone = models.CharField(max_length=20, validators=[RegexValidator(regex=r'^\+?\d{7,15}$', message='Telephone number must be between 7 and 15 digits.')])
     email = models.EmailField(max_length=100, validators=[EmailValidator()])
@@ -163,6 +164,7 @@ class Experience(models.Model):
     occupation = models.CharField(max_length=100)
     company = models.CharField(max_length=100)
     freelancer = models.ForeignKey(User, on_delete=models.CASCADE)
+    description = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
         return f'{self.occupation} at {self.company}'
@@ -204,14 +206,13 @@ class Comment(models.Model):
         super().save(*args, **kwargs)
 
 # ---------------------- PROJECTS ---------------------- #
+class ProjectStatus(models.Model):
+    name = models.CharField(max_length=30, unique=True)
+
+    def __str__(self):
+        return self.name
 
 class Project(models.Model):
-    statusproject = [
-        ('pending', 'Pending'),
-        ('completed', 'Completed'),
-        ('rejected', 'Rejected'),
-        ('in course', 'In course'),
-    ]
 
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=2000)
@@ -220,8 +221,9 @@ class Project(models.Model):
     budget = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.00)])
     area = models.ForeignKey(Area, on_delete=models.CASCADE)
     file = models.FileField(upload_to='uploads/', blank=True, null=True)
-    status = models.CharField(choices=statusproject, default="pending")
+    status = models.CharField(ProjectStatus, blank=True, null=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="owner_project")
+    profile_picture = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return self.name
