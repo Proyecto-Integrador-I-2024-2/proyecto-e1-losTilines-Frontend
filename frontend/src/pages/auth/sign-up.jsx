@@ -19,8 +19,8 @@ export function SignUp() {
   const registerMutation = useRegister();
   // User States
   const [isFreelancer, setIsFreelancer] = useState(true);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [first_name, setFirstName] = useState("");
+  const [last_name, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -29,28 +29,45 @@ export function SignUp() {
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
   const [companyTelephone, setCompanyTelephone] = useState("");
+  const [password, setPassword] = useState("");
 
 
 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
+    // Datos básicos de usuario
     const userData = {
-      firstName,
-      lastName,
+      first_name,
+      last_name,
       username,
       email,
       phone,
-      role: isFreelancer ? "freelancer" : "worker", // Agrega el rol según el tipo de usuario
+      password,
+      role: isFreelancer ? "freelancer" : "client",
     };
 
+  
+    // Si no es freelancer, agregar datos de la empresa
+    if (!isFreelancer) {
+      userData.companyTaxId = companyTaxId;
+      userData.companyName = companyName;
+      userData.city = city;
+      userData.address = address;
+      userData.companyTelephone = companyTelephone;
+      userData.password = password;
+    }
+  
     try {
       await registerMutation.mutateAsync(userData);
-
     } catch (err) {
+      console.error("Error details:", err.response ? err.response.data : err.message);
       setError("Registration failed! Please check your input.");
     }
+    
   };
+  
 
   return (
     <section className="p-8 flex w-full h-full">
@@ -80,11 +97,12 @@ export function SignUp() {
         </div>
         <form className="mt-8 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2" onSubmit={handleSubmit}>
           <div className="mb-1 flex flex-col gap-6">
-            <TextInputLabel label="First name" placeholder="First name" value={firstName} onValueChange={setFirstName} />
-            <TextInputLabel label="Last name" placeholder="Last name" value={lastName} onValueChange={setLastName} />
+            <TextInputLabel label="First name" placeholder="First name" value={first_name} onValueChange={setFirstName} />
+            <TextInputLabel label="Last name" placeholder="Last name" value={last_name} onValueChange={setLastName} />
             <TextInputLabel label="Username" placeholder="Username" value={username} onValueChange={setUsername} />
             <TextInputLabel label="Email" placeholder="email@example.com" value={email} onValueChange={setEmail} />
             <TextInputLabel label="Phone number" placeholder="Phone number" value={phone} onValueChange={setPhone} />
+            <TextInputLabel label="Password" placeholder="Password" value={password} onValueChange={setPassword} type = "password" />
             {
               !isFreelancer && (
                 <>
@@ -93,6 +111,7 @@ export function SignUp() {
                   <TextInputLabel label="City" placeholder="City" value={city} onValueChange={setCity} />
                   <TextInputLabel label="Address" placeholder="Address" value={address} onValueChange={setAddress} />
                   <TextInputLabel label="Company telephone" placeholder="Company telephone" value={companyTelephone} onValueChange={setCompanyTelephone} />
+          
                 </>
               )
             }
