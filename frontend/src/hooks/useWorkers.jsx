@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import apiClient from '../services/apiClient'; // Asegúrate de que esta ruta sea correcta
 
 const fetchWorkers = async () => {
