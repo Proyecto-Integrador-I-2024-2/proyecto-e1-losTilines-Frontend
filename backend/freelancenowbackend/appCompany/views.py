@@ -1,9 +1,19 @@
-from rest_framework import generics, permissions, serializers
-from app.models import Area, User, UserCompany
-from .serializers import AreaSerializer 
+from rest_framework import generics, permissions, status
+from app.models import Area, User, UserCompany, Project
+from .serializers import AreaSerializer, GroupSerializer
 from appAuth.serializers import UserSerializer
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from django.contrib.auth.models import Group
+
+
+class ListGroupsView(generics.ListAPIView):
+    serializer_class = GroupSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        return Group.objects.all()
 
 class WorkingAreaListView(generics.ListAPIView):
     queryset = Area.objects.all()
@@ -123,10 +133,6 @@ class WorkingAreaDeleteView(generics.DestroyAPIView):
 
         instance.delete()
 
-from rest_framework import generics
-from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import IsAuthenticated
-
 class ListCompanyWorkersView(generics.ListAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
@@ -145,4 +151,121 @@ class ListCompanyWorkersView(generics.ListAPIView):
         
         # Retorna los usuarios que pertenezcan a la misma compañía como instancias de User
         user_ids = UserCompany.objects.filter(company=user_company_instance.company).values_list('user', flat=True)
+        print(user_ids)
         return User.objects.filter(id__in=user_ids).exclude(id=business_manager.id)  # Excluye al Business Manager
+
+class RetrieveWorkerView(generics.RetrieveAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        business_manager = self.request.user
+
+        # Verifica si el usuario pertenece al grupo "Business Manager"
+        if not business_manager.groups.filter(name="Business Manager").exists():
+            raise ValidationError("No tienes permiso para ver esta información.")
+
+        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
+        if user_company_instance is None:
+            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
+
+        user_ids = UserCompany.objects.filter(company=user_company_instance.company).values_list('user', flat=True)
+        return User.objects.filter(id__in=user_ids)
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+class UpdateWorkerView(generics.UpdateAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        business_manager = self.request.user
+
+        if not business_manager.groups.filter(name="Business Manager").exists():
+            raise ValidationError("No tienes permiso para actualizar esta información.")
+
+        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
+        if user_company_instance is None:
+            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
+
+        user_ids = UserCompany.objects.filter(company=user_company_instance.company).values_list('user', flat=True)
+        return User.objects.filter(id__in=user_ids)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        data = request.data
+
+        current_role = instance.groups.values_list('name', flat=True).first()
+
+        if 'role' in data:
+            new_worker_id = data.get('new_worker')
+
+            # Verifica si el Area Admin o el Project Manager no están asociados
+            if current_role == "Area Admin" and not UserCompany.objects.filter(user=instance).exists():
+                # Se permite eliminar sin reemplazo
+                pass
+
+            elif current_role == "Project Manager" and not Project.objects.filter(user=instance).exists():
+                # Se permite eliminar sin reemplazo
+                pass
+
+            # Si hay un nuevo trabajador, valida
+            if new_worker_id:
+                new_worker = User.objects.get(id=new_worker_id)
+                new_worker_role = new_worker.groups.values_list('name', flat=True).first()
+                if new_worker_role != current_role:
+                    raise ValidationError(f"El trabajador que estás intentando asignar no tiene el rol de {current_role}.")
+            else:
+                raise ValidationError(f"Debes proporcionar el trabajador que reemplazará al {current_role}.")
+
+        return super().update(request, *args, **kwargs)
+
+class DeleteWorkerView(generics.DestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        business_manager = self.request.user
+
+        if not business_manager.groups.filter(name="Business Manager").exists():
+            raise ValidationError("No tienes permiso para eliminar esta información.")
+
+        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
+        if user_company_instance is None:
+            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
+
+        user_ids = UserCompany.objects.filter(company=user_company_instance.company).values_list('user', flat=True)
+        return User.objects.filter(id__in=user_ids)
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        data = request.data
+
+        current_role = instance.groups.values_list('name', flat=True).first()
+
+        # Verifica si el Area Admin o el Project Manager no están asociados
+        if current_role == "Area Admin" and not UserCompany.objects.filter(user=instance).exists():
+            # Se permite eliminar sin reemplazo
+            instance.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        elif current_role == "Project Manager" and not Project.objects.filter(user=instance).exists():
+            # Se permite eliminar sin reemplazo
+            instance.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        # Si el trabajador es asociado, requiere reemplazo
+        new_worker_id = data.get('new_worker')
+        if not new_worker_id:
+            raise ValidationError(f"Debes proporcionar el trabajador que reemplazará al {current_role}.")
+
+        # Validar que el nuevo trabajador sea del mismo rol
+        new_worker = User.objects.get(id=new_worker_id)
+        new_worker_role = new_worker.groups.values_list('name', flat=True).first()
+        if new_worker_role != current_role:
+            raise ValidationError(f"El trabajador que estás intentando asignar no tiene el rol de {current_role}.")
+
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
