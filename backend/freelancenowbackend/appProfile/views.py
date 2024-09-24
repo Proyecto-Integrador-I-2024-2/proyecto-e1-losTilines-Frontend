@@ -1,12 +1,45 @@
 from django.forms import ValidationError
-from rest_framework import generics
 from app.models import Company, Skill, FreelancerSkill, SkillType, Experience, Portfolio, UserCompany
-from rest_framework import serializers, permissions
+from rest_framework import serializers, permissions, generics, status
 from appAuth.serializers import CompanySerializer
 from .serializers import SkillSerializer, FreelancerSkillSerializer, ExperienceSerializer, PortfolioSerializer
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from appAuth.permission import IsFreelancer
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+class UserInfoView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        user_data = {
+            "id" : user.id,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "phone_number": user.phone_number,
+            "role": user.groups.first().name if user.groups.exists() else None,
+        }
+
+        if user.groups.filter(name="Freelancer").exists():
+            return Response(user_data, status=status.HTTP_200_OK)
+        
+        try:
+            user_company = UserCompany.objects.get(user=user)
+            user_data["company"] = {
+                "name": user_company.company.name,
+                "address": user_company.company.address,
+                "city": user_company.company.city.name if user_company.company.city else None,
+                "country": user_company.company.country.name if user_company.company.country else None
+            }
+            user_data["area"] = user_company.area.name if user_company.area else None
+        except UserCompany.DoesNotExist:
+            user_data["company"] = None
+            user_data["area"] = None
+
+        return Response(user_data, status=status.HTTP_200_OK)
 
 # ------------ FREELANCER VIEWS ------------
 
@@ -23,7 +56,7 @@ class FreelancerSkillView(generics.ListAPIView):
 class SkillCreateView(generics.CreateAPIView):
     queryset = Skill.objects.all()
     serializer_class = SkillSerializer
-    permission_classes = [IsAdminUser]  # Cambiado a IsAdminUser
+    permission_classes = [IsAdminUser]
 
     def perform_create(self, serializer):
         skill_name = self.request.data.get('name')
