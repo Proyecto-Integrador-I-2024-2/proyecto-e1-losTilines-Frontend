@@ -1,7 +1,9 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, serializers
 from app.models import Area, User, UserCompany
-from .serializers import AreaSerializer
+from .serializers import AreaSerializer 
+from appAuth.serializers import UserSerializer
 from rest_framework.exceptions import PermissionDenied, ValidationError
+from rest_framework.permissions import IsAuthenticated
 
 class WorkingAreaListView(generics.ListAPIView):
     queryset = Area.objects.all()
@@ -120,3 +122,27 @@ class WorkingAreaDeleteView(generics.DestroyAPIView):
         UserCompany.objects.filter(area=instance, company=user_company_instance.company).update(area=None)
 
         instance.delete()
+
+from rest_framework import generics
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated
+
+class ListCompanyWorkersView(generics.ListAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        business_manager = self.request.user
+
+        # Verifica que el usuario logueado sea un Business Manager
+        if not business_manager.groups.filter(name="Business Manager").exists():
+            raise ValidationError("No tienes permiso para ver esta información.")
+
+        # Obtener la compañía asociada al Business Manager
+        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
+        if user_company_instance is None:
+            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
+        
+        # Retorna los usuarios que pertenezcan a la misma compañía como instancias de User
+        user_ids = UserCompany.objects.filter(company=user_company_instance.company).values_list('user', flat=True)
+        return User.objects.filter(id__in=user_ids).exclude(id=business_manager.id)  # Excluye al Business Manager
