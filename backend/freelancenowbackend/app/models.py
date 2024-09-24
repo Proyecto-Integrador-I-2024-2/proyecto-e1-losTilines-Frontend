@@ -147,6 +147,7 @@ class Experience(models.Model):
     start_date = models.DateField()
     final_date = models.DateField(null=True, blank=True)
     occupation = models.CharField(max_length=100)
+    description = models.CharField(max_length=300, null=True, blank=True)
     company = models.CharField(max_length=100)
     freelancer = models.ForeignKey(User, on_delete=models.CASCADE)
 
