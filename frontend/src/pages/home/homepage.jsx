@@ -1,51 +1,64 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { FreelancerCard, ProjectCard } from "@/widgets/cards";
 
-const HomePage = () => {
+const projects = [
+  {
+    id: 1,
+    title: "Project 1",
+    description: "Description 1",
+    price: "$95.00",
+    image: "https://images.unsplash.com/photo-1629367494173-c78a56567877?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=927&q=80",
+  },
+  {
+    id: 2,
+    title: "Project 2",
+    description: "Description 2",
+    price: "$120.00",
+    image: "https://images.unsplash.com/photo-1629367494173-c78a56567877?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=927&q=80",
+  },
+  {
+    id: 3,
+    title: "Project 3",
+    description: "Description 3",
+    price: "$150.00",
+    image: "https://images.unsplash.com/photo-1629367494173-c78a56567877?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=927&q=80",
+  },
+  // Agrega más proyectos según sea necesario
+];
+
+const Homepage = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const handleScroll = (direction) => {
+    const newIndex = (activeIndex + direction + projects.length) % projects.length;
+    setActiveIndex(newIndex);
+  };
+
+  const handleSeeMore = () => {
+    window.location.href = "";
+  };
+
   return (
-    <div>
-      <header className="bg-gray-800 text-white p-4">
-        <h1 className="text-2xl">Mi Sitio Web</h1>
-        <nav>
-          <ul className="flex space-x-4">
-            <li><Link to="/">Inicio</Link></li>
-            <li><Link to="/about">Acerca de</Link></li>
-            <li><Link to="/services">Servicios</Link></li>
-            <li><Link to="/contact">Contacto</Link></li>
-          </ul>
-        </nav>
-      </header>
-      
-      <section className="hero bg-blue-500 text-white p-20 text-center">
-        <h2 className="text-4xl">Bienvenido a Mi Sitio Web</h2>
-        <p className="mt-4">Ofrecemos los mejores servicios para ti.</p>
-        <Link to="/signup" className="mt-6 inline-block bg-white text-blue-500 p-2 rounded">Empieza Ahora</Link>
-      </section>
-      
-      <section className="about p-10">
-        <h3 className="text-2xl">Sobre Nosotros</h3>
-        <p>Aquí hay una breve descripción de lo que hacemos.</p>
-      </section>
-
-      <section className="services p-10 bg-gray-100">
-        <h3 className="text-2xl">Nuestros Servicios</h3>
-        <ul>
-          <li>Servicio 1</li>
-          <li>Servicio 2</li>
-          <li>Servicio 3</li>
-        </ul>
-      </section>
-
-      <section className="testimonials p-10">
-        <h3 className="text-2xl">Testimonios</h3>
-        <blockquote>"Excelente servicio!" - Cliente Satisfecho</blockquote>
-      </section>
-
-      <footer className="bg-gray-800 text-white p-4 text-center">
-        <p>© 2024 Mi Sitio Web. Todos los derechos reservados.</p>
-      </footer>
+    <div className="flex justify-center items-center h-screen relative">
+      <div className="flex overflow-x-auto space-x-4 items-center">
+        <button onClick={() => handleScroll(-1)} className="bg-gray-200 rounded p-2">{"<"}</button>
+        {projects.map((project, index) => (
+          <ProjectCard
+            key={project.id}
+            project={project}
+            isActive={index === activeIndex}
+          />
+        ))}
+        <button onClick={() => handleScroll(1)} className="bg-gray-200 rounded p-2">{">"}</button>
+      </div>
+      <button 
+        onClick={handleSeeMore} 
+        className="absolute bottom-5 right-5 bg-blue-600 text-white rounded p-3 hover:bg-blue-700"
+      >
+        Ver más
+      </button>
     </div>
   );
-}
+};
 
-export default HomePage;
+export default Homepage;

@@ -2,7 +2,7 @@ import routes from "@/routes";
 import { Route, Routes } from "react-router-dom";
 import { NavigationTopBar } from "@/widgets/layout";
 
-export function homepageLayout() {
+export function HomepageLayout() {
   return (
     <div className="w-full h-full">
       <NavigationTopBar />
