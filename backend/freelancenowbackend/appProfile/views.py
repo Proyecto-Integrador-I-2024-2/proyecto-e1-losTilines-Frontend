@@ -53,12 +53,30 @@ class AllSkillView(generics.ListAPIView):
 
 # List all skills of the logged-in freelancer
 class FreelancerSkillView(generics.ListAPIView):
-    serializer_class = SkillSerializer
-    permission_classes = [IsAuthenticated, IsFreelancer]
+    serializer_class = FreelancerSkillSerializer
+    permission_classes = [permissions.IsAuthenticated, IsFreelancer]
 
     def get_queryset(self):
         user = self.request.user
-        return Skill.objects.filter(freelancerskill__freelancer=user)
+        return FreelancerSkill.objects.filter(freelancer=user)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(self.to_representation(serializer.data))
+
+    def to_representation(self, data):
+        result = []
+        for item in data:
+            freelancer_skill = FreelancerSkill.objects.get(id=item['id'])
+            skill_name = freelancer_skill.skill.name  
+            result.append({
+                'id': item['id'],
+                'skill_id': freelancer_skill.skill.id,
+                'skill_name' : skill_name,
+                'level': freelancer_skill.level,
+            })
+        return result
 
 # Create a new skill
 class SkillCreateView(generics.CreateAPIView):
