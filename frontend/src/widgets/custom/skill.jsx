@@ -47,7 +47,7 @@ const skillsIconMap = {
 };
 
 const getSkillIcon = (skillName) => {
-    const skillKey = Object.keys(skillsIconMap).find(key => key.toLowerCase().includes(skillName.toLowerCase()));
+    const skillKey = Object.keys(skillsIconMap).find(key => key.toLowerCase() === skillName.toLowerCase());
     return skillsIconMap[skillKey] || <FaCode />;
 };
 
@@ -63,11 +63,11 @@ export function SkillsSection({ sectionName, skills }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 h-full overflow-y-auto p-2 no-scrollbar">
                 {skillsToUse.map((skill, index) => (
                     <Card key={index} shadow={true} className="p-6 flex items-center">
-                        <div className="text-blue-500 text-3xl mr-4 pb-4">{skill.icon ? skill.icon : getSkillIcon(skill.name)}</div>
+                        <div className="text-blue-500 text-3xl mr-4 pb-4">{skill.icon ? skill.icon : getSkillIcon(skill.skill_name)}</div>
                         <div className="w-full">
                             <div className="flex justify-between mb-2">
                                 <Typography variant="h6" className="text-blue-gray-800">
-                                    {skill.name}
+                                    {skill.skill_name}
                                 </Typography>
                                 <Typography variant="small" className="text-blue-gray-600">
                                     {skill.level}%

@@ -1,6 +1,6 @@
 from rest_framework import generics, permissions, status
 from app.models import Area, User, UserCompany, Project
-from .serializers import AreaSerializer, GroupSerializer
+from .serializers import AreaSerializer, GroupSerializer, UserCompanySerializer
 from appAuth.serializers import UserSerializer
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.permissions import IsAuthenticated
@@ -269,3 +269,22 @@ class DeleteWorkerView(generics.DestroyAPIView):
 
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+
+class ListingAdminAreaAvailableView(generics.ListAPIView):
+    serializer_class = UserCompanySerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        business_manager = self.request.user
+        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
+        area_admins = User.objects.filter(groups__name="Area Admin")
+        assigned_admins = UserCompany.objects.filter(area__isnull=False).values_list('user_id', flat=True)
+        available_admins = area_admins.exclude(id__in=assigned_admins)
+
+        if user_company_instance is None:
+            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
+
+        return UserCompany.objects.filter(user__in=available_admins)
+

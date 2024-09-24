@@ -27,4 +27,19 @@ class AreaSerializer(serializers.ModelSerializer):
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        fields = ['id', 'name']  
+        fields = ['id', 'name'] 
+
+
+class UserCompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserCompany
+        fields = ['id', 'company', 'user', 'area']
+    
+    def validate_user(self, value):
+        """Custom validation to ensure user is not a freelancer."""
+        if value.groups.filter(name="Freelancer").exists():
+            raise serializers.ValidationError("This user type cannot be in a company.")
+        return value
+
+
+
