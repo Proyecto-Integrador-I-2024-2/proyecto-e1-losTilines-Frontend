@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { DashboardLayout } from "./layouts/dashboardLayout";
-import { ProfileLayout, Auth, ProjectLayout, HomepageLayout } from "./layouts";
-//import { HomepageLayout } from "./layouts/homepageLayout";
+import { ProfileLayout, Auth, ProjectLayout, homepageLayout } from "@/layouts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
@@ -22,7 +21,7 @@ function App() {
         <Route path="/profile/*" element={<ProfileLayout />} />
         <Route path="/auth/*" element={<Auth />} />
         <Route path="/project/*" element={<ProjectLayout />} />
-        <Route path="/homepage/*" element={<HomepageLayout />} />
+        <Route path="/homepage/*" element={<homepageLayout />} />
       </Routes>
     </QueryClientProvider>
   );
