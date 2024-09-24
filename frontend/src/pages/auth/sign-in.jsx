@@ -1,12 +1,29 @@
-import { Card, Input, Checkbox, Button, Typography } from "@material-tailwind/react";
+import { Input, Checkbox, Button, Typography } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useMutation } from '@tanstack/react-query'; 
-import apiClient from "../../services/apiClient"; 
+import apiClient from "@/services/apiClient";
+import {useLogin} from "@/hooks/useLogin";
+import { useNavigate } from "react-router-dom";
 
 export function SignIn() {
+
+  const login  = useLogin();
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+
+  
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await login.
+
+    mutation.mutate({ email, password });
+  };
+
 
   const loginUser = async (credentials) => {
     const response = await apiClient.post("/auth/", credentials);
@@ -24,10 +41,6 @@ export function SignIn() {
     },
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    mutation.mutate({ email, password });
-  };
 
   return (
     <section className="m-8 flex gap-4">
