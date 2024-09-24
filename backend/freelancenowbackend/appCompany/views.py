@@ -64,7 +64,8 @@ class WorkingAreaCreationView(generics.CreateAPIView):
         else:
             raise ValidationError("Se debe proporcionar un usuario.")
 
-        serializer.save(company=company, user=user)
+        area = serializer.save(company=company, user=user)
+        UserCompany.objects.filter(user=user, company=company).update(area=area)
 
 class WorkingAreaUpdateView(generics.UpdateAPIView):
     queryset = Area.objects.all()
@@ -84,7 +85,23 @@ class WorkingAreaUpdateView(generics.UpdateAPIView):
         if area.company != company:
             raise PermissionDenied("No tienes permiso para actualizar esta área de trabajo.")
 
-        serializer.save(company=company)
+        # Obtener el nuevo usuario del request
+        new_user_id = self.request.data.get("user")
+        if new_user_id:
+            try:
+                new_user = User.objects.get(id=new_user_id)
+                if not new_user.groups.filter(name='Area Admin').exists():
+                    raise ValidationError("El usuario debe pertenecer al grupo 'Area Admin'.")
+
+                UserCompany.objects.filter(area=area, company=company).update(user=new_user)
+
+            except User.DoesNotExist:
+                raise ValidationError("El usuario especificado no existe.")
+        else:
+            raise ValidationError("Se debe proporcionar un usuario.")
+
+        serializer.save(company=company, user=new_user)
+
 
 class WorkingAreaDeleteView(generics.DestroyAPIView):
     queryset = Area.objects.all()
@@ -99,5 +116,7 @@ class WorkingAreaDeleteView(generics.DestroyAPIView):
 
         if instance.company != user_company_instance.company:
             raise PermissionDenied("No tienes permiso para eliminar esta área de trabajo.")
+
+        UserCompany.objects.filter(area=instance, company=user_company_instance.company).update(area=None)
 
         instance.delete()
