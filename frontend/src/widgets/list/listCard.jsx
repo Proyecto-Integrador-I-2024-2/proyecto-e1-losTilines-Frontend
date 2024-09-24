@@ -12,7 +12,8 @@ export function ListCard({
   title,
   hasSeeAll,
   hasAdd,
-  addDescription,
+  newDialog, 
+  seeAllButton,
   children
 }) {
   const [selected, setSelected] = React.useState(1);
@@ -39,26 +40,13 @@ export function ListCard({
         )}
 
         {hasAdd && (
-          <Button color="gray" size="sm">
-            {addDescription}
-          </Button>
+          newDialog
         )}
       </div>
     </Card>
   );
 }
 
-function AreaInfoRow() {
-  return (
-    <ListItem
-      classname="flex"
-      selected={selected === 1}
-      onClick={() => setSelectedItem(1)}
-    >
-      <div></div>
-      <div></div>
-    </ListItem>
-  );
-}
+
 
 export default ListCard;
