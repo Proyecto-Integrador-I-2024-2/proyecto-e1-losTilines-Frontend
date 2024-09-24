@@ -3,8 +3,8 @@ import ListRowStructure from "@/widgets/list/listRowStructure";
 import { NumberInfo } from "@/widgets/statistics/numberInfo";
 import Chart from "@/widgets/statistics/chart";
 import { Button, Card, Typography } from "@material-tailwind/react";
-import { useUser, useWorkers} from "@/hooks";
-import useAreas from "@/hooks";
+import { useUser} from "@/hooks";
+
 function Dashboard() {
 
   const user = useUser();
