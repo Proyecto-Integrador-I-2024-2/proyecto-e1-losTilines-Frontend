@@ -267,7 +267,7 @@ export function SignUp() {
             </Link>
           </Typography>
         </form>
-      </div>
+        </div>
     </section>
   );
 }
