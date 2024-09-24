@@ -37,7 +37,7 @@ export function ExperienceSection() {
             <Typography variant="h6" color="blue-gray" className="mb-4">
                 Work Experience
             </Typography>
-            <div className="space-y-6 h-full overflow-y-auto">
+            <div className="space-y-6 h-full overflow-y-auto no-scrollbar">
                 {experiences.map((exp, index) => (
                     <Card key={index} shadow={true} className="p-6">
                         <div className="flex justify-between items-center">
