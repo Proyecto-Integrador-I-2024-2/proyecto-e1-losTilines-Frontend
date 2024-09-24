@@ -19,3 +19,4 @@ export function homepageLayout() {
     </div>
   );
 }
+export default homepageLayout;
