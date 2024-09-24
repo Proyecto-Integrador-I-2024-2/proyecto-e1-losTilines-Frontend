@@ -1,14 +1,34 @@
-import {
-  Card,
-  Input,
-  Checkbox,
-  Button,
-  Typography,
-} from "@material-tailwind/react";
+import { Card, Input, Checkbox, Button, Typography } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
-
+import { useState } from "react";
+import { useMutation } from '@tanstack/react-query'; 
+import apiClient from "../../services/apiClient"; 
 
 export function SignIn() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const loginUser = async (credentials) => {
+    const response = await apiClient.post("/auth/", credentials);
+    return response.data;
+  };
+
+  const mutation = useMutation(loginUser, {
+    onSuccess: (data) => {
+      sessionStorage.setItem('token', data.token);
+      alert('Login successful!');
+    },
+    onError: (error) => {
+      console.error('Login failed:', error.response.data);
+      alert('Login failed! Check your credentials.');
+    },
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    mutation.mutate({ email, password });
+  };
+
   return (
     <section className="m-8 flex gap-4">
       <div className="w-full lg:w-3/5 mt-24">
@@ -16,59 +36,48 @@ export function SignIn() {
           <Typography variant="h2" color="blue" className="font-bold mb-4">Sign In to Freelance Now</Typography>
           <Typography variant="paragraph" color="blue-gray" className="text-lg font-normal">Enter your email and password to Sign In.</Typography>
         </div>
-        <form className="mt-8 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2">
+        <form className="mt-8 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2" onSubmit={handleSubmit}>
           <div className="mb-1 flex flex-col gap-6">
-            <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
-              Your email
-            </Typography>
+            <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">Your email</Typography>
             <Input
               size="lg"
               placeholder="name@mail.com"
-              className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-              labelProps={{
-                className: "before:content-none after:content-none",
-              }}
+              className="!border-t-blue-gray-200 focus:!border-t-gray-900"
+              labelProps={{ className: "before:content-none after:content-none" }}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
-            <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
-              Password
-            </Typography>
+            <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">Password</Typography>
             <Input
               type="password"
               size="lg"
               placeholder="********"
-              className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-              labelProps={{
-                className: "before:content-none after:content-none",
-              }}
+              className="!border-t-blue-gray-200 focus:!border-t-gray-900"
+              labelProps={{ className: "before:content-none after:content-none" }}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <Checkbox
             label={
-              <Typography
-                variant="small"
-                color="gray"
-                className="flex items-center justify-start font-medium"
-              >
+              <Typography variant="small" color="gray" className="flex items-center justify-start font-medium">
                 I agree the&nbsp;
-                <a
-                  href="#"
-                  className="font-normal text-black transition-colors hover:text-gray-900 underline"
-                >
-                  Terms and Conditions
-                </a>
+                <a href="#" className="font-normal text-black transition-colors hover:text-gray-900 underline">Terms and Conditions</a>
               </Typography>
             }
             containerProps={{ className: "-ml-2.5" }}
           />
-          <Button className="mt-6" fullWidth color="blue">
+          <Button className="mt-6" fullWidth color="blue" type="submit">
             Sign In
           </Button>
+          {mutation.isLoading && <p>Loading...</p>}
+          {mutation.isError && <p>Error: {mutation.error.message}</p>}
 
           <div className="flex items-center justify-between gap-2 mt-6">
             <Typography variant="small" className="font-medium text-gray-900">
-              <a href="#">
+              <Link to="/forgot-password">
                 Forgot Password
-              </a>
+              </Link>
             </Typography>
           </div>
           <div className="space-y-4 mt-8">
@@ -94,15 +103,10 @@ export function SignIn() {
             <Link to="/auth/sign-up" className="text-gray-900 ml-1">Create account</Link>
           </Typography>
         </form>
-
       </div>
       <div className="w-2/5 h-full hidden lg:block">
-        <img
-          src="/img/pattern.png"
-          className="h-full w-full object-cover rounded-3xl"
-        />
+        <img src="/img/pattern.png" className="h-full w-full object-cover rounded-3xl" />
       </div>
-
     </section>
   );
 }
