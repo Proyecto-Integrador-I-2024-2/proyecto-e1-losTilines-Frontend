@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group
 from django.forms import ValidationError
 from django.core.validators import RegexValidator, EmailValidator, MinValueValidator, MaxValueValidator
-from cities_light.models import Country, City
 from django.utils import timezone
 
 # ---------------------- USERS ---------------------- #
@@ -28,6 +27,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=30, blank=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now)
+    profile_picture = models.ImageField(upload_to='uploads/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
@@ -64,14 +64,13 @@ class UserNotification(models.Model):
 class Company(models.Model):
     tax_id = models.CharField(max_length=30, unique=True, validators=[RegexValidator(regex=r'^[A-Z0-9]{1,30}$', message='Company ID must be alphanumeric and up to 30 characters.')])
     name = models.CharField(max_length=100, unique=True)
-    country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True, blank=True)
-    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True)
+    country = models.CharField(max_length=100, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
     address = models.CharField(max_length=200)
     telephone = models.CharField(max_length=20, validators=[RegexValidator(regex=r'^\+?\d{7,15}$', message='Telephone number must be between 7 and 15 digits.')])
     email = models.EmailField(max_length=100, validators=[EmailValidator()])
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    description = models.CharField(max_length=300, null=True,blank=True)
-    profile_picture = models.ImageField(upload_to='uploads/', blank=True, null=True)
+    description = models.CharField(max_length=300, null=True, blank=True)
     industry = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
@@ -81,6 +80,7 @@ class Company(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['email'], name='unique_company_email')
         ]
+    
     def save(self, *args, **kwargs):
         if not self.user.groups.filter(name="Business Manager").exists():
             raise ValueError("Only business manager can be in a company register")
@@ -117,6 +117,20 @@ class UserCompany(models.Model):
         super().save(*args, **kwargs)
 
 # ---------------------- FREELANCERS ---------------------- #
+class Freelancer(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    description = models.CharField(max_length=2000, blank=True)
+    country = models.CharField(max_length=100, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    
+    def __str__(self):
+        return self.user.email
+
+    def save(self, *args, **kwargs):
+        if not self.user.groups.filter(name="Freelancer").exists():
+            raise ValueError("The user must be part of the 'freelancer' group.")
+        super().save(*args, **kwargs)
+
 class SkillType(models.Model):
     name = models.CharField(max_length=30, unique=True)
 
