@@ -10,7 +10,6 @@ const fetchUserSkills = async (userId) => {
 export const useSkills = (userId) => {
 
     return useQuery(['Skill', userId], () => fetchUserSkills(userId), {
-        staleTime: 1000 * 60 * 3,
         cachetime: 1000 * 60 * 30,
         retry: 2,
         enabled: !!userId
