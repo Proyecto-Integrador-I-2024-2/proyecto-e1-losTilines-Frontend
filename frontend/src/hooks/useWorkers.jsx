@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import apiClient from '../services/apiClient'; // Asegúrate de que esta ruta sea correcta
 
 const fetchWorkers = async () => {
-  const { data } = await apiClient.get('/workers/'); // Ajusta la URL según tu API
+  const { data } = await apiClient.get('/company/workers/'); // Ajusta la URL según tu API
   return data;
 };
 

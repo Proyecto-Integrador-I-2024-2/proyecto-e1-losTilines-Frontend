@@ -12,7 +12,7 @@ function Dashboard() {
   const { data: areas, isLoading: areasLoading } = useAreas();
 
   if (workersLoading || areasLoading) {
-    return <div>Cargando...</div>; // Puedes personalizar el loader
+    return <div>Cargando...</div>; 
   }
 
   return (
