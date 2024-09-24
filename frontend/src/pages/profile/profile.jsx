@@ -38,7 +38,7 @@ import { GitButton } from "@/widgets/custom";
 
 export function Profile() {
 
-    const [isFreelancer, setIsFreelancer] = useState(false)
+    const [isFreelancer, setIsFreelancer] = useState(true)
 
     return (
         <div className="w-full h-full">
@@ -170,7 +170,7 @@ export function Profile() {
                                         <Typography variant="h6" color="blue-gray" className="mb-4">
                                             Freelancers that have worked here
                                         </Typography>
-                                        <div className="space-y-6 h-full overflow-y-auto">
+                                        <div className="space-y-6 h-full overflow-y-auto no-scrollbar">
                                             {freelancersData.map((props) => (
                                                 <MessageCard
                                                     key={props.name}

@@ -12,8 +12,8 @@ import { useState } from "react";
 
 
 export function SignUp() {
-  const [isFreelancer, setIsFreelancer] = useState(true)
-  const [isWorker, setIsWorker] = useState(false)
+  const [isFreelancer, setIsFreelancer] = useState(false)
+  const [isWorker, setIsWorker] = useState(true)
 
   return (
     <section className="p-8 flex w-full h-full">
