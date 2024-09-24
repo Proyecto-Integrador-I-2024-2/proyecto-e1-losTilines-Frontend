@@ -7,7 +7,7 @@ const fetchAreas = async () => {
 };
 
 export const useAreas = () => {
-  return useQuery(['areas'], fetchAreas);
+  return useQuery(["areas"], fetchAreas);
 };
 
 export default useAreas;
