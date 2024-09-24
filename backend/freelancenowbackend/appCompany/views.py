@@ -1,7 +1,9 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, serializers
 from app.models import Area, User, UserCompany
-from .serializers import AreaSerializer
+from .serializers import AreaSerializer 
+from appAuth.serializers import UserSerializer
 from rest_framework.exceptions import PermissionDenied, ValidationError
+from rest_framework.permissions import IsAuthenticated
 
 class WorkingAreaListView(generics.ListAPIView):
     queryset = Area.objects.all()
@@ -64,7 +66,8 @@ class WorkingAreaCreationView(generics.CreateAPIView):
         else:
             raise ValidationError("Se debe proporcionar un usuario.")
 
-        serializer.save(company=company, user=user)
+        area = serializer.save(company=company, user=user)
+        UserCompany.objects.filter(user=user, company=company).update(area=area)
 
 class WorkingAreaUpdateView(generics.UpdateAPIView):
     queryset = Area.objects.all()
@@ -84,7 +87,23 @@ class WorkingAreaUpdateView(generics.UpdateAPIView):
         if area.company != company:
             raise PermissionDenied("No tienes permiso para actualizar esta área de trabajo.")
 
-        serializer.save(company=company)
+        # Obtener el nuevo usuario del request
+        new_user_id = self.request.data.get("user")
+        if new_user_id:
+            try:
+                new_user = User.objects.get(id=new_user_id)
+                if not new_user.groups.filter(name='Area Admin').exists():
+                    raise ValidationError("El usuario debe pertenecer al grupo 'Area Admin'.")
+
+                UserCompany.objects.filter(area=area, company=company).update(user=new_user)
+
+            except User.DoesNotExist:
+                raise ValidationError("El usuario especificado no existe.")
+        else:
+            raise ValidationError("Se debe proporcionar un usuario.")
+
+        serializer.save(company=company, user=new_user)
+
 
 class WorkingAreaDeleteView(generics.DestroyAPIView):
     queryset = Area.objects.all()
@@ -100,4 +119,30 @@ class WorkingAreaDeleteView(generics.DestroyAPIView):
         if instance.company != user_company_instance.company:
             raise PermissionDenied("No tienes permiso para eliminar esta área de trabajo.")
 
+        UserCompany.objects.filter(area=instance, company=user_company_instance.company).update(area=None)
+
         instance.delete()
+
+from rest_framework import generics
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated
+
+class ListCompanyWorkersView(generics.ListAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        business_manager = self.request.user
+
+        # Verifica que el usuario logueado sea un Business Manager
+        if not business_manager.groups.filter(name="Business Manager").exists():
+            raise ValidationError("No tienes permiso para ver esta información.")
+
+        # Obtener la compañía asociada al Business Manager
+        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
+        if user_company_instance is None:
+            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
+        
+        # Retorna los usuarios que pertenezcan a la misma compañía como instancias de User
+        user_ids = UserCompany.objects.filter(company=user_company_instance.company).values_list('user', flat=True)
+        return User.objects.filter(id__in=user_ids).exclude(id=business_manager.id)  # Excluye al Business Manager

@@ -56,7 +56,7 @@ class FreelancerSkillView(generics.ListAPIView):
 class SkillCreateView(generics.CreateAPIView):
     queryset = Skill.objects.all()
     serializer_class = SkillSerializer
-    permission_classes = [IsAdminUser]  # Cambiado a IsAdminUser
+    permission_classes = [IsAdminUser]
 
     def perform_create(self, serializer):
         skill_name = self.request.data.get('name')

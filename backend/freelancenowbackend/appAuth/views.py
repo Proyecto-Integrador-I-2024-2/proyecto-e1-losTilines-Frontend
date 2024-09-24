@@ -125,3 +125,5 @@ class LoginView(APIView):
             'user_id': user.id,
             'email': user.email
         }, status=status.HTTP_200_OK)
+    
+    
