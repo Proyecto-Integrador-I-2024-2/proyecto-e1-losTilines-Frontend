@@ -4,12 +4,13 @@ import { ChartCustom } from "@/widgets/statistics";
 import { TableTwoColums } from "@/widgets/tables";
 import { workerData } from "@/data";
 import { Card, Input } from "@material-tailwind/react";
-
+import { useUser } from "@/hooks";
 import { TrashIcon } from "@heroicons/react/24/solid";
 
 function Workers() {
   //Info for collapse buttons.
-
+  const user = useUser();
+  console.log(user.data)
   const addContent =
     "Give this code to your workers to add them to your team #42123";
 

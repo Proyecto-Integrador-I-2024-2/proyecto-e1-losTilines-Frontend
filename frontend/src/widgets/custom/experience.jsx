@@ -1,6 +1,6 @@
 import { Card, Typography, IconButton } from "@material-tailwind/react";
 
-const experiences = [
+const defaultExperiences = [
     {
         role: "Frontend Developer",
         company: "Tech Solutions Inc.",
@@ -31,14 +31,17 @@ const experiences = [
     },
 ];
 
-export function ExperienceSection() {
+export function ExperienceSection({ experiences }) {
+
+    const experiencesToUse = defaultExperiences || experiences;
+
     return (
         <div className="h-full">
             <Typography variant="h6" color="blue-gray" className="mb-4">
                 Work Experience
             </Typography>
             <div className="space-y-6 h-full overflow-y-auto no-scrollbar">
-                {experiences.map((exp, index) => (
+                {experiencesToUse.map((exp, index) => (
                     <Card key={index} shadow={true} className="p-6">
                         <div className="flex justify-between items-center">
                             <div>
@@ -46,7 +49,7 @@ export function ExperienceSection() {
                                     {exp.role}
                                 </Typography>
                                 <Typography className="text-blue-gray-600">
-                                    {exp.company} &bull; {exp.duration}
+                                    {exp.company} &bull; {exp.duration || `${exp.start_date} to ${exp.end_date}`}
                                 </Typography>
                             </div>
                             <IconButton size="sm" className="bg-blue-500">
@@ -54,7 +57,7 @@ export function ExperienceSection() {
                             </IconButton>
                         </div>
                         <Typography className="text-blue-gray-700 mt-4">
-                            {exp.description}
+                            {exp.description ? exp.description : "No description provided"}
                         </Typography>
                     </Card>
                 ))}
