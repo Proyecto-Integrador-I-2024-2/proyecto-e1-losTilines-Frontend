@@ -3,8 +3,14 @@ import ListRowStructure from "@/widgets/list/listRowStructure";
 import { NumberInfo } from "@/widgets/statistics/numberInfo";
 import Chart from "@/widgets/statistics/chart";
 import { Button, Card, Typography } from "@material-tailwind/react";
-import { useUser, useAreas } from "@/hooks";
+import { useUser, useAreas, useAdminAreas } from "@/hooks";
 import useWorkers from "@/hooks/useWorkers";
+import { CreateArea } from "@/widgets/popUp";
+import { projectsData } from "@/data";
+import { CustomListItem } from "@/widgets/horList";
+import { TableWithCheckBox } from "@/widgets/tables";
+import workerCompanies from "@/data/workersAreas";
+
 function Dashboard() {
   const user = useUser();
 
@@ -13,11 +19,24 @@ function Dashboard() {
   const { data: workersData, isLoading: workersLoading } = useWorkers();
 
   console.log("WORKERS: ", workersData);
+
   console.log("USUARIO: ", user.data);
 
   console.log("AREAS IDENTIFICADAS", areas);
 
   console.log(sessionStorage.getItem("token"));
+
+  const adminAreasAvailables =  useAdminAreas();
+  
+  console.log("AREA ADMINS: ", adminAreasAvailables.data);
+  
+    
+
+  const createArea = (
+    <CreateArea description={"New area"}>
+      <TableWithCheckBox content={adminAreasAvailables.data} />
+    </CreateArea>
+  );
 
   return (
     <div className="h-full md:flex md:flex-row w-full my-2 px-2 min-h-0">
@@ -28,7 +47,7 @@ function Dashboard() {
           title={"Areas"}
           hasAdd={true}
           hasSeeAll={true}
-          addDescription={"New Area"}
+          newDialog={createArea}
         >
           {areas != undefined ? (
             areas.map((area, index) => (
@@ -51,7 +70,6 @@ function Dashboard() {
           {/* Aquí iría el contenido para trabajadores y finanzas */}
 
           <div className="flex flex-col h-auto w-full md:space-x-6  md:flex-row  md:h-full">
-
             <div className="h-96 my-4 md:my-0 md:h-full md:w-full">
               <ListCard
                 title={"Workers"}
@@ -59,14 +77,18 @@ function Dashboard() {
                 hasSeeAll={true}
                 addDescription={"New worker"}
               >
-                {workers.map((worker, index) => (
-                  <ListRowWithImage
-                    key={index}
-                    rowName={worker.rowName}
-                    description={worker.description}
-                    chipValue={worker.area}
-                  />
-                ))}
+                {workersData != undefined ? (
+                  workersData.map((worker, index) => (
+                    <ListRowWithImage
+                      key={index}
+                      rowName={worker.rowName}
+                      description={worker.description}
+                      chipValue={worker.area}
+                    />
+                  ))
+                ) : (
+                  <div>Cargando...</div>
+                )}
               </ListCard>
             </div>
             <ListCard title={"Finance"} hasAdd={false} hasSeeAll={true}>

@@ -4,3 +4,4 @@ export * from "@/hooks/useLogin";
 export * from "@/hooks/useCompany";
 export * from "@/hooks/useAreas"
 export * from "@/hooks/useWorkers";
+export * from "@/hooks/useAdminAreas"
