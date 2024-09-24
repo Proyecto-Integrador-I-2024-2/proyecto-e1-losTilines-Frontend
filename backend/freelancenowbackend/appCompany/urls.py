@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import WorkingAreaListView, WorkingAreaDetailView, WorkingAreaCreationView, WorkingAreaUpdateView, WorkingAreaDeleteView, ListCompanyWorkersView, RetrieveWorkerView, UpdateWorkerView, DeleteWorkerView
+from .views import WorkingAreaListView, WorkingAreaDetailView, WorkingAreaCreationView, WorkingAreaUpdateView, WorkingAreaDeleteView, ListCompanyWorkersView, RetrieveWorkerView, UpdateWorkerView, DeleteWorkerView, ListGroupsView
 
 urlpatterns = [
+    path('groups/', ListGroupsView.as_view(), name='list-groups'),
     path('areas/', WorkingAreaListView.as_view(), name='working-area-list'),
     path('areas/<int:pk>/', WorkingAreaDetailView.as_view(), name='working-area-detail'),
     path('areas/create/', WorkingAreaCreationView.as_view(), name='working-area-create'),
