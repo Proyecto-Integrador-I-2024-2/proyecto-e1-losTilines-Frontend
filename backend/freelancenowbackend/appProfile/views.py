@@ -31,10 +31,10 @@ class UserInfoView(APIView):
             user_data["company"] = {
                 "name": user_company.company.name,
                 "address": user_company.company.address,
-                "city": user_company.company.city.name if user_company.company.city else None,
-                "country": user_company.company.country.name if user_company.company.country else None
+                "city": user_company.company.city,
+                "country": user_company.company.country
             }
-            user_data["area"] = user_company.area.name if user_company.area else None
+            user_data["area"] = user_company.area
         except UserCompany.DoesNotExist:
             user_data["company"] = None
             user_data["area"] = None

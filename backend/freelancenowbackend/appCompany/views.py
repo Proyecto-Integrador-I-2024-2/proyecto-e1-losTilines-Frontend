@@ -7,7 +7,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.contrib.auth.models import Group
 
-
 class ListGroupsView(generics.ListAPIView):
     serializer_class = GroupSerializer
     permission_classes = [permissions.AllowAny]
