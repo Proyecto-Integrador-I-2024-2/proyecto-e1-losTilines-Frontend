@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import apiClient from "../services/apiClient"; 
+import apiClient from "@/services/apiClient";
 
 const registerUser = async (userData) => {
   const response = await apiClient.post("/users/register/freelancer", userData);
@@ -17,3 +17,5 @@ export const useRegister = () => {
     },
   });
 };
+
+export default useRegister;

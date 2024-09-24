@@ -7,7 +7,7 @@ const fetchWorkers = async () => {
 };
 
 const useWorkers = () => {
-  return useQuery('workers', fetchWorkers);
+  return useQuery(['workers'], fetchWorkers);
 };
 
 export default useWorkers;

@@ -7,7 +7,7 @@ const fetchCompany  = async () =>{
     return data;
 }
 
-export const useUser = () => {
+export const useCompany = () => {
 
     return useQuery(['User'], fetchUser, {
         staleTime: 1000 * 60 * 3,
@@ -16,4 +16,4 @@ export const useUser = () => {
     })
 }
 
-export default useUser;
+export default useCompany;
