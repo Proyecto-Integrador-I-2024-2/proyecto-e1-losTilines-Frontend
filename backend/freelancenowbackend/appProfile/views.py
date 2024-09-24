@@ -50,33 +50,50 @@ class AllSkillView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return Skill.objects.all()
+    
+class FreelancerSkillBaseView:
+    def to_representation(self, queryset):
+        result = []
+        for freelancer_skill in queryset:
+            result.append({
+                'id': freelancer_skill.id,
+                'skill_id': freelancer_skill.skill.id,
+                'skill_name': freelancer_skill.skill.name,
+                'level': freelancer_skill.level,
+            })
+        return result
+
+# List all skills by id
+class FreelancerSkillIdView(generics.RetrieveAPIView, FreelancerSkillBaseView):
+    serializer_class = FreelancerSkillSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        return FreelancerSkill.objects.select_related('skill').all()
+
+    def retrieve(self, request, *args, **kwargs):
+        freelancer_id = kwargs.get('freelancer_id')
+        # Filtra las habilidades por el ID del freelancer
+        queryset = self.get_queryset().filter(freelancer_id=freelancer_id)
+
+        if not queryset.exists():
+            return Response({"detail": "No skills found for this freelancer."}, status=status.HTTP_404_NOT_FOUND)
+
+        # No necesitas serializar aquí, ya que to_representation lo manejará
+        return Response(self.to_representation(queryset))
 
 # List all skills of the logged-in freelancer
-class FreelancerSkillView(generics.ListAPIView):
+class FreelancerSkillView(generics.ListAPIView, FreelancerSkillBaseView):
     serializer_class = FreelancerSkillSerializer
     permission_classes = [permissions.IsAuthenticated, IsFreelancer]
 
     def get_queryset(self):
         user = self.request.user
-        return FreelancerSkill.objects.filter(freelancer=user)
+        return FreelancerSkill.objects.filter(freelancer=user).select_related('skill')
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(self.to_representation(serializer.data))
-
-    def to_representation(self, data):
-        result = []
-        for item in data:
-            freelancer_skill = FreelancerSkill.objects.get(id=item['id'])
-            skill_name = freelancer_skill.skill.name  
-            result.append({
-                'id': item['id'],
-                'skill_id': freelancer_skill.skill.id,
-                'skill_name' : skill_name,
-                'level': freelancer_skill.level,
-            })
-        return result
+        return Response(self.to_representation(queryset))
 
 # Create a new skill
 class SkillCreateView(generics.CreateAPIView):
