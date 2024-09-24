@@ -4,6 +4,7 @@ import Profile from "./pages/profile/profile";
 import Workers from "./pages/dashboard/workers";
 import Areas from "./pages/dashboard/areas";
 import Projects from "./pages/dashboard/projects";
+import Homepage from "./pages/home/homepage";
 import { ProjectDetail } from "@/pages/project"
 import { SignIn, SignUp } from "./pages/auth";
 
@@ -69,6 +70,16 @@ export const routes = [
       },
     ],
   },
+  {
+    layout: "homepage",
+    pages: [
+      {
+        name: "homepage",
+        path: "/",
+        element: <Homepage />,
+      },
+    ],
+  }
 ];
 
 export default routes;
