@@ -46,9 +46,12 @@ function Dashboard() {
       </section>
 
       {/* Columna derecha */}
-      <section className="flex flex-col md:w-2/3">
-        <div className="flex flex-col h-auto min-h-0 w-full mb-2 my-4 md:my-0 md:flex-row md:h-1/2">
-          <div className="flex flex-col h-auto w-full md:space-x-6 md:flex-row md:h-full">
+      <section className="flex flex-col  md:w-2/3  ">
+        <div className="flex flex-col h-auto min-h-0 w-full mb-2 my-4 md:my-0 md:flex-row md:h-1/2  ">
+          {/* Aquí iría el contenido para trabajadores y finanzas */}
+
+          <div className="flex flex-col h-auto w-full md:space-x-6  md:flex-row  md:h-full">
+
             <div className="h-96 my-4 md:my-0 md:h-full md:w-full">
               <ListCard
                 title={"Workers"}
@@ -56,18 +59,14 @@ function Dashboard() {
                 hasSeeAll={true}
                 addDescription={"New worker"}
               >
-                {workersData != undefined ? (
-                  workersData.map((worker, index) => (
-                    <ListRowWithImage
-                      key={index}
-                      rowName={`${worker.first_name}  ${worker.last_name}` }
-                      description={worker.email  }
-                      chipValue={worker.phone_number}
-                    />
-                  ))
-                ) : (
-                  <div>Cargando...</div>
-                )}
+                {workers.map((worker, index) => (
+                  <ListRowWithImage
+                    key={index}
+                    rowName={worker.rowName}
+                    description={worker.description}
+                    chipValue={worker.area}
+                  />
+                ))}
               </ListCard>
             </div>
             <ListCard title={"Finance"} hasAdd={false} hasSeeAll={true}>
