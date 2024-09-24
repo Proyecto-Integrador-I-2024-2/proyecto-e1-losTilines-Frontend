@@ -8,15 +8,26 @@ import {
   Button,
   Typography,
 } from "@material-tailwind/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate,   } from "react-router-dom";
 import { TextInputLabel } from "@/widgets/textInputs";
 import { GoogleButton } from "@/widgets/buttons";
-import { useState } from "react";
-import { useRegister } from "../../hooks/useRegisterFreelancer";
+import { useState} from "react";
+import { useRegister, useLogin  } from "@/hooks";
+
 
 export function SignUp() {
-  const [error, setError] = useState(null);
+
+  //React hoooks
+  const navigate = useNavigate();
+
+  //Custom hook
   const registerMutation = useRegister();
+  const login  = useLogin();
+
+
+  //Info status
+  const [error, setError] = useState(null);
+
   // User States
   const [isFreelancer, setIsFreelancer] = useState(true);
   const [first_name, setFirstName] = useState("");
@@ -24,6 +35,9 @@ export function SignUp() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+
+  // Company States
+
   const [companyTaxId, setCompanyTaxId] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [city, setCity] = useState("");
@@ -47,6 +61,7 @@ export function SignUp() {
       role: isFreelancer ? "freelancer" : "client",
     };
 
+
     const companyData = {
       tax_id: companyTaxId,
       name: companyName,
@@ -57,18 +72,24 @@ export function SignUp() {
       email: companyEmail,
     };
 
-    // Si no es freelancer, agregar datos de la empresa
 
     try {
       await registerMutation.mutateAsync(
         isFreelancer ? userData : { ...userData, companyData }
       );
+
+      
+      await login.mutateAsync({email, password});
+      
+      // Just navigate if register and login is correct
+
+      navigate("/profile");
+    
     } catch (err) {
       console.error(
         "Error details:",
-        err.response ? err.response.data : err.message
+        err.response ? err.response.data : err.message 
       );
-      setError("Registration failed! Please check your input.");
     }
   };
 

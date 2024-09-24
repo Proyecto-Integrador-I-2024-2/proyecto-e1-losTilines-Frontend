@@ -47,6 +47,8 @@ function Profile() {
 
   const [isFreelancer, setIsFreelancer] = useState(true);
 
+  console.log(sessionStorage.getItem("token"));
+
   return (
     <div className="w-full h-full">
       <div className="mx-3 mt-4 mb-2 lg:mx-4 border border-blue-gray-100 h-2/3">
