@@ -1,19 +1,33 @@
-import { NavigationTopBar } from "@/widgets/layout";
 import { ListCard, ListRowWithImage } from "@/widgets/list";
 import ListRowStructure from "@/widgets/list/listRowStructure";
 import { NumberInfo } from "@/widgets/statistics/numberInfo";
 import Chart from "@/widgets/statistics/chart";
-import { Button, Card } from "@material-tailwind/react";
-import useWorkers from "../../hooks/useWorkers"; 
-import useAreas from "../../hooks/useAreas"; 
-
+import { Button, Card, Typography } from "@material-tailwind/react";
+import { useUser } from "@/hooks";
 function Dashboard() {
-  const { data: workers, isLoading: workersLoading } = useWorkers();
-  const { data: areas, isLoading: areasLoading } = useAreas();
+
+  const user = useUser();
+
+  console.log(sessionStorage.getItem("token"));
+
+
+  const workers = [
+    {
+      rowName: "Kevin Nieto Curaca",
+      description: "Project Manager",
+      area: "Area 1",
+    },
+    { rowName: "John Doe", description: "Developer", area: "Area 2" },
+    { rowName: "Jane Smith", description: "Designer", area: "Area 3" },
+    { rowName: "Jane Smith", description: "Designer", area: "Area 3" },
+    { rowName: "Jane Smith", description: "Designer", area: "Area 3" },
+    { rowName: "Jane Smith", description: "Designer", area: "Area 3" },
+
+    ]
 
   if (workersLoading || areasLoading) {
     return <div>Cargando...</div>; 
-  }
+    }
 
   return (
     <div className="h-full md:flex md:flex-row w-full my-2 px-2 min-h-0">
