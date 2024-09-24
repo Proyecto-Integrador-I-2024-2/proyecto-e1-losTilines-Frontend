@@ -10,7 +10,6 @@ const fetchUserExperiences = async (userId) => {
 export const useExperiences = (userId) => {
 
     return useQuery(['Experience', userId], () => fetchUserExperiences(userId), {
-        staleTime: 1000 * 60 * 3,
         cachetime: 1000 * 60 * 30,
         retry: 2,
         enabled: !!userId
