@@ -3,11 +3,11 @@ import apiClient from "@/services/apiClient";
 
 const fetchUser  = async () =>{
 
-    const {data}  = await apiClient.get("/user");
+    const {data}  = await apiClient.get("/profile/info/");
     return data;
 }
 
-const useUser = () => {
+export const useUser = () => {
 
     return useQuery(['User'], fetchUser, {
         staleTime: 1000 * 60 * 3,
@@ -15,3 +15,5 @@ const useUser = () => {
         retry: 2
     })
 }
+
+export default useUser;

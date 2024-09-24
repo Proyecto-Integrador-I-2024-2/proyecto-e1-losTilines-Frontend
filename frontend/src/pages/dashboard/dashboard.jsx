@@ -1,11 +1,16 @@
-import { NavigationTopBar } from "@/widgets/layout";
 import { ListCard, ListRowWithImage } from "@/widgets/list";
 import ListRowStructure from "@/widgets/list/listRowStructure";
 import { NumberInfo } from "@/widgets/statistics/numberInfo";
 import Chart from "@/widgets/statistics/chart";
 import { Button, Card, Typography } from "@material-tailwind/react";
-
+import { useUser } from "@/hooks";
 function Dashboard() {
+
+  const user = useUser();
+
+  console.log(sessionStorage.getItem("token"));
+
+
   const workers = [
     {
       rowName: "Kevin Nieto Curaca",
