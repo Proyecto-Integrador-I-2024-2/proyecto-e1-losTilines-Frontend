@@ -43,14 +43,57 @@ class UserInfoView(APIView):
 
 # ------------ FREELANCER VIEWS ------------
 
-# List all skills of the logged-in freelancer
-class FreelancerSkillView(generics.ListAPIView):
+class AllSkillView(generics.ListAPIView):
     serializer_class = SkillSerializer
-    permission_classes = [IsAuthenticated, IsFreelancer]
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         user = self.request.user
-        return Skill.objects.filter(freelancerskill__freelancer=user)
+        return Skill.objects.all()
+    
+class FreelancerSkillBaseView:
+    def to_representation(self, queryset):
+        result = []
+        for freelancer_skill in queryset:
+            result.append({
+                'id': freelancer_skill.id,
+                'skill_id': freelancer_skill.skill.id,
+                'skill_name': freelancer_skill.skill.name,
+                'level': freelancer_skill.level,
+            })
+        return result
+
+# List all skills by id
+class FreelancerSkillIdView(generics.RetrieveAPIView, FreelancerSkillBaseView):
+    serializer_class = FreelancerSkillSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        return FreelancerSkill.objects.select_related('skill').all()
+
+    def retrieve(self, request, *args, **kwargs):
+        freelancer_id = kwargs.get('freelancer_id')
+        # Filtra las habilidades por el ID del freelancer
+        queryset = self.get_queryset().filter(freelancer_id=freelancer_id)
+
+        if not queryset.exists():
+            return Response({"detail": "No skills found for this freelancer."}, status=status.HTTP_404_NOT_FOUND)
+
+        # No necesitas serializar aquí, ya que to_representation lo manejará
+        return Response(self.to_representation(queryset))
+
+# List all skills of the logged-in freelancer
+class FreelancerSkillView(generics.ListAPIView, FreelancerSkillBaseView):
+    serializer_class = FreelancerSkillSerializer
+    permission_classes = [permissions.IsAuthenticated, IsFreelancer]
+
+    def get_queryset(self):
+        user = self.request.user
+        return FreelancerSkill.objects.filter(freelancer=user).select_related('skill')
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        return Response(self.to_representation(queryset))
 
 # Create a new skill
 class SkillCreateView(generics.CreateAPIView):
@@ -131,6 +174,15 @@ class FreelancerSkillDeleteView(generics.DestroyAPIView):
             raise ValidationError({"error": "You do not have permission to delete this skill."})
         return freelancer_skill
 
+# List experience by freelancer ID
+class ExperienceListByFreelancerIdView(generics.ListAPIView):
+    serializer_class = ExperienceSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        freelancer_id = self.kwargs['freelancer_id']
+        return Experience.objects.filter(freelancer_id=freelancer_id)
+
 # List and create experience
 class ExperienceListCreateView(generics.ListCreateAPIView):
     serializer_class = ExperienceSerializer
@@ -154,6 +206,15 @@ class ExperienceDetailView(generics.RetrieveUpdateDestroyAPIView):
         if obj.freelancer != self.request.user:
             raise ValidationError("You do not have permission to access this experience.")
         return obj
+
+# List portfolio by freelancer ID
+class PortfolioListByFreelancerIdView(generics.ListAPIView):
+    serializer_class = PortfolioSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        freelancer_id = self.kwargs['freelancer_id']
+        return Portfolio.objects.filter(freelancer_id=freelancer_id)
 
 # List and create portfolio
 class PortfolioListCreateView(generics.ListCreateAPIView):
@@ -180,6 +241,22 @@ class PortfolioDetailView(generics.RetrieveUpdateDestroyAPIView):
         return obj
     
 # ------------ COMPANY VIEWS ------------
+
+# List all companies
+class ListCompanyView(generics.ListAPIView):
+    serializer_class = CompanySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Company.objects.all()
+
+# Detail company by id
+class DetailCompanyView(generics.RetrieveAPIView):
+    serializer_class = CompanySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Company.objects.all()
 
 # Show and update company information 
 class CompanyRetrieveUpdateView(generics.RetrieveUpdateAPIView):

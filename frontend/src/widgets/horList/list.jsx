@@ -6,7 +6,7 @@ import {
 
 export function CustomList({ children, sectionTitle, sectionSubtitle }) {
     return (
-        <div className="px-4 pb-4 overflow-x-auto whitespace-nowrap">
+        <div className="px-4 pb-4 overflow-x-auto whitespace-nowrap no-scrollbar">
             <Typography variant="h6" color="blue-gray" className="mb-2">
                 {sectionTitle}
             </Typography>

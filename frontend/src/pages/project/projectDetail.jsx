@@ -65,7 +65,7 @@ export function ProjectDetail() {
                     variant="small"
                     className="font-normal text-blue-gray-600"
                   >
-                    CEO / Co-Founder
+                    Frontend Dev
                   </Typography>
                   <Rating value={4} />
                 </div>
