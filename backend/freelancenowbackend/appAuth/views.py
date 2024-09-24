@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
-from app.models import User, UserRole, Group, Company, UserCompany
+from app.models import User, UserRole, Group, Company, UserCompany, Freelancer
 from .serializers import UserSerializer, CompanySerializer
 from rest_framework import serializers
 import logging
@@ -22,6 +22,7 @@ class FreelancerRegisterView(generics.CreateAPIView):
         role, created = Group.objects.get_or_create(name='Freelancer')
         user.groups.add(role)
         UserRole.objects.create(user=user, role=role)
+        Freelancer.objects.create(user=user)
         user.groups.add(role)
 
 class BusinessManagerRegisterView(generics.CreateAPIView):
