@@ -5,13 +5,15 @@ import {
 
 
 
-export function TextInputLabel({ label, placeholder }) {
+export function TextInputLabel({ label, placeholder, value, onValueChange }) {
     return (
         <div className="mb-1 flex flex-col gap-4">
             <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
                 {label}
             </Typography>
             <Input
+                value={value}
+                onChange={(e) => onValueChange(e.target.value)}
                 size="lg"
                 placeholder={placeholder}
                 className=" !border-t-blue-gray-200 focus:!border-t-gray-900"

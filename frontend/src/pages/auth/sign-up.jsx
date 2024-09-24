@@ -1,6 +1,9 @@
 import {
-  Card,
-  Input,
+  Tabs,
+  TabsHeader,
+  TabsBody,
+  Tab,
+  TabPanel,
   Checkbox,
   Button,
   Typography,
@@ -9,17 +12,26 @@ import { Link } from "react-router-dom";
 import { TextInputLabel } from "@/widgets/textInputs";
 import { GoogleButton } from "@/widgets/buttons";
 import { useState } from "react";
-import { useRegister } from "../../hooks/useRegister"; 
+import { useRegister } from "../../hooks/useRegister";
 
 export function SignUp() {
+  const [error, setError] = useState(null);
+  const registerMutation = useRegister();
+  // User States
   const [isFreelancer, setIsFreelancer] = useState(true);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [error, setError] = useState(null);
-  const registerMutation = useRegister();
+  const [companyTaxId, setCompanyTaxId] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [city, setCity] = useState("");
+  const [address, setAddress] = useState("");
+  const [companyTelephone, setCompanyTelephone] = useState("");
+
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,7 +46,7 @@ export function SignUp() {
 
     try {
       await registerMutation.mutateAsync(userData);
-    
+
     } catch (err) {
       setError("Registration failed! Please check your input.");
     }
@@ -49,25 +61,41 @@ export function SignUp() {
         />
       </div>
       <div className="w-full lg:w-3/5 flex flex-col items-center justify-center">
-        <div className="text-center">
+        <div className="flex flex-col items-center m-4">
           <Typography variant="h2" color="blue" className="font-bold mb-4">Join Us Today</Typography>
-          <Typography variant="paragraph" color="blue-gray" className="text-lg font-normal">Fill the following fields to register.</Typography>
+          <Typography variant="h5" color="blue-gray">How do you want to register?</Typography>
+        </div>
+        <Tabs value="Freelancer">
+          <TabsHeader>
+            <Tab key={"Freelancer"} value={"Freelancer"} onClick={() => setIsFreelancer(true)}>
+              Freelancer
+            </Tab>
+            <Tab key={"Client"} value={"Client"} onClick={() => setIsFreelancer(false)}>
+              Client
+            </Tab>
+          </TabsHeader>
+        </Tabs>
+        <div className="flex flex-col items-center mt-4">
+          <Typography variant="h5" color="blue-gray">Fill the following fields to register.</Typography>
         </div>
         <form className="mt-8 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2" onSubmit={handleSubmit}>
           <div className="mb-1 flex flex-col gap-6">
-            {isFreelancer ? (
-              <>
-                <TextInputLabel label="First name" placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-                <TextInputLabel label="Last name" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
-                <TextInputLabel label="Username" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
-                <TextInputLabel label="Email" placeholder="email@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
-                <TextInputLabel label="Phone number" placeholder="Phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
-              </>
-            ) : (
-              <>
-                {/* Campos para trabajador */}
-              </>
-            )}
+            <TextInputLabel label="First name" placeholder="First name" value={firstName} onValueChange={setFirstName} />
+            <TextInputLabel label="Last name" placeholder="Last name" value={lastName} onValueChange={setLastName} />
+            <TextInputLabel label="Username" placeholder="Username" value={username} onValueChange={setUsername} />
+            <TextInputLabel label="Email" placeholder="email@example.com" value={email} onValueChange={setEmail} />
+            <TextInputLabel label="Phone number" placeholder="Phone number" value={phone} onValueChange={setPhone} />
+            {
+              !isFreelancer && (
+                <>
+                  <TextInputLabel label="Company tax id" placeholder="Company tax id" value={companyTaxId} onValueChange={setCompanyTaxId} />
+                  <TextInputLabel label="Company name" placeholder="Company name" value={companyName} onValueChange={setCompanyName} />
+                  <TextInputLabel label="City" placeholder="City" value={city} onValueChange={setCity} />
+                  <TextInputLabel label="Address" placeholder="Address" value={address} onValueChange={setAddress} />
+                  <TextInputLabel label="Company telephone" placeholder="Company telephone" value={companyTelephone} onValueChange={setCompanyTelephone} />
+                </>
+              )
+            }
           </div>
           <Checkbox
             label={
