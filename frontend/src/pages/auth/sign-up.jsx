@@ -8,11 +8,11 @@ import {
   Button,
   Typography,
 } from "@material-tailwind/react";
-import { Link, useNavigate,   } from "react-router-dom";
+import { Link, useNavigate, } from "react-router-dom";
 import { TextInputLabel } from "@/widgets/textInputs";
 import { GoogleButton } from "@/widgets/buttons";
-import { useState} from "react";
-import { useRegister, useLogin  } from "@/hooks";
+import { useState } from "react";
+import { useRegister, useLogin } from "@/hooks";
 
 
 export function SignUp() {
@@ -22,7 +22,7 @@ export function SignUp() {
 
   //Custom hook
   const registerMutation = useRegister();
-  const login  = useLogin();
+  const login = useLogin();
 
 
   //Info status
@@ -78,17 +78,17 @@ export function SignUp() {
         isFreelancer ? userData : { ...userData, companyData }
       );
 
-      
-      await login.mutateAsync({email, password});
-      
+
+      await login.mutateAsync({ email, password });
+
       // Just navigate if register and login is correct
 
       navigate("/profile");
-    
+
     } catch (err) {
       console.error(
         "Error details:",
-        err.response ? err.response.data : err.message 
+        err.response ? err.response.data : err.message
       );
     }
   };
