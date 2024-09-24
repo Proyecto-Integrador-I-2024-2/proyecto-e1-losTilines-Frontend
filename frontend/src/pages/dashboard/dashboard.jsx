@@ -4,8 +4,8 @@ import ListRowStructure from "@/widgets/list/listRowStructure";
 import { NumberInfo } from "@/widgets/statistics/numberInfo";
 import Chart from "@/widgets/statistics/chart";
 import { Button, Card } from "@material-tailwind/react";
-import useWorkers from "../hooks/useWorkers"; 
-import useAreas from "../hooks/useAreas"; 
+import useWorkers from "../../hooks/useWorkers"; 
+import useAreas from "../../hooks/useAreas"; 
 
 function Dashboard() {
   const { data: workers, isLoading: workersLoading } = useWorkers();
