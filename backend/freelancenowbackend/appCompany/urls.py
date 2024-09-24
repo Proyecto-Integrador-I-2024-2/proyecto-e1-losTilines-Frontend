@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import WorkingAreaListView, WorkingAreaDetailView, WorkingAreaCreationView, WorkingAreaUpdateView, WorkingAreaDeleteView, ListCompanyWorkersView, RetrieveWorkerView, UpdateWorkerView, DeleteWorkerView, ListGroupsView
+from .views import WorkingAreaListView, ListingAdminAreaAvailableView, WorkingAreaDetailView, WorkingAreaCreationView, WorkingAreaUpdateView, WorkingAreaDeleteView, ListCompanyWorkersView, RetrieveWorkerView, UpdateWorkerView, DeleteWorkerView, ListGroupsView
 
 urlpatterns = [
     path('groups/', ListGroupsView.as_view(), name='list-groups'),
@@ -12,4 +12,5 @@ urlpatterns = [
     path('workers/<int:pk>/', RetrieveWorkerView.as_view(), name='retrieve-worker'),
     path('workers/update/<int:pk>/', UpdateWorkerView.as_view(), name='update-worker'),
     path('workers/delete/<int:pk>/', DeleteWorkerView.as_view(), name='delete-worker'),
+    path('workers/admin/available/', ListingAdminAreaAvailableView.as_view(), name='admin-area-available'),
 ]
