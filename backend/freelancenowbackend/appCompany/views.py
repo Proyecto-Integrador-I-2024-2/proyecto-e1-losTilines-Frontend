@@ -207,18 +207,19 @@ class UpdateWorkerView(generics.UpdateAPIView):
                 # Se permite eliminar sin reemplazo
                 pass
 
-            elif current_role == "Project Manager" and not Project.objects.filter(user=instance).exists():
+            elif current_role == "Project Manager":
                 # Se permite eliminar sin reemplazo
                 pass
-
-            # Si hay un nuevo trabajador, valida
-            if new_worker_id:
-                new_worker = User.objects.get(id=new_worker_id)
-                new_worker_role = new_worker.groups.values_list('name', flat=True).first()
-                if new_worker_role != current_role:
-                    raise ValidationError(f"El trabajador que estás intentando asignar no tiene el rol de {current_role}.")
+            
             else:
-                raise ValidationError(f"Debes proporcionar el trabajador que reemplazará al {current_role}.")
+                # Si hay un nuevo trabajador, valida
+                if new_worker_id:
+                    new_worker = User.objects.get(id=new_worker_id)
+                    new_worker_role = new_worker.groups.values_list('name', flat=True).first()
+                    if new_worker_role != current_role:
+                        raise ValidationError(f"El trabajador que estás intentando asignar no tiene el rol de {current_role}.")
+                else:
+                    raise ValidationError(f"Debes proporcionar el trabajador que reemplazará al {current_role}.")
 
         return super().update(request, *args, **kwargs)
 
