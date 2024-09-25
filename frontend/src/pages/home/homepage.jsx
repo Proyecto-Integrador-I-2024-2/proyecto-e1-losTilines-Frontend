@@ -1,5 +1,70 @@
 import React, { useState } from "react";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Typography,
+} from "@material-tailwind/react";
 import { FreelancerCard, ProjectCard } from "@/widgets/cards";
+import { CustomList } from "@/widgets/horList";
+import { CustomListItem } from "@/widgets/horList";
+import { projectsData } from "@/data";
+import { IconButton } from "@material-tailwind/react";
+const Homepage = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const handleScroll = (direction) => {
+    const newIndex = (activeIndex + direction + projectsData.length) % projectsData.length;
+    setActiveIndex(newIndex);
+  };
+
+  const handleSeeMore = () => {
+    window.location.href = "";
+  };
+
+  return (
+    <div className="justify-center items-center">
+      <div className="w-full flex flex-row mt-4 px-4 justify-between">
+        <IconButton onClick={() => handleScroll(-1)}>
+          <i className="fa-solid fa-arrow-left" />
+        </IconButton>
+        <Typography variant="h3">Projects you might be interested in</Typography>
+        <IconButton onClick={() => handleScroll(1)}>
+          <i className="fa-solid fa-arrow-right" />
+        </IconButton>
+        {/* <Button  className="h-12 w-12 bg-gray-200 p-2"></Typography></Button> */}
+      </div>
+      <Card className="overscroll-y-none mx-3 mt-4 mb-2 lg:mx-4 border border-blue-gray-100">
+        <CardBody className="overscroll-y-none h-full flex flex-row">
+          <CustomList
+            sectionTitle={""}
+            sectionSubtitle={""}
+          >
+            {projectsData.map((project, index) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                isActive={index === activeIndex}
+              />
+              // <CustomListItem key={project.id}
+              //   {...project}
+              // />
+            ))}
+          </CustomList>
+        </CardBody>
+      </Card>
+    </div >
+
+  );
+};
+
+export default Homepage;
+
+
+
+
+
 
 const projects = [
   {
@@ -25,40 +90,3 @@ const projects = [
   },
   // Agrega más proyectos según sea necesario
 ];
-
-const Homepage = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  const handleScroll = (direction) => {
-    const newIndex = (activeIndex + direction + projects.length) % projects.length;
-    setActiveIndex(newIndex);
-  };
-
-  const handleSeeMore = () => {
-    window.location.href = "";
-  };
-
-  return (
-    <div className="flex justify-center items-center h-screen relative">
-      <div className="flex overflow-x-auto space-x-4 items-center">
-        <button onClick={() => handleScroll(-1)} className="bg-gray-200 rounded p-2">{"<"}</button>
-        {projects.map((project, index) => (
-          <ProjectCard
-            key={project.id}
-            project={project}
-            isActive={index === activeIndex}
-          />
-        ))}
-        <button onClick={() => handleScroll(1)} className="bg-gray-200 rounded p-2">{">"}</button>
-      </div>
-      <button 
-        onClick={handleSeeMore} 
-        className="absolute bottom-5 right-5 bg-blue-600 text-white rounded p-3 hover:bg-blue-700"
-      >
-        Ver más
-      </button>
-    </div>
-  );
-};
-
-export default Homepage;
