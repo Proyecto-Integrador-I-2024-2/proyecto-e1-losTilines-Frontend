@@ -4,10 +4,14 @@ import { ChartCustom } from "@/widgets/statistics";
 import { TableTwoColums } from "@/widgets/tables";
 import { workerData } from "@/data";
 import { Card, Input } from "@material-tailwind/react";
-import { useUser } from "@/hooks";
+import { useAreas, useCompany, useCompanyRoles, useUser } from "@/hooks";
 import { TrashIcon } from "@heroicons/react/24/solid";
 
 function Workers() {
+
+  const { data: areasListData, isLoading: areaslistIsLoading } = useAreas();
+  const { data: rolesData, isLoading: rolesIsLoading } = useCompanyRoles();
+
   //Info for collapse buttons.
   const user = useUser();
   console.log(user.data)
@@ -17,7 +21,7 @@ function Workers() {
   //Info for select buttons.
   const sortContent = ["name", "area"];
 
-  const roleInfo = ["Area admin", "Project maanger"];
+  const roleInfo = ["Area admin", "Project manager"];
 
   const areaInfo = ["Area1", "Area2", "Area3", "Area4"];
 
