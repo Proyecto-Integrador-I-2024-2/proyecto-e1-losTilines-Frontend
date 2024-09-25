@@ -9,7 +9,7 @@ import { CreateArea } from "@/widgets/popUp";
 import { projectsData } from "@/data";
 import { CustomListItem } from "@/widgets/horList";
 import { TableWithCheckBox } from "@/widgets/tables";
-
+import workerCompanies from "@/data/workersAreas";
 function Dashboard() {
 
   
@@ -36,7 +36,7 @@ function Dashboard() {
 
   const createArea = (
     <CreateArea description={"New area"}>
-      <TableWithCheckBox content={adminAreasAvailables.data} />
+      <TableWithCheckBox content={workerCompanies} />
     </CreateArea>
   );
 
