@@ -113,7 +113,6 @@ class WorkingAreaUpdateView(generics.UpdateAPIView):
 
         serializer.save(company=company, user=new_user)
 
-
 class WorkingAreaDeleteView(generics.DestroyAPIView):
     queryset = Area.objects.all()
     permission_classes = [permissions.IsAuthenticated]
@@ -150,7 +149,6 @@ class ListCompanyWorkersView(generics.ListAPIView):
         
         # Retorna los usuarios que pertenezcan a la misma compañía como instancias de User
         user_ids = UserCompany.objects.filter(company=user_company_instance.company).values_list('user', flat=True)
-        print(user_ids)
         return User.objects.filter(id__in=user_ids).exclude(id=business_manager.id)  # Excluye al Business Manager
 
 class RetrieveWorkerView(generics.RetrieveAPIView):
@@ -270,8 +268,6 @@ class DeleteWorkerView(generics.DestroyAPIView):
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
-
-
 class ListingAdminAreaAvailableView(generics.ListAPIView):
     serializer_class = UserCompanySerializer
     permission_classes = [IsAuthenticated]
