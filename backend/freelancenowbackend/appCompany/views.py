@@ -113,7 +113,6 @@ class WorkingAreaUpdateView(generics.UpdateAPIView):
 
         serializer.save(company=company, user=new_user)
 
-
 class WorkingAreaDeleteView(generics.DestroyAPIView):
     queryset = Area.objects.all()
     permission_classes = [permissions.IsAuthenticated]
@@ -173,19 +172,9 @@ class ListCompanyWorkersRoleAreaView(generics.ListAPIView):
         if user_company_instance is None:
             raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
         
-        # Obtener los usuarios de la compañía
-        return User.objects.filter(usercompany__company=user_company_instance.company).exclude(id=business_manager.id)
-
-
-    def get_area(self, user):
-        # Obtener el área a través de UserCompany
-        user_company = UserCompany.objects.filter(user=user).first()
-        if user_company and user_company.area:
-            return {
-                "id": user_company.area.id,
-                "name": user_company.area.name
-            }
-        return None  # Si el área es nula o no existe, retorna None
+        # Retorna los usuarios que pertenezcan a la misma compañía como instancias de User
+        user_ids = UserCompany.objects.filter(company=user_company_instance.company).values_list('user', flat=True)
+        return User.objects.filter(id__in=user_ids).exclude(id=business_manager.id)  # Excluye al Business Manager
 
 class RetrieveWorkerView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
@@ -304,8 +293,6 @@ class DeleteWorkerView(generics.DestroyAPIView):
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
-
-
 class ListingAdminAreaAvailableView(generics.ListAPIView):
     serializer_class = UserCompanySerializer
     permission_classes = [IsAuthenticated]
