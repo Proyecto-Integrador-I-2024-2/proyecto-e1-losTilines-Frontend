@@ -19,7 +19,7 @@ import {
   ChevronUpIcon,
 } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom"; // Importa useNavigate
-
+import { Link } from "react-router-dom"; // Importa Link
 const nestedMenuItems = [
   {
     title: "Hero",
@@ -64,15 +64,13 @@ function NavListMenu() {
               Options
               <ChevronDownIcon
                 strokeWidth={2.5}
-                className={`hidden h-3 w-3 transition-transform lg:block ${
-                  isMenuOpen ? "rotate-180" : ""
-                }`}
+                className={`hidden h-3 w-3 transition-transform lg:block ${isMenuOpen ? "rotate-180" : ""
+                  }`}
               />
               <ChevronDownIcon
                 strokeWidth={2.5}
-                className={`block h-3 w-3 transition-transform lg:hidden ${
-                  isMobileMenuOpen ? "rotate-180" : ""
-                }`}
+                className={`block h-3 w-3 transition-transform lg:hidden ${isMobileMenuOpen ? "rotate-180" : ""
+                  }`}
               />
             </ListItem>
           </Typography>
@@ -90,9 +88,8 @@ function NavListMenu() {
                 Projects
                 <ChevronUpIcon
                   strokeWidth={2.5}
-                  className={`h-3.5 w-3.5 transition-transform ${
-                    isMenuOpen ? "rotate-90" : ""
-                  }`}
+                  className={`h-3.5 w-3.5 transition-transform ${isMenuOpen ? "rotate-90" : ""
+                    }`}
                 />
               </MenuItem>
             </MenuHandler>
@@ -116,9 +113,8 @@ function NavListMenu() {
                 Figma
                 <ChevronUpIcon
                   strokeWidth={2.5}
-                  className={`h-3.5 w-3.5 transition-transform ${
-                    isMenuOpen ? "rotate-90" : ""
-                  }`}
+                  className={`h-3.5 w-3.5 transition-transform ${isMenuOpen ? "rotate-90" : ""
+                    }`}
                 />
               </MenuItem>
             </MenuHandler>
@@ -144,9 +140,9 @@ function NavList() {
         variant="small"
         color="blue-gray"
         className="font-medium cursor-pointer"
-        onClick={() => navigate('/home')} // Redirige a la URL de Home
+        onClick={() => navigate('/profile')} // Redirige a la URL de Home
       >
-        <ListItem className="flex items-center gap-2 py-2 pr-4">Home</ListItem>
+        <ListItem className="flex items-center gap-2 py-2 pr-4">Profile</ListItem>
       </Typography>
       <Typography
         as="a"
@@ -186,14 +182,16 @@ export function NavigationTopBar() {
   return (
     <Navbar className="mx-auto max-w-full px-4 py-2">
       <div className="flex items-center justify-between text-blue-gray-900">
-        <Typography
-          as="a"
-          href="#"
-          variant="h6"
-          className="mr-4 cursor-pointer py-1.5 lg:ml-2"
-        >
-          Freelance Now
-        </Typography>
+        <Link to="/">
+          <Typography
+            as="a"
+            href="#"
+            variant="h6"
+            className="mr-4 cursor-pointer py-1.5 lg:ml-2"
+          >
+            Freelance Now
+          </Typography>
+        </Link>
         <div className="hidden lg:block">
           <NavList />
         </div>

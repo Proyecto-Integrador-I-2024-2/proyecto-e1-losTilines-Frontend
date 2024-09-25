@@ -21,7 +21,7 @@ function App() {
         <Route path="/profile/*" element={<ProfileLayout />} />
         <Route path="/auth/*" element={<Auth />} />
         <Route path="/project/*" element={<ProjectLayout />} />
-        <Route path="/homepage/*" element={<HomepageLayout />} />
+        <Route path="/*" element={<HomepageLayout />} />
       </Routes>
     </QueryClientProvider>
   );
