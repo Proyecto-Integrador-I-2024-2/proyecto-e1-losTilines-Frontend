@@ -67,12 +67,6 @@ function Profile() {
 
     const { id, email, first_name, last_name, phone_number, role } = userData;
 
-
-
-
-
-
-
     return (
         <div className="w-full h-full">
             <div className="mx-3 mt-4 mb-2 lg:mx-4 border border-blue-gray-100 h-2/3">
