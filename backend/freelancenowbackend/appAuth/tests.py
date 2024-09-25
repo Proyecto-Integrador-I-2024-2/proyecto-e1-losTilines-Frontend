@@ -101,7 +101,7 @@ class CompanyTests(APITestCase):
         )
         UserCompany.objects.create(company=self.company, user=self.business_manager)
         # Intentar registrar un Area Admin
-        url = reverse('register_company_users')
+        url = reverse('register_area_admin')
         data = {
             'email': 'areaadmin@example.com',
             'first_name': 'Area',
@@ -116,3 +116,29 @@ class CompanyTests(APITestCase):
         area_admin = User.objects.get(email='areaadmin@example.com')
         self.assertTrue(area_admin.groups.filter(name='Area Admin').exists())
         self.assertTrue(UserCompany.objects.filter(company=self.company, user=area_admin).exists())
+
+    def test_register_project_manager(self):
+        # Crear compañía para el Business Manager
+        self.company = Company.objects.create(
+            tax_id='123456789', name='Test Company', address='123 Main St',
+            telephone='+1234567890', email='company@example.com', user=self.business_manager
+        )
+        UserCompany.objects.create(company=self.company, user=self.business_manager)
+        
+        # Intentar registrar un Project Manager
+        url = reverse('register_project_manager')
+        data = {
+            'email': 'projectmanager@example.com',
+            'first_name': 'Project',
+            'last_name': 'Manager',
+            'password': 'adminpassword123',
+            'phone_number': '0987654321'
+        }
+        response = self.client.post(url, data, format='json')
+
+        print(response.data)  # Para ver la respuesta del servidor
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        project_manager = User.objects.get(email='projectmanager@example.com')
+        self.assertTrue(project_manager.groups.filter(name='Project Manager').exists())
+        self.assertTrue(UserCompany.objects.filter(company=self.company, user=project_manager).exists())
