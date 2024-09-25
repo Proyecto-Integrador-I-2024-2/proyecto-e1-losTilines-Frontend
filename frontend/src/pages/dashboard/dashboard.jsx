@@ -3,6 +3,7 @@ import ListRowStructure from "@/widgets/list/listRowStructure";
 import { NumberInfo } from "@/widgets/statistics/numberInfo";
 import Chart from "@/widgets/statistics/chart";
 import { Button, Card, Typography } from "@material-tailwind/react";
+import { Link } from "react-router-dom";
 import {
   useUser,
   useAreas,
@@ -65,10 +66,10 @@ function Dashboard() {
     } else {
       alert(
         "Please selecet an area and a user." +
-          " Nombre de area:" +
-          areaName +
-          ". Id:" +
-          selectId
+        " Nombre de area:" +
+        areaName +
+        ". Id:" +
+        selectId
       );
       return false;
     }
@@ -99,6 +100,7 @@ function Dashboard() {
           hasAdd={true}
           hasSeeAll={true}
           newDialog={createArea}
+          route={"areas/"}
         >
           {areas != undefined ? (
             areas.map((area, index) => (
@@ -127,6 +129,7 @@ function Dashboard() {
                 hasAdd={false}
                 hasSeeAll={true}
                 addDescription={"New worker"}
+                route={"workers/"}
               >
                 {workersData != undefined ? (
                   workersData.map((worker, index) => (
@@ -142,7 +145,7 @@ function Dashboard() {
                 )}
               </ListCard>
             </div>
-            <ListCard title={"Finance"} hasAdd={false} hasSeeAll={true}>
+            <ListCard title={"Finance"} hasAdd={false} hasSeeAll={true} route={"finance/"}>
               <NumberInfo
                 description={"Total investment in projects"}
                 number={"$2.500.000"}
@@ -160,10 +163,11 @@ function Dashboard() {
               type={"pie"}
             />
           </div>
-
-          <Button color="gray" size="sm" variant="outlined" className="w-32">
-            See all
-          </Button>
+          <Link to="stats/">
+            <Button color="gray" size="sm" variant="outlined" className="w-32">
+              See all
+            </Button>
+          </Link>
         </Card>
       </section>
     </div>

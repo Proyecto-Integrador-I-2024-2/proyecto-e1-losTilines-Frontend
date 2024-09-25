@@ -6,7 +6,7 @@ import { workerData } from "@/data";
 import { Card, Input, Spinner } from "@material-tailwind/react";
 import { useAreas, useWorkersRoleArea, useCompanyRoles, useUser, useFreelancerProjects, } from "@/hooks";
 import { TrashIcon } from "@heroicons/react/24/solid";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 
 function Workers() {
@@ -120,7 +120,7 @@ function Workers() {
               </div>
               <div className="flex flex-col w-full space-y-6  md:flex-row md:space-y-0 ">
 
-                {/* <TableTwoColums titles={TABLE_HEAD} content={} /> */}
+                <TableTwoColums titles={TABLE_HEAD} content={workerData[0].projects} />
 
                 <div className="flex flex-row">
                   <ChartCustom description={"Project status distribution"} />

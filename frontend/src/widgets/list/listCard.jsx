@@ -6,15 +6,16 @@ import {
   Typography,
   Button,
 } from "@material-tailwind/react";
-
+import { Link } from 'react-router-dom';
 export function ListCard({
   numberOfItems,
   title,
   hasSeeAll,
   hasAdd,
-  newDialog, 
+  newDialog,
   seeAllButton,
-  children
+  children,
+  route
 }) {
   const [selected, setSelected] = React.useState(1);
   const setSelectedItem = (value) => setSelected(value);
@@ -29,21 +30,27 @@ export function ListCard({
         </Typography>
       </div>
       <div className="h-full overflow-auto">
-          {children}
+        {children}
       </div>
 
       <div className="flex flex-row justify-center space-x-4 my-4">
         {hasSeeAll && (
-          <Button color="gray" size="sm" variant="outlined">
-            See all
-          </Button>
+          <Link to={route}>
+
+            <Button color="gray" size="sm" variant="outlined">
+              See all
+            </Button>
+
+          </Link>
+
+
         )}
 
         {hasAdd && (
           newDialog
         )}
       </div>
-    </Card>
+    </Card >
   );
 }
 
