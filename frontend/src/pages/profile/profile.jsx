@@ -34,7 +34,7 @@ import { CustomListItem } from "@/widgets/horList";
 import { ExperienceSection } from "@/widgets/custom";
 import { SkillsSection } from "@/widgets/custom";
 import { GitButton } from "@/widgets/custom";
-import { useUser } from "@/hooks";
+import { usePortfolio, useUser } from "@/hooks";
 import useSkills from "@/hooks/useSkills";
 import useExperiences from "@/hooks/useExperiences";
 
@@ -44,8 +44,10 @@ function Profile() {
     const { data: userData, isLoading: isUserLoading } = useUser();
     const { data: skillsData, isLoading: isSkillsLoading } = useSkills(userData.id);
     const { data: experiencesData, isLoading: isExperiencesLoading } = useExperiences(userData.id);
+    const { data: portfolioData, isLoading: isPortfolioLoading } = usePortfolio(userData.id);
 
-    console.log(experiencesData)
+    console.log("Portofolio", portfolioData)
+    console.log("User", userData)
 
     const [isFreelancer, setIsFreelancer] = useState(false);
 
@@ -147,7 +149,10 @@ function Profile() {
                                         </Tooltip>
                                     }
                                 />}
-                                <GitButton />
+                                {
+                                    isPortfolioLoading ? "Loading..." : <GitButton url={portfolioData[0]?.Url} />
+                                }
+
                             </div>
 
                             <div className="h-96 mb-2">
@@ -190,10 +195,10 @@ function Profile() {
                     {/* Aquí va la fila scrollable img, title, tag, description, members, route --->*/}
                     <CustomList
                         sectionTitle={"Projects"}
-                        sectionSubtitle={"FreelancerProjects"}
+                        sectionSubtitle={"Associated Projects"}
                     >
                         {projectsData.map((project) => (
-                            <CustomListItem key={project.title} {...project} />
+                            <CustomListItem key={project.title} {...project} route={"/project/detail"} />
                         ))}
                     </CustomList>
                 </CardBody>
