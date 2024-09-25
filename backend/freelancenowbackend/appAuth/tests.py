@@ -136,7 +136,6 @@ class CompanyTests(APITestCase):
         }
         response = self.client.post(url, data, format='json')
 
-        print(response.data)  # Para ver la respuesta del servidor
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         project_manager = User.objects.get(email='projectmanager@example.com')
