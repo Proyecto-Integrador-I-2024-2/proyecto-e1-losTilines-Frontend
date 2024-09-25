@@ -38,8 +38,12 @@ class ExperienceSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
     
     def validate(self, attrs):
-        if attrs['final_date'] and attrs['final_date'] < attrs['start_date']:
-            raise serializers.ValidationError("Final date cannot be before start date.")
+        start_date = attrs.get('start_date')
+        final_date = attrs.get('final_date')
+
+        if final_date and start_date and final_date < start_date:
+            raise serializers.ValidationError("La fecha final no puede ser anterior a la fecha de inicio.")
+        
         return attrs
     
 class PortfolioSerializer(serializers.ModelSerializer):
