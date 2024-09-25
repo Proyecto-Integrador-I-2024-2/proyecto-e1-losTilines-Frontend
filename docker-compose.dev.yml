@@ -28,7 +28,7 @@ services:
       - DJANGO_SUPERUSER_PASSWORD=admin123
       - DJANGO_SUPERUSER_FIRST_NAME=Admin
       - DJANGO_SUPERUSER_LAST_NAME=User
-
+    
     ports:
       - 29000:8000
       - 29001:8000

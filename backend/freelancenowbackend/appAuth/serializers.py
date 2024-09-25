@@ -4,12 +4,11 @@ from cities_light.models import City, Country
   
     
 class UserSerializer(serializers.ModelSerializer):
-    area = serializers.SerializerMethodField()
     password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
 
     class Meta:
         model = User
-        fields = ['id','email', 'first_name', 'last_name', 'phone_number', 'password', 'created_at', 'area']
+        fields = ['id','email', 'first_name', 'last_name', 'phone_number', 'password', 'created_at']
 
     def create(self, validated_data):
         password = validated_data.pop('password')
@@ -18,17 +17,6 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         return user   
 
-    def get_area(self, obj):
-        """
-        Obtiene el nombre del área asociada al usuario a través de UserCompany.
-        """
-        try:
-            user_company = UserCompany.objects.select_related('area').get(user=obj)
-            if user_company.area:
-                return user_company.area.name
-            return None
-        except UserCompany.DoesNotExist:    
-            return None
     
 class FreelancerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -74,7 +62,7 @@ class CompanySerializer(serializers.ModelSerializer):
 class UserCompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = UserCompany
-        fields = ['company', 'user']
+        fields = ['company', 'user', 'area']
 
     def validate_user(self, value):
         if value.groups.filter(name="Freelancer").exists():
