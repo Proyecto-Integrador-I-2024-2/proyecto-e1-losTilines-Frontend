@@ -33,7 +33,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
 
     objects = CustomUserManager()
-
+        
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name'] 
 
@@ -165,7 +165,6 @@ class Experience(models.Model):
     description = models.CharField(max_length=300, null=True, blank=True)
     company = models.CharField(max_length=100)
     freelancer = models.ForeignKey(User, on_delete=models.CASCADE)
-    description = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
         return f'{self.occupation} at {self.company}'
@@ -178,7 +177,7 @@ class Experience(models.Model):
 class Portfolio(models.Model):
     date = models.DateField()
     project_name = models.CharField(max_length=100)
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, null=True, blank=True)   
     url = models.URLField()
     freelancer = models.ForeignKey(User, on_delete=models.CASCADE)
 
@@ -240,7 +239,7 @@ class ProjectFreelancer(models.Model):
     def __str__(self):
         return f'{self.freelancer} working on {self.project}'
     def save(self, *args, **kwargs):
-        if not self.freelancer.groups.filter(name="freelancer").exists():
+        if not self.freelancer.groups.filter(name="Freelancer").exists():
             raise ValueError("The user must be part of the 'freelancer' group.")
         super().save(*args, **kwargs)
     

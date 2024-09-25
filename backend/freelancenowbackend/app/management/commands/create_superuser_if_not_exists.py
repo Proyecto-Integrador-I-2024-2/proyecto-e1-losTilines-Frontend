@@ -24,6 +24,7 @@ class Command(BaseCommand):
                 first_name=first_name, 
                 last_name=last_name
             )
+            
             self.stdout.write(self.style.SUCCESS(f'Superuser "{email}" has been created'))
         else:
             self.stdout.write(self.style.SUCCESS(f'Superuser "{email}" already exists'))

@@ -9,9 +9,12 @@ import { CreateArea } from "@/widgets/popUp";
 import { projectsData } from "@/data";
 import { CustomListItem } from "@/widgets/horList";
 import { TableWithCheckBox } from "@/widgets/tables";
-import workerCompanies from "@/data/workersAreas";
 
 function Dashboard() {
+
+  
+  const adminAreasAvailables =  useAdminAreas();
+
   const user = useUser();
 
   const { data: areas, isLoading: areasLoading } = useAreas();
@@ -26,11 +29,10 @@ function Dashboard() {
 
   console.log(sessionStorage.getItem("token"));
 
-  const adminAreasAvailables =  useAdminAreas();
   
   console.log("AREA ADMINS: ", adminAreasAvailables.data);
   
-    
+
 
   const createArea = (
     <CreateArea description={"New area"}>
