@@ -5,3 +5,4 @@ export * from "@/hooks/useCompany";
 export * from "@/hooks/useAreas"
 export * from "@/hooks/useWorkers";
 export * from "@/hooks/useAdminAreas"
+export * from "@/hooks/usePortfolio"
