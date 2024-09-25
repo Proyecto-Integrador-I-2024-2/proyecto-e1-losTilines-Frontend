@@ -11,6 +11,8 @@ services:
       echo 'Date base available!' &&
       python manage.py makemigrations &&
       python manage.py migrate &&
+      echo 'Testing process' &&
+      python manage.py test &&
       echo 'Creating django admin...' &&
       python manage.py create_superuser_if_not_exists &&
       echo 'Django admin created' &&

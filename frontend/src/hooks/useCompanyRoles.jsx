@@ -12,7 +12,7 @@ export const useCompanyRoles = () => {
     return useQuery(['CompanyRoles'], fetchCompanyRoles, {
         staleTime: 1000 * 60 * 6,
         cachetime: 1000 * 60 * 30,
-        retry: 2,
+        retry: 2,   
         placeholderData: []
     })
 }
