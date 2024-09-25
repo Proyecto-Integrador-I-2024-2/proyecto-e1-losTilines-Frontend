@@ -15,10 +15,10 @@ urlpatterns = [
     path('register/business-manager/', BusinessManagerRegisterView.as_view(), name='register_business_manager'),
 
     # Registro de usuarios de la compañía (Area Admin, Project Manager) por el Business Manager
-    path('register/projectmanager/', RegisterProjectManagerView.as_view(), name='register_company_users'),
+    path('register/projectmanager/', RegisterProjectManagerView.as_view(), name='register_project_manager'),
 
     # Registro de usuarios de la compañía (Area Admin, Project Manager) por el Business Manager
-    path('register/adminarea/', RegisterAreaAdminView.as_view(), name='register_company_users'),
+    path('register/adminarea/', RegisterAreaAdminView.as_view(), name='register_area_admin'),
 
      # Registro de compañias
     path('create/company/', CreateCompanyView.as_view(), name='creation_company'),
