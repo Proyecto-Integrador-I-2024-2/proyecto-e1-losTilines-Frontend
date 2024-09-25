@@ -178,8 +178,10 @@ class Command(BaseCommand):
         # Crear UserCompany
         user_companies = []
         for i, company in enumerate(companies):
-            user = project_managers[i]
+            user = business_managers[i]
             area = areas[i]
+            admin = area_admins[i]
+            manager = project_managers[i]
             try:
                 user_company, created = UserCompany.objects.get_or_create(
                     company=company,
@@ -188,6 +190,22 @@ class Command(BaseCommand):
                         'area': area
                     }
                 )
+                user_company2, created = UserCompany.objects.get_or_create(
+                    company=company,
+                    user=admin,
+                    defaults={
+                        'area': area
+                    }
+                )
+                user_company3, created = UserCompany.objects.get_or_create(
+                    company=company,
+                    user=manager,
+                    defaults={
+                        'area': area
+                    }
+                )
+             
+                
                 if created:
                     self.stdout.write(self.style.SUCCESS(f'UserCompany para usuario "{user.email}" y compañía "{company.name}" creada'))
                 else:
@@ -195,7 +213,15 @@ class Command(BaseCommand):
             except ValueError as e:
                 self.stdout.write(self.style.ERROR(f'Error al crear UserCompany: {str(e)}'))
                 continue
-            user_companies.append(user_company)
+            user_companies.append(user_company )
+            user_companies.append(user_company2)
+            user_companies.append(user_company3)
+            
+            
+            
+        
+            
+        
 
         # Crear perfiles de freelancers
         freelancers_instances = []
