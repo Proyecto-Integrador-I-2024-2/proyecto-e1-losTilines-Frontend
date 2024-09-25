@@ -144,14 +144,18 @@ class ListCompanyWorkersView(generics.ListAPIView):
             raise ValidationError("No tienes permiso para ver esta información.")
 
         # Obtener la compañía asociada al Business Manager
-        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
+        user_company_instance = UserCompany.objects.select_related('company').filter(user=business_manager).first()
         if user_company_instance is None:
             raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
-        
-        # Retorna los usuarios que pertenezcan a la misma compañía como instancias de User
-        user_ids = UserCompany.objects.filter(company=user_company_instance.company).values_list('user', flat=True)
-        print(user_ids)
-        return User.objects.filter(id__in=user_ids).exclude(id=business_manager.id)  # Excluye al Business Manager
+
+        # Obtener todos los UserCompany relacionados con la misma compañía, excluyendo al Business Manager
+        user_companies = UserCompany.objects.select_related('area').filter(company=user_company_instance.company).exclude(user=business_manager)
+
+        # Extraer los IDs de usuario
+        user_ids = user_companies.values_list('user__id', flat=True)
+
+        # Retornar los usuarios filtrados
+        return User.objects.filter(id__in=user_ids)
 
 class RetrieveWorkerView(generics.RetrieveAPIView):
     serializer_class = UserSerializer

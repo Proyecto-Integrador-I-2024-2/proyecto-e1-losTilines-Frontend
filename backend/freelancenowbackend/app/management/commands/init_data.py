@@ -62,6 +62,8 @@ class Command(BaseCommand):
                 user.last_name = f'Apellido{i}'
                 user.save()
                 user.groups.add(business_manager_group)
+                user.groups.add(area_admin_group)
+
                 user.save()
                 self.stdout.write(self.style.SUCCESS(f'Usuario Business Manager "{email}" creado'))
             else:

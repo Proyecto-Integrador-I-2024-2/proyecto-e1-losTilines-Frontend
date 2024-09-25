@@ -3,19 +3,25 @@ from app.models import User, Company, UserCompany, Freelancer
 from cities_light.models import City, Country
 
 class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
+    area = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'last_name', 'phone_number', 'password', 'created_at']
+        fields = ['id', 'email', 'first_name', 'last_name', 'phone_number', 'profile_picture', 'area']
+        # Asegúrate de incluir otros campos que desees exponer
 
-    def create(self, validated_data):
-        password = validated_data.pop('password')
-        user = User(**validated_data)
-        user.set_password(password)
-        user.save()
-        return user
-
+    def get_area(self, obj):
+        """
+        Obtiene el nombre del área asociada al usuario a través de UserCompany.
+        """
+        try:
+            user_company = UserCompany.objects.select_related('area').get(user=obj)
+            if user_company.area:
+                return user_company.area.name
+            return None
+        except UserCompany.DoesNotExist:    
+            return None
+    
 class FreelancerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Freelancer

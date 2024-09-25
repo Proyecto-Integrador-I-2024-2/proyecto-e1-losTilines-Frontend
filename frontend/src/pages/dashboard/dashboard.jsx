@@ -3,23 +3,42 @@ import ListRowStructure from "@/widgets/list/listRowStructure";
 import { NumberInfo } from "@/widgets/statistics/numberInfo";
 import Chart from "@/widgets/statistics/chart";
 import { Button, Card, Typography } from "@material-tailwind/react";
-import { useUser, useAreas, useAdminAreas } from "@/hooks";
+import {
+  useUser,
+  useAreas,
+  useAdminAreas,
+  useCreateArea,
+} from "@/hooks";
 import useWorkers from "@/hooks/useWorkers";
 import { CreateArea } from "@/widgets/popUp";
 import { projectsData } from "@/data";
 import { CustomListItem } from "@/widgets/horList";
 import { TableWithCheckBox } from "@/widgets/tables";
 import workerCompanies from "@/data/workersAreas";
-function Dashboard() {
+import { useState } from "react";
 
-  
-  const adminAreasAvailables =  useAdminAreas();
+function Dashboard() {
+  //STATES
+
+  const [selectId, setSelectedId] = useState(null);
+  const [areaName, setAreaName] = useState(null);
+
+  //CUSTOM HOOKS
+
+  const adminAreasAvailables = useAdminAreas();
 
   const user = useUser();
+
+  const createAreaHook = useCreateArea();
+
+
+  //GET DATA FROM CUSTOM HOOKS
 
   const { data: areas, isLoading: areasLoading } = useAreas();
 
   const { data: workersData, isLoading: workersLoading } = useWorkers();
+
+  //LOGS
 
   console.log("WORKERS: ", workersData);
 
@@ -29,14 +48,44 @@ function Dashboard() {
 
   console.log(sessionStorage.getItem("token"));
 
-  
   console.log("AREA ADMINS: ", adminAreasAvailables.data);
-  
 
+  const handleAreaNameChange = (name) => {
+    setAreaName(name);
+    console.log("Nombre del área seleccionado:", name);
+  };
 
+  const handleAreaCreation = async () => {
+    if (areaName != null && areaName.length > 0 && selectId != null) {
+      console.log("Area name: ", areaName);
+      await createAreaHook.mutateAsync({ name: areaName, user: selectId });
+
+      alert("Area created succesfully.");
+      return true;
+    } else {
+      alert(
+        "Please selecet an area and a user." +
+          " Nombre de area:" +
+          areaName +
+          ". Id:" +
+          selectId
+      );
+      return false;
+    }
+  };
+
+  //POPUP to create areea and select its area admmin.
   const createArea = (
-    <CreateArea description={"New area"}>
-      <TableWithCheckBox content={workerCompanies} />
+    <CreateArea
+      description={"New area"}
+      setAreaName={handleAreaNameChange}
+      submitFunc={handleAreaCreation}
+    >
+      <TableWithCheckBox
+        content={workersData}
+        selectedId={selectId}
+        setSelectedId={setSelectedId}
+      />
     </CreateArea>
   );
 
@@ -83,8 +132,8 @@ function Dashboard() {
                   workersData.map((worker, index) => (
                     <ListRowWithImage
                       key={index}
-                      rowName={worker.rowName}
-                      description={worker.description}
+                      rowName={worker.first_name + " " + worker.last_name}
+                      description={worker.email}
                       chipValue={worker.area}
                     />
                   ))
