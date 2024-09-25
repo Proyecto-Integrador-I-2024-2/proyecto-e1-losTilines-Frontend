@@ -11,6 +11,7 @@ export const useAreas = () => {
     onError: (error) => {
       console.error("Error fetching areas:", error);
     },
+    placeholderData: []
   });
 };
 
