@@ -39,13 +39,18 @@ class Command(BaseCommand):
         for i in range(1, 4):
             email = f'freelancer{i}@example.com'
             user, created = User.objects.get_or_create(email=email)
+            
             if created:
+                
+                
                 user.set_password('password123')
                 user.first_name = f'Freelancer{i}'
                 user.last_name = f'Apellido{i}'
                 user.save()
                 user.groups.add(freelancer_group)
                 user.save()
+                userRole = UserRole.objects.create(user=user,role=freelancer_group)
+                userRole.save()
                 self.stdout.write(self.style.SUCCESS(f'Usuario Freelancer "{email}" creado'))
             else:
                 self.stdout.write(self.style.WARNING(f'Usuario Freelancer "{email}" ya existe'))
@@ -63,8 +68,10 @@ class Command(BaseCommand):
                 user.save()
                 user.groups.add(business_manager_group)
                 user.groups.add(area_admin_group)
-
                 user.save()
+                
+                userRole = UserRole.objects.create(user=user,role=business_manager_group)
+                userRole.save()
                 self.stdout.write(self.style.SUCCESS(f'Usuario Business Manager "{email}" creado'))
             else:
                 self.stdout.write(self.style.WARNING(f'Usuario Business Manager "{email}" ya existe'))
@@ -81,7 +88,9 @@ class Command(BaseCommand):
                 user.last_name = f'Apellido{i}'
                 user.save()
                 user.groups.add(area_admin_group)
-                user.save()
+                user.save()    
+                userRole = UserRole.objects.create(user=user,role=area_admin_group)
+                userRole.save()
                 self.stdout.write(self.style.SUCCESS(f'Usuario Area Admin "{email}" creado'))
             else:
                 self.stdout.write(self.style.WARNING(f'Usuario Area Admin "{email}" ya existe'))
@@ -99,6 +108,8 @@ class Command(BaseCommand):
                 user.save()
                 user.groups.add(project_manager_group)
                 user.save()
+                userRole = UserRole.objects.create(user=user,role=project_manager_group)
+                userRole.save()
                 self.stdout.write(self.style.SUCCESS(f'Usuario Project Manager "{email}" creado'))
             else:
                 self.stdout.write(self.style.WARNING(f'Usuario Project Manager "{email}" ya existe'))
