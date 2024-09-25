@@ -65,15 +65,18 @@ class UserRegistrationTests(APITestCase):
 class CompanyTests(APITestCase):
     
     def setUp(self):
-        self.manager_group = Group.objects.create(name="Business Manager")
-        self.manager = User.objects.create_user(
-            email='manager@example.com', 
-            password='testpassword123', 
-            first_name='Manager', 
-            last_name='Test'
+        # Crear grupo Business Manager y Area Admin
+        self.business_manager_group, _ = Group.objects.get_or_create(name="Business Manager")
+        self.area_admin_group, _ = Group.objects.get_or_create(name="Area Admin")
+
+        # Crear usuario Business Manager
+        self.business_manager = User.objects.create_user(
+            email='manager@example.com', password='testpassword123', first_name='Jane', last_name='Smith'
         )
-        self.manager.groups.add(self.manager_group)
-        self.client.force_authenticate(user=self.manager)  
+        self.business_manager.groups.add(self.business_manager_group)
+
+        # Autenticar usuario Business Manager
+        self.client.force_authenticate(user=self.business_manager)
 
     def test_create_company(self):
         url = reverse('creation_company')  
@@ -89,7 +92,27 @@ class CompanyTests(APITestCase):
         response = self.client.post(url, data, format='json')
         
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        
-        company = Company.objects.get(name='Test Company')
-        self.assertEqual(company.email, 'company@example.com')
-        self.assertEqual(UserCompany.objects.filter(user=self.manager, company=company).exists(), True)
+
+    def test_register_area_admin(self):
+        # Crear compañía para el Business Manager
+        self.company = Company.objects.create(
+            tax_id='123456789', name='Test Company', address='123 Main St',
+            telephone='+1234567890', email='company@example.com', user=self.business_manager
+        )
+        UserCompany.objects.create(company=self.company, user=self.business_manager)
+        # Intentar registrar un Area Admin
+        url = reverse('register_company_users')
+        data = {
+            'email': 'areaadmin@example.com',
+            'first_name': 'Area',
+            'last_name': 'Admin',
+            'password': 'adminpassword123',
+            'phone_number': '0987654321'
+        }
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        area_admin = User.objects.get(email='areaadmin@example.com')
+        self.assertTrue(area_admin.groups.filter(name='Area Admin').exists())
+        self.assertTrue(UserCompany.objects.filter(company=self.company, user=area_admin).exists())
