@@ -7,3 +7,6 @@ export * from "@/hooks/useWorkers";
 export * from "@/hooks/useAdminAreas"
 export * from "@/hooks/usePortfolio"
 export * from "@/hooks/useCompanyRoles"
+export * from "@/hooks/useWorkers"
+export * from "@/hooks/useWorkersRoleArea"
+export * from "@/hooks/useFreelancerProjects"

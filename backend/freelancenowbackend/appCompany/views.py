@@ -1,6 +1,6 @@
 from rest_framework import generics, permissions, status
-from app.models import Area, User, UserCompany, Project
-from .serializers import AreaSerializer, GroupSerializer, UserCompanySerializer
+from app.models import Area, User, UserCompany, Project, UserRole
+from .serializers import AreaSerializer, GroupSerializer, UserCompanySerializer, UserRoleSerializer
 from appAuth.serializers import UserSerializer
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.permissions import IsAuthenticated
@@ -152,6 +152,36 @@ class ListCompanyWorkersView(generics.ListAPIView):
         user_ids = UserCompany.objects.filter(company=user_company_instance.company).values_list('user', flat=True)
         print(user_ids)
         return User.objects.filter(id__in=user_ids).exclude(id=business_manager.id)  # Excluye al Business Manager
+
+class ListCompanyWorkersRoleAreaView(generics.ListAPIView):
+    serializer_class = UserRoleSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        business_manager = self.request.user
+
+        # Verifica que el usuario logueado sea un Business Manager
+        if not business_manager.groups.filter(name="Business Manager").exists():
+            raise ValidationError("No tienes permiso para ver esta información.")
+
+        # Obtener la compañía asociada al Business Manager
+        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
+        if user_company_instance is None:
+            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
+        
+        # Obtener los usuarios de la compañía
+        return User.objects.filter(usercompany__company=user_company_instance.company).exclude(id=business_manager.id)
+
+
+    def get_area(self, user):
+        # Obtener el área a través de UserCompany
+        user_company = UserCompany.objects.filter(user=user).first()
+        if user_company and user_company.area:
+            return {
+                "id": user_company.area.id,
+                "name": user_company.area.name
+            }
+        return None  # Si el área es nula o no existe, retorna None
 
 class RetrieveWorkerView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
