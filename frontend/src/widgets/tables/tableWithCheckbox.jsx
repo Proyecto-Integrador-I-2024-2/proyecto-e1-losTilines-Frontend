@@ -8,12 +8,27 @@ import {
     Avatar,
     Checkbox,
   } from "@material-tailwind/react";
+import { useState } from "react";
    
   const TABLE_HEAD = ["Member", "Is Check?"];
-   
 
+  
    
-  export function TableWithCheckBox({content}) {
+  export function TableWithCheckBox({content, selectedId, setSelectedId}) {
+
+
+    const handleSelecet = (id) =>{
+  
+      if(selectedId === id){
+        setSelectedId(null)
+        if(onselect) onselect(null);
+    } else{
+  
+      setSelectedId(id)
+      if (onselect) onselect(id);
+    }
+    console.log("SELECTED ID: ", selectedId); 
+  }
     return (
       <Card className="h-full w-full">
         <CardBody className="overflow-scroll px-0">
@@ -41,14 +56,14 @@ import {
             </thead>
             <tbody>
               {content.map(
-                ({ img, name, email}, index) => {
+                ({ img, name, email, id}, index) => {
                   const isLast = index === content.length - 1;
                   const classes = isLast
                     ? "p-4"
                     : "p-4 border-b border-blue-gray-50";
    
                   return (
-                    <tr key={name}>
+                    <tr key={id}>
                       <td className={classes}>
                         <div className="flex items-center gap-3">
                           <Avatar src={img} alt={name} size="sm" />
@@ -73,7 +88,11 @@ import {
                    
                       <td className={classes}>
                         <div className="w-max">
-                          <Checkbox/>
+                          <Checkbox
+                            checked={selectedId === id}
+                            onChange={() => handleSelecet(id)}
+
+                          />
                         </div>
                       </td>
                 
@@ -88,4 +107,4 @@ import {
     );
   }
 
-  export default TableWithCheckBox; 
+  export default TableWithCheckBox;

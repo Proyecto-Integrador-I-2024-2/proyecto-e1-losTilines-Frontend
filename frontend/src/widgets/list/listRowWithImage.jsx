@@ -20,7 +20,7 @@ export function ListRowWithImage({ rowName, description, chipValue }) {
           src="/img/people/persona1.jpg"
         />
         <div className="flex flex-col justify-center ml-3">
-          <Typography color="black" variant="lead">
+          <Typography className="font-medium" color="black" variant="paragraph">
             {rowName}
           </Typography>
           <Typography color="blue-gray" size="sm">

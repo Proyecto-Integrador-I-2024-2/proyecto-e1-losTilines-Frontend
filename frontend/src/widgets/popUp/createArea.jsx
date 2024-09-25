@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   Dialog,
@@ -8,12 +8,28 @@ import {
   Input,
   Typography,
 } from "@material-tailwind/react";
-import { CustomList } from "../horList";
 
-export function CreateArea({ description, children }) {
+export function CreateArea({ description, setAreaName, submitFunc, children }) {
   const [open, setOpen] = React.useState(false);
+  const [localAreaName, setLocalAreaName] = useState("");
+
+  const handleAreaNameChange = (event) => {
+
+    const {value} = event.target;
+    setLocalAreaName(value); 
+    setAreaName(value);
+
+  }
 
   const handleOpen = () => setOpen(!open);
+
+  const handleConfirm = async () => {
+
+    const result = await submitFunc();
+
+    if (result) setOpen(!open)
+
+  }
 
   return (
     <>
@@ -31,7 +47,7 @@ export function CreateArea({ description, children }) {
             </Typography>
 
             <div className="flex flex-row justify-center items-center w-full md:w-full ">
-              <Input label="Area name"></Input>
+              <Input onChange={handleAreaNameChange} label="Area name"></Input>
             </div>
 
             <Typography>
@@ -50,7 +66,7 @@ export function CreateArea({ description, children }) {
           >
             <span>Cancel</span>
           </Button>
-          <Button variant="gradient" color="cyan" onClick={handleOpen}>
+          <Button variant="gradient" color="cyan" onClick={handleConfirm}>
             <span>Confirm</span>
           </Button>
         </DialogFooter>
