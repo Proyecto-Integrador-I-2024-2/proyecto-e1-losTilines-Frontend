@@ -34,7 +34,7 @@ class UserInfoView(APIView):
                 "city": user_company.company.city,
                 "country": user_company.company.country
             }
-            user_data["area"] = user_company.area
+            user_data["area"] = user_company.area.name
         except UserCompany.DoesNotExist:
             user_data["company"] = None
             user_data["area"] = None
