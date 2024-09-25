@@ -7,7 +7,11 @@ const fetchAreas = async () => {
 };
 
 export const useAreas = () => {
-  return useQuery(["areas"], fetchAreas);
+  return useQuery(["areas"], fetchAreas, {
+    onError: (error) => {
+      console.error("Error fetching areas:", error);
+    },
+  });
 };
 
 export default useAreas;
