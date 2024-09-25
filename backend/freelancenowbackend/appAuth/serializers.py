@@ -1,14 +1,22 @@
 from rest_framework import serializers
 from app.models import User, Company, UserCompany, Freelancer
 from cities_light.models import City, Country
-
+  
+    
 class UserSerializer(serializers.ModelSerializer):
     area = serializers.SerializerMethodField()
+    password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'phone_number', 'profile_picture', 'area']
-        # Asegúrate de incluir otros campos que desees exponer
+        fields = ['id','email', 'first_name', 'last_name', 'phone_number', 'password', 'created_at', 'area']
+
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = User(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user   
 
     def get_area(self, obj):
         """
