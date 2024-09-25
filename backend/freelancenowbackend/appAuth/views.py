@@ -62,12 +62,13 @@ class RegisterAreaAdminView(generics.CreateAPIView):
     def perform_create(self, serializer):
         businessmanager = self.request.user
         user_company_instance = UserCompany.objects.filter(user=businessmanager).first()
+
+        if user_company_instance is None:
+            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
+
         # Asegurarse que el que hace la solicitud es un Business Manager
         if not businessmanager.groups.filter(name='Business Manager').exists():
             raise serializers.ValidationError({"error": "Unauthorized"}, code=403)        
-    
-        if user_company_instance is None:
-            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
 
         # Crea el usuario y asocia el rol "Area Admin"
         area_admin_user = serializer.save()  # Guarda el usuario
@@ -87,11 +88,11 @@ class RegisterProjectManagerView(generics.CreateAPIView):
         businessmanager = self.request.user
         user_company_instance = UserCompany.objects.filter(user=businessmanager).first()
 
-        if not businessmanager.groups.filter(name='Business Manager').exists():
-            raise serializers.ValidationError({"error": "Unauthorized"}, code=403)        
-    
         if user_company_instance is None:
             raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
+
+        if not businessmanager.groups.filter(name='Business Manager').exists():
+            raise serializers.ValidationError({"error": "Unauthorized"}, code=403)        
 
         area_admin_user = serializer.save()
         role, created = Group.objects.get_or_create(name='Project Manager')
@@ -126,5 +127,4 @@ class LoginView(APIView):
             'user_id': user.id,
             'email': user.email
         }, status=status.HTTP_200_OK)
-    
     
