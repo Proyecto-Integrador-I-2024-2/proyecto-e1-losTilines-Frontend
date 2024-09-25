@@ -6,7 +6,7 @@ const fetchWorkers = async () => {
   return data;
 };
 
-const useWorkers = () => {
+export const useWorkers = () => {
   return useQuery(['workers'], fetchWorkers);
 };
 

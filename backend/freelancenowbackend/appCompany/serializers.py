@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from app.models import Area, User, UserCompany
+from app.models import Area, User, UserCompany, UserRole
+from appAuth.serializers import UserSerializer
 from django.contrib.auth.models import Group
 
 class AreaSerializer(serializers.ModelSerializer):
@@ -40,6 +41,30 @@ class UserCompanySerializer(serializers.ModelSerializer):
         if value.groups.filter(name="Freelancer").exists():
             raise serializers.ValidationError("This user type cannot be in a company.")
         return value
+    
 
+class UserRoleSerializer(serializers.ModelSerializer):
+    role = serializers.SerializerMethodField()
+    area = serializers.SerializerMethodField()
 
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'first_name', 'last_name', 'phone_number', 'created_at', 'role', 'area']
 
+    def get_role(self, obj):
+        user_role = UserRole.objects.filter(user=obj).first()
+        if user_role:
+            return {
+                "id": user_role.role.id,
+                "name": user_role.role.name
+            }
+        return None
+
+    def get_area(self, obj):
+        user_company = UserCompany.objects.filter(user=obj).first()
+        if user_company and user_company.area:
+            return {
+                "id": user_company.area.id,
+                "name": user_company.area.name
+            }
+        return None# Si el área es nula o no existe, retorna None
