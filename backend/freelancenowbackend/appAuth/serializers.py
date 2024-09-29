@@ -1,7 +1,5 @@
 from rest_framework import serializers
 from app.models import User, Company, UserCompany, Freelancer
-from cities_light.models import City, Country
-  
     
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
@@ -35,9 +33,6 @@ class FreelancerSerializer(serializers.ModelSerializer):
         return instance
 
 class CompanySerializer(serializers.ModelSerializer):
-    country = serializers.PrimaryKeyRelatedField(queryset=Country.objects.all(), required=False)
-    city = serializers.PrimaryKeyRelatedField(queryset=City.objects.all(), required=False)
-
     class Meta:
         model = Company
         fields = [
