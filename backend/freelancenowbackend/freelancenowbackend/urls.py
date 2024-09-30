@@ -22,12 +22,11 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', LoginView.as_view(), name='login'),  # Login y autenticación por token
     path('', include('appAuth.urls')),
     path('profile/', include('appProfile.urls')),
-    path('company/', include('appCompany.urls')),
+    path('', include('appCompany.urls')),
     path('projects/', include('appProject.urls')),
 ]
