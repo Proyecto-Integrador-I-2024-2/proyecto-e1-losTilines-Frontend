@@ -1,7 +1,5 @@
 from rest_framework import serializers
 from app.models import Area, User, UserCompany, UserRole, Company
-from rest_framework import serializers
-from django.contrib.auth.models import Group
 
 class AreaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -13,15 +11,8 @@ class CompanySerializer(serializers.ModelSerializer):
         model = Company
         fields = ['id', 'name', 'tax_id', 'email', 'telephone']
 
-class RoleSerializer(serializers.ModelSerializer):
-    role_name = serializers.CharField(source='role.name')
-
-    class Meta:
-        model = UserRole
-        fields = ['role_name']
-
 class UserSerializer(serializers.ModelSerializer):
-    roles = serializers.SerializerMethodField()  
+    role = serializers.SerializerMethodField()  # Sigue siendo un campo calculado
     company = serializers.SerializerMethodField()  
     area = serializers.SerializerMethodField()
 
@@ -29,12 +20,14 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'first_name', 'last_name', 'email', 'phone_number', 'created_at', 
-            'profile_picture', 'roles', 'company', 'area'
+            'profile_picture', 'role', 'company', 'area'
         ]
 
-    def get_roles(self, obj):
-        user_roles = UserRole.objects.filter(user=obj)
-        return RoleSerializer(user_roles, many=True).data
+    def get_role(self, obj):
+        user_role = UserRole.objects.filter(user=obj).first()  # Se espera un solo rol
+        if user_role:
+            return user_role.role.name  # Retorna el nombre del rol como una cadena
+        return None
 
     def get_company(self, obj):
         user_company = UserCompany.objects.filter(user=obj).first()
@@ -47,6 +40,7 @@ class UserSerializer(serializers.ModelSerializer):
         if user_company and user_company.area:
             return AreaSerializer(user_company.area).data
         return None
+
 
 # class AreaSerializer(serializers.ModelSerializer):
 #     class Meta:
