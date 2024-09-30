@@ -8,6 +8,7 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
+from django.shortcuts import get_object_or_404
 
 class WorkerViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny] 
@@ -158,8 +159,80 @@ class WorkerViewSet(viewsets.ModelViewSet):
                 raise ValidationError("The new Project Manager is not valid.")
             
 class AreaViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny] 
+    permission_classes = [AllowAny]
     queryset = Area.objects.all()
     serializer_class = AreaSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['company', 'user']
+
+    def create(self, request, *args, **kwargs):
+        area_name = request.data.get('name')
+        company_id = request.data.get('company')
+        area_admin_id = request.data.get('user')
+
+        area = self.validate_area(area_name, company_id, area_admin_id)
+
+        return Response(AreaSerializer(area).data, status=status.HTTP_201_CREATED)
+
+    def update(self, request, *args, **kwargs):
+        area = self.get_object()
+        area_name = request.data.get('name')
+        company_id = request.data.get('company')
+        area_admin_id = request.data.get('user')
+
+        area = self.validate_area(area_name, company_id, area_admin_id, area=area)
+
+        return Response(AreaSerializer(area).data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        area = self.get_object()
+        self.delete_area_and_projects(area)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def validate_area(self, area_name, company_id, area_admin_id, area=None):
+        # Obtener el Area Admin
+        area_admin = get_object_or_404(User, pk=area_admin_id)
+        
+        # Validar si el Area Admin pertenece a la compañía
+        if not area_admin.usercompany_set.filter(company__id=company_id).exists():
+            raise ValidationError("El Area Admin debe pertenecer a la compañía especificada.")
+        
+        # Validar que el Area Admin no tenga un área asignada (a menos que sea el mismo área que se está actualizando)
+        if area_admin.usercompany_set.filter(area__isnull=False).exists() and (area is None or area_admin != area.user):
+            raise ValidationError("El Area Admin ya tiene un área asignada.")
+
+        # Validar que el nombre del área sea único
+        if area is None:  # Para creación
+            if Area.objects.filter(name=area_name, company__id=company_id).exists():
+                raise ValidationError("El nombre del área ya existe en esta compañía.")
+        else:  # Para actualización
+            if Area.objects.filter(name=area_name, company__id=company_id).exclude(id=area.id).exists():
+                raise ValidationError("El nombre del área ya existe en esta compañía.")
+
+        # Crear o actualizar el área
+        if area is None:  # Creación
+            area = Area(name=area_name, company_id=company_id, user=area_admin)
+            area.save()
+        else:  # Actualización
+            area.name = area_name
+            area.company_id = company_id
+            area.user = area_admin
+            area.save()
+
+        return area
+
+    def delete_area_and_projects(self, area):
+        # Eliminar todos los proyectos relacionados al área
+        projects = Project.objects.filter(user__usercompany__area=area)
+        projects.delete()
+
+        # Desasociar el Area Admin de su área
+        area.user.usercompany_set.filter(area=area).update(area=None)
+
+        # Desasociar a los Project Managers del área
+        project_managers = User.objects.filter(usercompany__area=area, userrole__role__name="Project Manager")
+        for pm in project_managers:
+            pm.usercompany_set.filter(area=area).update(area=None)
+
+        # Eliminar el área
+        area.delete()
