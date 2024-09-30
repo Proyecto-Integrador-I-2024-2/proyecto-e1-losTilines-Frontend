@@ -1,4 +1,4 @@
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny  # Considera cambiar a permisos más restrictivos
 from rest_framework import viewsets
 from django_filters.rest_framework import DjangoFilterBackend
 from app.models import User
@@ -6,7 +6,7 @@ from .serializers import WorkerSerializer
 from .filters import WorkerFilter 
 
 class WorkerViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny]  # Considera cambiar a IsAuthenticated para mayor seguridad
     queryset = User.objects.filter(is_active=True)
     serializer_class = WorkerSerializer
     filter_backends = [DjangoFilterBackend]

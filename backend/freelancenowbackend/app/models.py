@@ -212,16 +212,13 @@ class ProjectStatus(models.Model):
         return self.name
 
 class Project(models.Model):
-
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=2000)
     start_date = models.DateField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     budget = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.00)])
-    area = models.ForeignKey(Area, on_delete=models.CASCADE)
     file = models.FileField(upload_to='uploads/', blank=True, null=True)
     status = models.CharField(ProjectStatus, blank=True, null=True)
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="owner_project")
     profile_picture = models.URLField(blank=True, null=True)
 
     def __str__(self):
