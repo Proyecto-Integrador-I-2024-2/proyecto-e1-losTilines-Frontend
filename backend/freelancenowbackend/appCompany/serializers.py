@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from app.models import UserRole, Company, UserCompany, Project
 from app.serializers import UserSerializer
+from django.db.models import Q
 
 class RelatedProjectSerializer(serializers.ModelSerializer):
     project_manager = serializers.SerializerMethodField()
@@ -60,8 +61,8 @@ class WorkerSerializer(UserSerializer):
             user_company = obj.usercompany_set.select_related('company', 'area').first()
             if user_company and user_company.area:
                 projects = Project.objects.filter(
-                    user__usercompany__company=user_company.company,
-                    user__usercompany__area=user_company.area
+                    Q(user__usercompany__company=user_company.company, user__usercompany__area=user_company.area) |
+                    Q(user=obj)
                 ).distinct()
             else:
                 projects = Project.objects.none()
