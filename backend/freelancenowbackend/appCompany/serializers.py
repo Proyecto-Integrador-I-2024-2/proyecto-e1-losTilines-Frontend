@@ -61,11 +61,11 @@ class WorkerSerializer(UserSerializer):
             user_company = obj.usercompany_set.select_related('company', 'area').first()
             if user_company and user_company.area:
                 projects = Project.objects.filter(
-                    Q(user__usercompany__company=user_company.company, user__usercompany__area=user_company.area) |
-                    Q(user=obj)
-                ).distinct()
+                    user__usercompany__company=user_company.company, 
+                    user__usercompany__area=user_company.area
+                ).distinct() + Project.objects.filter(user=obj).distinct()
             else:
-                projects = Project.objects.none()
+                projects = Project.objects.filter(user=obj).distinct()
 
         elif role_name == 'Project Manager':
             projects = Project.objects.filter(user=obj).distinct()
