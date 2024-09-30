@@ -1,10 +1,13 @@
 from rest_framework import viewsets
 from .serializers import UserSerializer
+from app.models import User
 from rest_framework.permissions import AllowAny
 
-class WorkerViewSet(viewsets.ViewSet):
+class WorkerViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
+    queryset = User.objects.all()
     permission_classes = [AllowAny]
+
 
 # from rest_framework import generics, permissions, status
 # from app.models import Area, User, UserCompany, Project, UserRole
