@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from app.models import UserRole, Company, UserCompany, Project
+from app.models import Company, Project
 from app.serializers import UserSerializer
-from django.db.models import Q
 
 class RelatedProjectSerializer(serializers.ModelSerializer):
     project_manager = serializers.SerializerMethodField()
@@ -15,8 +14,7 @@ class RelatedProjectSerializer(serializers.ModelSerializer):
         if obj.user:
             return f"{obj.user.first_name} {obj.user.last_name}"
         return None
-
-
+ 
 class WorkerSerializer(UserSerializer):
     role = serializers.SerializerMethodField()
     company = serializers.SerializerMethodField()
@@ -63,7 +61,7 @@ class WorkerSerializer(UserSerializer):
                 projects = Project.objects.filter(
                     user__usercompany__company=user_company.company, 
                     user__usercompany__area=user_company.area
-                ).distinct() + Project.objects.filter(user=obj).distinct()
+                ).distinct().union(Project.objects.filter(user=obj).distinct())
             else:
                 projects = Project.objects.filter(user=obj).distinct()
 

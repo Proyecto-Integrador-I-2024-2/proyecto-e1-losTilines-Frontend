@@ -1,12 +1,13 @@
-from rest_framework.permissions import AllowAny 
-from django_filters.rest_framework import DjangoFilterBackend
-from app.models import User, UserRole, Project
-from django.contrib.auth.models import Group
 from .serializers import WorkerSerializer
 from .filters import WorkerFilter
+from app.models import User, UserRole, Project, Area
+from app.serializers import AreaSerializer
+from django.contrib.auth.models import Group 
+from rest_framework.permissions import AllowAny 
 from rest_framework import status, viewsets
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError 
+from rest_framework.exceptions import ValidationError
+from django_filters.rest_framework import DjangoFilterBackend
 
 class WorkerViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny] 
@@ -108,6 +109,7 @@ class WorkerViewSet(viewsets.ModelViewSet):
         current_role.save()
 
     def handle_deactivation(self, worker, request):
+
         current_role = worker.userrole_set.first()
         
         if current_role.role.name == 'Area Admin':
@@ -154,3 +156,10 @@ class WorkerViewSet(viewsets.ModelViewSet):
 
             except User.DoesNotExist:
                 raise ValidationError("The new Project Manager is not valid.")
+            
+class AreaViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny] 
+    queryset = Area.objects.all()
+    serializer_class = AreaSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['company', 'user']

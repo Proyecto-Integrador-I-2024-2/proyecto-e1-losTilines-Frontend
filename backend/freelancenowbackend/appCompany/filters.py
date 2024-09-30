@@ -1,5 +1,5 @@
 import django_filters
-from app.models import User
+from app.models import User, Area
 
 class WorkerFilter(django_filters.FilterSet):
     company = django_filters.NumberFilter(field_name='usercompany__company__id')
