@@ -9,7 +9,6 @@ from app.models import (
     UserRole, Notification, UserNotification, Company, Area, UserCompany,
     Freelancer, SkillType, Skill, FreelancerSkill, Experience, Portfolio, Comment,
     ProjectStatus, Project, ProjectFreelancer, ProjectSkill, Milestone, Deliverable, Payment,
-    Country, City
 )
 
 User = get_user_model()
