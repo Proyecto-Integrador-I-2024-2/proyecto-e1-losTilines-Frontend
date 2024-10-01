@@ -398,8 +398,6 @@ class Command(BaseCommand):
                         'start_date': start_date,
                         'user': user,
                         'budget': budget,
-                        'area': area,
-                        'company': company,
                         'status': project_statuses[i - 1].name
                     }
                 )

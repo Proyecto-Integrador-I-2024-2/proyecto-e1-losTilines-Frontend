@@ -9,6 +9,8 @@ from app.models import User, UserRole, Group, UserCompany, Freelancer
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import FreelancerFilter, WorkerFilter, CompanyFilter
 
 
 #Creacion de usuarios
@@ -17,6 +19,8 @@ class FreelancerViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(groups__name='Freelancer')
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = FreelancerFilter
 
     def perform_create(self, serializer):
         user = serializer.save()
@@ -30,6 +34,8 @@ class BusinessManagerViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(groups__name='Business Manager')
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = WorkerFilter
 
     def perform_create(self, serializer):
         user = serializer.save()
@@ -42,6 +48,8 @@ class ProjectManagerViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(groups__name='Project Manager')
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = WorkerFilter
 
     def perform_create(self, serializer):
         businessmanager = self.request.user
@@ -61,6 +69,8 @@ class AdminAreaViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(groups__name='Area Admin')
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = WorkerFilter
 
     def perform_create(self, serializer):
         businessmanager = self.request.user
@@ -81,6 +91,8 @@ class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = CompanyFilter
 
     def get_queryset(self):
         # Solo las compañías pueden ser vistas o editadas por los Business Managers
