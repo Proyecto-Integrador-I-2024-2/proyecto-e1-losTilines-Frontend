@@ -147,7 +147,7 @@ class Skill(models.Model):
 
 class FreelancerSkill(models.Model):
     freelancer = models.ForeignKey(User, on_delete=models.CASCADE)
-    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
+    skill = models.ForeignKey(Skill, on_delete=models.CASCADE, related_name='freelancerskill')
     level = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
 
     def __str__(self):

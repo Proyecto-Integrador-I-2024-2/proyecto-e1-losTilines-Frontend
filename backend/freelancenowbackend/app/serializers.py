@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import Group
-from .models import User, UserRole, Notification, UserNotification, Company, Area, UserCompany, Freelancer, Project, ProjectStatus
+from .models import User, UserRole, Notification, FreelancerSkill, UserNotification, Company, Area, UserCompany, Freelancer, Project, ProjectStatus
 
 # ---------------------- USERS ---------------------- #
 class UserSerializer(serializers.ModelSerializer):
@@ -64,3 +64,10 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta: 
         model = Project
         fields = '__all__'
+
+# ---------------Freelancer skills-----------------------#
+class FreelancerSkillSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FreelancerSkill
+        fields = '__all__'
+

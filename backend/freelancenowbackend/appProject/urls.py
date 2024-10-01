@@ -1,12 +1,12 @@
-from django.urls import path
+from django.urls import path, include
 from .views import *
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+
+router.register(r'projects', ProjectViewSet, basename="project")
+router.register(r'projectsfreelancers', ProjectFreelancerViewSet, basename="projects_freelancers")
 
 urlpatterns = [
-    path('creation/', ProjectCreateView.as_view(), name='project-creation'),
-    path('listing/businessmanager', ProjectListForManagersView.as_view(), name='listing-businessmanager'),
-    path('listing/adminarea', ProjectListForAdminView.as_view(), name='listing-adminarea'),
-    path('listing/freelancer', ProjectListForFreelancersView.as_view(), name='freelancer-listing'),
-    path('listing/', ProjectListView.as_view(), name='project-listing'),
-    path('listing/company/<int:company_id>/', ProjectByCompanyView.as_view(), name='project-listing-company'),
-    path('listing/freelancer/<int:user_id>/', ProjectByFreelancerView.as_view(), name='project-listing-freelancer'),
+    path('', include(router.urls)),
 ]

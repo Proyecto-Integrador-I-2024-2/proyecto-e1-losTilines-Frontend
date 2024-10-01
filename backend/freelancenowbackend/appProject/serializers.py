@@ -4,11 +4,9 @@ from django.core.exceptions import ValidationError
 
 # Serializador para los freelancers asociados a un proyecto
 class ProjectFreelancerSerializer(serializers.ModelSerializer):
-    freelancer = serializers.StringRelatedField()
-
     class Meta:
         model = ProjectFreelancer
-        fields = ['freelancer']
+        fields = '__all__'
 
 # Serializador principal del proyecto
 class ProjectSerializer(serializers.ModelSerializer):
@@ -17,7 +15,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ['id', 'name', 'description', 'start_date', 'budget', 'area', 'file', 'status', 'company', 'profile_picture', 'freelancers']
+        fields = ['id', 'name', 'description', 'start_date', 'budget', 'file', 'status', 'company', 'profile_picture', 'freelancers']
         read_only_fields = ['user', 'company', 'freelancers', 'status']  # Se definen como de solo lectura
 
     # Validación general del presupuesto y otras reglas del proyecto
