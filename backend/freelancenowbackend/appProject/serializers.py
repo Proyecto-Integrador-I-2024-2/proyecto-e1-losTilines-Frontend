@@ -15,7 +15,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ['id', 'name', 'description', 'start_date', 'budget', 'file', 'status', 'company', 'profile_picture', 'freelancers']
+        fields = '__all__'
         read_only_fields = ['user', 'company', 'freelancers', 'status']  # Se definen como de solo lectura
 
     # Validación general del presupuesto y otras reglas del proyecto
