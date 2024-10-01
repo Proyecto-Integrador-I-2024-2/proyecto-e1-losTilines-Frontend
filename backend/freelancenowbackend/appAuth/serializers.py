@@ -35,10 +35,7 @@ class FreelancerSerializer(serializers.ModelSerializer):
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = [
-            'tax_id', 'name', 'country', 'city', 'address', 'telephone', 'email', 
-            'description', 'industry'
-        ]  
+        fields = '__all__'  
 
     def update(self, instance, validated_data):
         instance.country = validated_data.get('country', instance.country)
