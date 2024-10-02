@@ -1,12 +1,11 @@
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
-from app.models import Skill, FreelancerSkill, Experience, Portfolio, SkillType
-from .serializers import SkillSerializer, FreelancerSkillSerializer, ExperienceSerializer, PortfolioSerializer
+from app.models import Skill, FreelancerSkill, Experience, SkillType
+from .serializers import SkillSerializer, FreelancerSkillSerializer, ExperienceSerializer
 from appAuth.permission import IsFreelancer
 from rest_framework.exceptions import ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import *
-
 
 class SkillViewSet(viewsets.ModelViewSet):
     queryset = Skill.objects.all()
@@ -37,21 +36,3 @@ class ExperienceViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
          serializer.save(freelancer=self.request.user)
-
-# Freelancer Portfolio ViewSet
-class PortfolioViewSet(viewsets.ModelViewSet):
-    queryset = Portfolio.objects.all()
-    serializer_class = PortfolioSerializer
-    permission_classes = [IsAuthenticated]
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = PortfolioFilter
-
-    def get_queryset(self):
-         # Only allow freelancers to access their own portfolios
-         return Portfolio.objects.filter(freelancer=self.request.user)
-
-    def perform_create(self, serializer):
-         serializer.save(freelancer=self.request.user)
-
-
-
