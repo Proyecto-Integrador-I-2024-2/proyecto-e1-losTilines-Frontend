@@ -123,6 +123,7 @@ class Freelancer(models.Model):
     description = models.CharField(max_length=2000, blank=True)
     country = models.CharField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
+    portfolio = models.URLField(blank=True, null=True)
     
     def __str__(self):
         return self.user.email
@@ -169,21 +170,6 @@ class Experience(models.Model):
     def __str__(self):
         return f'{self.occupation} at {self.company}'
     
-    def save(self, *args, **kwargs):
-        if not self.freelancer.groups.filter(name="Freelancer").exists():
-            raise ValueError("The user must be part of the 'freelancer' group.")
-        super().save(*args, **kwargs)
-    
-class Portfolio(models.Model):
-    date = models.DateField()
-    project_name = models.CharField(max_length=100)
-    description = models.CharField(max_length=255, null=True, blank=True)   
-    url = models.URLField()
-    freelancer = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f'{self.project_name} by {self.freelancer.first_name}'
-
     def save(self, *args, **kwargs):
         if not self.freelancer.groups.filter(name="Freelancer").exists():
             raise ValueError("The user must be part of the 'freelancer' group.")

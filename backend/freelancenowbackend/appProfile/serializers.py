@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from app.models import FreelancerSkill, Experience, Portfolio, Skill, SkillType
+from app.models import FreelancerSkill, Experience, Skill, SkillType
 
 class SkillSerializer(serializers.ModelSerializer):
     type = serializers.CharField()
@@ -45,17 +45,3 @@ class ExperienceSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("La fecha final no puede ser anterior a la fecha de inicio.")
         
         return attrs
-    
-class PortfolioSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Portfolio
-        fields = ['id', 'date', 'project_name', 'description', 'url']
-
-    def create(self, validated_data):
-        validated_data['freelancer'] = self.context['request'].user
-        return super().create(validated_data)
-
-    def validate_freelancer(self, value):
-        if not value.groups.filter(name="Freelancer").exists():
-            raise serializers.ValidationError("The user must be part of the 'freelancer' group.")
-        return value

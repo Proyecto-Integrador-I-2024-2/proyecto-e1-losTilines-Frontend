@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 
 from app.models import (
     UserRole, Notification, UserNotification, Company, Area, UserCompany,
-    Freelancer, SkillType, Skill, FreelancerSkill, Experience, Portfolio, Comment,
+    Freelancer, SkillType, Skill, FreelancerSkill, Experience, Comment,
     ProjectStatus, Project, ProjectFreelancer, ProjectSkill, Milestone, Deliverable, Payment,
 )
 
@@ -325,26 +325,6 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR(f'Error al crear experiencia: {str(e)}'))
                 continue
             experiences.append(experience)
-
-        # Crear portafolios
-        portfolios = []
-        for i, freelancer in enumerate(freelancers):
-            try:
-                portfolio, created = Portfolio.objects.get_or_create(
-                    freelancer=freelancer,
-                    date=timezone.now().date(),
-                    project_name=f'Proyecto {i+1}',
-                    url=f'http://example.com/portafolio/{i+1}',
-                    description=f'Descripción del portafolio {i+1}'
-                )
-                if created:
-                    self.stdout.write(self.style.SUCCESS(f'Portafolio "{portfolio.project_name}" para "{freelancer.email}" creado'))
-                else:
-                    self.stdout.write(self.style.WARNING(f'Portafolio "{portfolio.project_name}" ya existe para "{freelancer.email}"'))
-            except ValueError as e:
-                self.stdout.write(self.style.ERROR(f'Error al crear portafolio: {str(e)}'))
-                continue
-            portfolios.append(portfolio)
 
         # Crear comentarios
         comments = []

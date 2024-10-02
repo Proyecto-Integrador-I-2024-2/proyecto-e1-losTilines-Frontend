@@ -6,7 +6,6 @@ router = DefaultRouter()
 
 router.register(r'skills', SkillViewSet)
 router.register(r'experience', ExperienceViewSet, basename='freelancer-experience')
-router.register(r'portfolio', PortfolioViewSet, basename='freelancer-portfolio')
 
 urlpatterns = [
     path('', include(router.urls)),
