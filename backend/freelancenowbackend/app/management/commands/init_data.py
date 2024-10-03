@@ -291,7 +291,7 @@ class Command(BaseCommand):
             level = 50 + i * 10
             try:
                 freelancer_skill, created = FreelancerSkill.objects.get_or_create(
-                    freelancer=freelancer,
+                    freelancer = Freelancer.objects.get(user__email=f"freelancer1@example.com"),
                     skill=skill,
                     defaults={
                         'level': level
@@ -311,7 +311,7 @@ class Command(BaseCommand):
         for i, freelancer in enumerate(freelancers):
             try:
                 experience, created = Experience.objects.get_or_create(
-                    freelancer=freelancer,
+                    freelancer = Freelancer.objects.get(user__email=f"freelancer1@example.com"),
                     start_date=timezone.now().date(),
                     occupation=f'Ocupación {i+1}',
                     company=f'Compañía {i+1}',
@@ -332,7 +332,7 @@ class Command(BaseCommand):
             writer = project_managers[i % len(project_managers)]
             try:
                 comment, created = Comment.objects.get_or_create(
-                    freelancer=freelancer,
+                    freelancer = Freelancer.objects.get(user__email=f"freelancer1@example.com"),
                     writer=writer,
                     defaults={
                         'title': f'Título del comentario {i+1}',
@@ -378,7 +378,7 @@ class Command(BaseCommand):
                         'start_date': start_date,
                         'user': user,
                         'budget': budget,
-                        'status': project_statuses[i - 1].name
+                        'status': project_statuses[i - 1]
                     }
                 )
                 if created:
@@ -397,7 +397,7 @@ class Command(BaseCommand):
             try:
                 project_freelancer, created = ProjectFreelancer.objects.get_or_create(
                     project=project,
-                    freelancer=freelancer
+                    freelancer = Freelancer.objects.get(user__email=f"freelancer1@example.com"),
                 )
                 if created:
                     self.stdout.write(self.style.SUCCESS(f'Freelancer "{freelancer.email}" asignado al proyecto "{project.name}"'))

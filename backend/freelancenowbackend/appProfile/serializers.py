@@ -1,47 +1,24 @@
 from rest_framework import serializers
-from app.models import FreelancerSkill, Experience, Skill, SkillType
+from app.models import Freelancer, ProjectFreelancer, Project
+from app.serializers import FreelancerSkillSerializer, ExperienceSerializer, ProjectSerializer, UserSerializer
 
-class SkillSerializer(serializers.ModelSerializer):
-    type = serializers.CharField()
-
-    class Meta:
-        model = Skill
-        fields = ['id', 'name', 'is_predefined', 'type']
-
-    def create(self, validated_data):
-        skill_type_name = validated_data.pop('type')
-        
-        skill_type, created = SkillType.objects.get_or_create(name=skill_type_name)
-        
-        skill = Skill.objects.create(type=skill_type, **validated_data)
-        return skill
-
-class FreelancerSkillSerializer(serializers.ModelSerializer):
-    skill = serializers.PrimaryKeyRelatedField(queryset=Skill.objects.all(), required=False) 
+class FreelancerDetailSerializer(serializers.ModelSerializer):
+    user = UserSerializer()  
+    skills = FreelancerSkillSerializer(many=True) 
+    experience_set = ExperienceSerializer(many=True) 
+    projects = serializers.SerializerMethodField() 
 
     class Meta:
-        model = FreelancerSkill
-        fields = ['id', 'skill', 'level' ]
+        model = Freelancer
+        fields = ['id', 'user', 'description', 'country', 'city', 'portfolio', 'skills', 'experience_set', 'projects']
 
-    def validate_level(self, value):
-        if value < 0 or value > 100:
-            raise serializers.ValidationError("Skill level must be between 0 and 100.")
-        return value
-
-class ExperienceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Experience
-        fields = ['id', 'start_date', 'final_date', 'occupation', 'company', 'description']
-
-    def create(self, validated_data):
-        validated_data['freelancer'] = self.context['request'].user
-        return super().create(validated_data)
-    
-    def validate(self, attrs):
-        start_date = attrs.get('start_date')
-        final_date = attrs.get('final_date')
-
-        if final_date and start_date and final_date < start_date:
-            raise serializers.ValidationError("La fecha final no puede ser anterior a la fecha de inicio.")
+    def get_projects(self, obj):
+        # Obtener proyectos únicos asociados al freelancer (tanto de milestones como de ProjectFreelancer)
+        milestone_projects = obj.milestone_set.values_list('project', flat=True)
+        project_freelancers = ProjectFreelancer.objects.filter(freelancer=obj).values_list('project', flat=True)
         
-        return attrs
+        # Eliminar duplicados
+        project_ids = set(milestone_projects).union(set(project_freelancers))
+        
+        projects = Project.objects.filter(id__in=project_ids)
+        return ProjectSerializer(projects, many=True).data

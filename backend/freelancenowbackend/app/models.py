@@ -148,16 +148,12 @@ class Skill(models.Model):
         return self.name
 
 class FreelancerSkill(models.Model):
-    freelancer = models.ForeignKey(User, on_delete=models.CASCADE)
-    skill = models.ForeignKey(Skill, on_delete=models.CASCADE, related_name='freelancerskill')
-    level = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
+    freelancer = models.ForeignKey(Freelancer, related_name='skills', on_delete=models.CASCADE)
+    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
+    level = models.IntegerField()
 
     def __str__(self):
         return f'{self.freelancer.first_name} - {self.skill.name}'
-    def save(self, *args, **kwargs):
-        if not self.freelancer.groups.filter(name="Freelancer").exists():
-            raise ValueError("The user must be part of the 'freelancer' group.")
-        super().save(*args, **kwargs)
     
 class Experience(models.Model):
     start_date = models.DateField()
@@ -165,28 +161,21 @@ class Experience(models.Model):
     occupation = models.CharField(max_length=100)
     description = models.CharField(max_length=300, null=True, blank=True)
     company = models.CharField(max_length=100)
-    freelancer = models.ForeignKey(User, on_delete=models.CASCADE)
+    freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.occupation} at {self.company}'
-    
-    def save(self, *args, **kwargs):
-        if not self.freelancer.groups.filter(name="Freelancer").exists():
-            raise ValueError("The user must be part of the 'freelancer' group.")
-        super().save(*args, **kwargs)
 
 class Comment(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     stars = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(5.0)])
-    freelancer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='freelancer_comments')
+    freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE, related_name='freelancer_comments')
     writer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='worker_comments', null=True)
 
     def __str__(self):
         return self.title
     def save(self, *args, **kwargs):
-        if not self.freelancer.groups.filter(name="Freelancer").exists():
-            raise ValueError("This user types dont allow comments")
         if self.writer.groups.filter(name="Freelancer").exists():
             raise ValueError("You cannot comment this")
         super().save(*args, **kwargs)
@@ -205,9 +194,8 @@ class Project(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     budget = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.00)])
     file = models.FileField(upload_to='uploads/', blank=True, null=True)
-    status = models.CharField(ProjectStatus, blank=True, null=True)
+    status = models.ForeignKey(ProjectStatus, on_delete=models.CASCADE, blank=True, null=True)
     image = models.ImageField(upload_to='uploads/', blank=True, null=True)
-
 
     def __str__(self):
         return self.name
@@ -218,14 +206,10 @@ class Project(models.Model):
     
 class ProjectFreelancer(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    freelancer = models.ForeignKey(User, on_delete=models.CASCADE)
+    freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.freelancer} working on {self.project}'
-    def save(self, *args, **kwargs):
-        if not self.freelancer.groups.filter(name="Freelancer").exists():
-            raise ValueError("The user must be part of the 'freelancer' group.")
-        super().save(*args, **kwargs)
     
 class ProjectSkill(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -239,7 +223,7 @@ class Milestone(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=255, blank=True)
     due_date = models.DateField()
-    freelancer = models.ForeignKey(User, on_delete=models.CASCADE)
+    freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     file = models.FileField(upload_to='uploads/', blank=True, null=True)
 
@@ -249,10 +233,6 @@ class Milestone(models.Model):
     def clean(self):
         if self.due_date < self.project.start_date:
             raise ValidationError('The due date cannot be before the project start date.')
-    def save(self, *args, **kwargs):
-        if not self.freelancer.groups.filter(name="freelancer").exists():
-            raise ValueError("The user must be part of the 'freelancer' group.")
-        super().save(*args, **kwargs)
 
 class Deliverable(models.Model):
     name = models.CharField(max_length=100)
@@ -274,11 +254,7 @@ class Payment(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     amount = models.DecimalField(max_digits=10, decimal_places=3, validators=[MinValueValidator(0.00)])
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    freelancer = models.ForeignKey(User, on_delete=models.CASCADE)
+    freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'Payment {self.id} for Project {self.project.name}'
-    def save(self, *args, **kwargs):
-        if not self.freelancer.groups.filter(name="freelancer").exists():
-            raise ValueError("The user must be part of the 'freelancer' group.")
-        super().save(*args, **kwargs)
