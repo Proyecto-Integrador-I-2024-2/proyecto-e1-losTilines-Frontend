@@ -3,7 +3,7 @@ from .views import *
 from django.urls import path, include
 
 router = DefaultRouter()
-
+router.register(r'freelancer', FreelancerDetailViewSet)
 router.register(r'skills', SkillViewSet)
 router.register(r'experience', ExperienceViewSet, basename='freelancer-experience')
 

@@ -1,11 +1,17 @@
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from app.models import Skill, FreelancerSkill, Experience, SkillType
-from .serializers import SkillSerializer, FreelancerSkillSerializer, ExperienceSerializer
+from app.serializers import SkillSerializer, ExperienceSerializer
 from appAuth.permission import IsFreelancer
 from rest_framework.exceptions import ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import *
+from .serializers import *
+
+class FreelancerDetailViewSet(viewsets.ModelViewSet):
+    queryset = Freelancer.objects.all()
+    serializer_class = FreelancerDetailSerializer
+    permission_classes = [AllowAny]
 
 class SkillViewSet(viewsets.ModelViewSet):
     queryset = Skill.objects.all()
