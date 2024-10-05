@@ -13,7 +13,7 @@ from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import FreelancerFilter, WorkerFilter, CompanyFilter
 
-class BaseUserViewSet(viewsets.ModelViewSet):
+class BaseUserFreeViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
 
     def get_permissions(self):
@@ -31,7 +31,7 @@ class BaseUserViewSet(viewsets.ModelViewSet):
         user.groups.add(role)
         UserRole.objects.create(user=user, role=role)
 
-class FreelancerViewSet(BaseUserViewSet):
+class FreelancerViewSet(BaseUserFreeViewSet):
     queryset = User.objects.filter(groups__name='Freelancer')
     serializer_class = UserSerializer
     filterset_class = FreelancerFilter
@@ -39,7 +39,7 @@ class FreelancerViewSet(BaseUserViewSet):
     def perform_create(self, serializer):
         super().perform_create(serializer, 'Freelancer')
 
-class BusinessManagerViewSet(BaseUserViewSet):
+class BusinessManagerViewSet(BaseUserFreeViewSet):
     queryset = User.objects.filter(groups__name='Business Manager')
     serializer_class = UserSerializer
     filterset_class = WorkerFilter
