@@ -153,7 +153,7 @@ class FreelancerSkill(models.Model):
     level = models.IntegerField()
 
     def __str__(self):
-        return f'{self.freelancer.first_name} - {self.skill.name}'
+        return f'{self.freelancer.user.first_name} - {self.skill.name}'
     
 class Experience(models.Model):
     start_date = models.DateField()

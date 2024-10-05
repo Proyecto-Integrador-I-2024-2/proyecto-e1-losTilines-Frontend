@@ -86,7 +86,7 @@ class FreelancerSkillSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FreelancerSkill
-        fields = ['id', 'skill', 'level' ]
+        fields = ['id', 'freelancer', 'skill', 'level' ]
 
     def validate_level(self, value):
         if value < 0 or value > 100:
@@ -96,7 +96,7 @@ class FreelancerSkillSerializer(serializers.ModelSerializer):
 class ExperienceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Experience
-        fields = ['id', 'start_date', 'final_date', 'occupation', 'company', 'description']
+        fields = ['id', 'start_date', 'final_date', 'occupation', 'company', 'description', 'freelancer']
 
     def create(self, validated_data):
         validated_data['freelancer'] = self.context['request'].user
