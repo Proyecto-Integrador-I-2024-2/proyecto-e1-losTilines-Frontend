@@ -33,7 +33,7 @@ class IsOwnerOrReadOnly(BasePermission):
         if request.method in SAFE_METHODS:
             return True
 
-        return obj == request.user
+        return obj.user == request.user
 
 class IsBusinessManagerOrReadOnly(BasePermission):
     def has_permission(self, request, view):

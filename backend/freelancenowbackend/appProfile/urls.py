@@ -4,8 +4,9 @@ from django.urls import path, include
 
 router = DefaultRouter()
 router.register(r'freelancer', FreelancerDetailViewSet)
+# router.register(r'freelancer-skills', FreelancerSkillViewSet)
 router.register(r'skills', SkillViewSet)
-router.register(r'experience', ExperienceViewSet, basename='freelancer-experience')
+# router.register(r'experience', ExperienceViewSet, basename='freelancer-experience')
 
 urlpatterns = [
     path('', include(router.urls)),

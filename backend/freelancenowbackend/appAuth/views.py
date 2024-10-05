@@ -38,6 +38,7 @@ class FreelancerViewSet(BaseUserFreeViewSet):
 
     def perform_create(self, serializer):
         super().perform_create(serializer, 'Freelancer')
+        Freelancer.objects.create(user=serializer.save())
 
 class BusinessManagerViewSet(BaseUserFreeViewSet):
     queryset = User.objects.filter(groups__name='Business Manager')
