@@ -6,21 +6,27 @@ from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from rest_framework.decorators import action
 from app.models import User, UserRole, Group, UserCompany, Freelancer
+from app.permission import IsBusinessManager, IsBusinessManagerOrReadOnly, IsOwnerOrReadOnly
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import FreelancerFilter, WorkerFilter, CompanyFilter
 
-
-#Creacion de usuarios
-
 class FreelancerViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(groups__name='Freelancer')
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = FreelancerFilter
+
+    def get_permissions(self):
+        if self.action == 'create':
+            return [AllowAny()]
+        elif self.action in ['list', 'retrieve']:
+            return [IsAuthenticated()] 
+        elif self.action in ['update', 'partial_update']:
+            return [IsAuthenticated(), IsOwnerOrReadOnly()]
+        return super().get_permissions()
 
     def perform_create(self, serializer):
         user = serializer.save()
@@ -33,9 +39,17 @@ class FreelancerViewSet(viewsets.ModelViewSet):
 class BusinessManagerViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(groups__name='Business Manager')
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = WorkerFilter
+
+    def get_permissions(self):
+        if self.action == 'create':
+            return [AllowAny()]
+        elif self.action in ['list', 'retrieve']:
+            return [IsAuthenticated()] 
+        elif self.action in ['update', 'partial_update']:
+            return [IsAuthenticated(), IsOwnerOrReadOnly()]
+        return super().get_permissions()
 
     def perform_create(self, serializer):
         user = serializer.save()
@@ -43,78 +57,72 @@ class BusinessManagerViewSet(viewsets.ModelViewSet):
         user.groups.add(role)
         UserRole.objects.create(user=user, role=role)
 
+class BaseUserViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated, IsBusinessManager]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = WorkerFilter
 
-class ProjectManagerViewSet(viewsets.ModelViewSet):
+    def get_queryset(self):
+        # Filtrar usuarios de la misma compañía
+        business_manager = self.request.user
+        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
+        return self.queryset.filter(usercompany__company=user_company_instance.company)
+
+    def perform_create(self, serializer, role_name):
+        business_manager = self.request.user
+        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
+
+        user = serializer.save()
+        role, created = Group.objects.get_or_create(name=role_name)
+        user.groups.add(role)
+        UserRole.objects.create(user=user, role=role)
+        UserCompany.objects.create(company=user_company_instance.company, user=user)
+
+    def update(self, request, *args, **kwargs):
+        raise PermissionDenied("Updating worker is not allowed.")
+
+    def destroy(self, request, *args, **kwargs):
+        raise PermissionDenied("Deleting worker is not allowed.")
+
+class ProjectManagerViewSet(BaseUserViewSet):
     queryset = User.objects.filter(groups__name='Project Manager')
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = WorkerFilter
 
     def perform_create(self, serializer):
-        businessmanager = self.request.user
-        user_company_instance = UserCompany.objects.filter(user=businessmanager).first()
+        super().perform_create(serializer, 'Project Manager')
 
-        if not businessmanager.groups.filter(name='Business Manager').exists():
-            raise PermissionDenied("Unauthorized")
-
-        user = serializer.save()
-        role, created = Group.objects.get_or_create(name='Project Manager')
-        user.groups.add(role)
-        UserRole.objects.create(user=user, role=role)
-        UserCompany.objects.create(company=user_company_instance.company, user=user)
-
-
-class AdminAreaViewSet(viewsets.ModelViewSet):
+class AdminAreaViewSet(BaseUserViewSet):
     queryset = User.objects.filter(groups__name='Area Admin')
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = WorkerFilter
 
     def perform_create(self, serializer):
-        businessmanager = self.request.user
-        user_company_instance = UserCompany.objects.filter(user=businessmanager).first()
+        super().perform_create(serializer, 'Area Admin')
 
-        if not businessmanager.groups.filter(name='Business Manager').exists():
-            raise PermissionDenied("Unauthorized")
-
-        user = serializer.save()
-        role, created = Group.objects.get_or_create(name='Area Admin')
-        user.groups.add(role)
-        UserRole.objects.create(user=user, role=role)
-        UserCompany.objects.create(company=user_company_instance.company, user=user)
-
-
-# Company ViewSet
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsBusinessManagerOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_class = CompanyFilter
 
     def get_queryset(self):
-        # Solo las compañías pueden ser vistas o editadas por los Business Managers
-        if self.action in ['retrieve', 'update']:
-            user = self.request.user
-            if not user.groups.filter(name='Business Manager').exists():
-                raise PermissionDenied({"error": "You are not authorized to access this company information."})
+        user = self.request.user
+        if user.groups.filter(name='Business Manager').exists():
             return Company.objects.filter(usercompany__user=user)
-        return super().get_queryset()
+        return Company.objects.none()
+
+    def perform_create(self, serializer):
+        company = serializer.save()
+        UserCompany.objects.create(user=self.request.user, company=company)
 
     def perform_update(self, serializer):
-        # Solo los Business Managers pueden actualizar la información de la compañía
         user_company_instance = UserCompany.objects.filter(user=self.request.user).first()
         if not user_company_instance:
-            raise ValidationError("No company associated with this Business Manager.")
+            raise ValidationError({"error": "You are not associated with any company."})
+        
         serializer.save(company=user_company_instance.company)
 
-
 #--------------------------------------------------------------------------------------------------#
-
-#Login and logout
-
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
@@ -141,5 +149,3 @@ class LoginView(APIView):
             'user_id': user.id,
             'email': user.email
         }, status=status.HTTP_200_OK)
-    
-
