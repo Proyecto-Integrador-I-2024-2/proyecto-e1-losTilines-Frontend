@@ -83,15 +83,27 @@ class SkillSerializer(serializers.ModelSerializer):
 
 class FreelancerSkillSerializer(serializers.ModelSerializer):
     skill = serializers.PrimaryKeyRelatedField(queryset=Skill.objects.all(), required=False) 
+    skill_name = serializers.CharField(source='skill.name', read_only=True)
+
 
     class Meta:
         model = FreelancerSkill
-        fields = ['id', 'freelancer', 'skill', 'level' ]
+        fields = ['id', 'freelancer', 'skill_name', 'skill', 'level' ]
 
     def validate_level(self, value):
         if value < 0 or value > 100:
             raise serializers.ValidationError("Skill level must be between 0 and 100.")
         return value
+    
+    def create(self, validated_data):
+        user = self.context['request'].user
+        freelancer = Freelancer.objects.get(user=user)
+        validated_data['freelancer'] = freelancer
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        validated_data.pop('freelancer', None)
+        return super().update(instance, validated_data)
 
 class ExperienceSerializer(serializers.ModelSerializer):
     class Meta:
