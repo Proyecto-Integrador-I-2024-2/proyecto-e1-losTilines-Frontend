@@ -13,49 +13,39 @@ from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import FreelancerFilter, WorkerFilter, CompanyFilter
 
-class FreelancerViewSet(viewsets.ModelViewSet):
+class BaseUserViewSet(viewsets.ModelViewSet):
+    filter_backends = [DjangoFilterBackend]
+
+    def get_permissions(self):
+        if self.action == 'create':
+            return [AllowAny()]
+        elif self.action in ['list', 'retrieve']:
+            return [IsAuthenticated()]
+        elif self.action in ['update', 'partial_update']:
+            return [IsAuthenticated(), IsOwnerOrReadOnly()]
+        return super().get_permissions()
+
+    def perform_create(self, serializer, group_name):
+        user = serializer.save()
+        role, created = Group.objects.get_or_create(name=group_name)
+        user.groups.add(role)
+        UserRole.objects.create(user=user, role=role)
+
+class FreelancerViewSet(BaseUserViewSet):
     queryset = User.objects.filter(groups__name='Freelancer')
     serializer_class = UserSerializer
-    filter_backends = [DjangoFilterBackend]
     filterset_class = FreelancerFilter
 
-    def get_permissions(self):
-        if self.action == 'create':
-            return [AllowAny()]
-        elif self.action in ['list', 'retrieve']:
-            return [IsAuthenticated()] 
-        elif self.action in ['update', 'partial_update']:
-            return [IsAuthenticated(), IsOwnerOrReadOnly()]
-        return super().get_permissions()
-
     def perform_create(self, serializer):
-        user = serializer.save()
-        role, created = Group.objects.get_or_create(name='Freelancer')
-        user.groups.add(role)
-        UserRole.objects.create(user=user, role=role)
-        Freelancer.objects.create(user=user)
+        super().perform_create(serializer, 'Freelancer')
 
-
-class BusinessManagerViewSet(viewsets.ModelViewSet):
+class BusinessManagerViewSet(BaseUserViewSet):
     queryset = User.objects.filter(groups__name='Business Manager')
     serializer_class = UserSerializer
-    filter_backends = [DjangoFilterBackend]
     filterset_class = WorkerFilter
 
-    def get_permissions(self):
-        if self.action == 'create':
-            return [AllowAny()]
-        elif self.action in ['list', 'retrieve']:
-            return [IsAuthenticated()] 
-        elif self.action in ['update', 'partial_update']:
-            return [IsAuthenticated(), IsOwnerOrReadOnly()]
-        return super().get_permissions()
-
     def perform_create(self, serializer):
-        user = serializer.save()
-        role, created = Group.objects.get_or_create(name='Business Manager')
-        user.groups.add(role)
-        UserRole.objects.create(user=user, role=role)
+        super().perform_create(serializer, 'Business Manager')
 
 class BaseUserViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsBusinessManager]
