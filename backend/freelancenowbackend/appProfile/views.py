@@ -26,6 +26,36 @@ class FreelancerDetailViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         raise PermissionDenied("Deleting freelancer is not allowed.")
 
+class FreelancerSkillViewSet(viewsets.ModelViewSet):
+    queryset = FreelancerSkill.objects.all()
+    serializer_class = FreelancerSkillSerializer
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            permission_classes = [IsAuthenticated]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        try:
+            freelancer = Freelancer.objects.get(user=user)
+            serializer.save(freelancer=freelancer)
+        except Freelancer.DoesNotExist:
+            raise PermissionDenied("You must be a freelancer to add skills.")
+
+    def perform_update(self, serializer):
+        instance = self.get_object()
+        if instance.freelancer.user != self.request.user:
+            raise PermissionDenied("You can only update your own skills.")
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        if instance.freelancer.user != self.request.user:
+            raise PermissionDenied("You can only delete your own skills.")
+        instance.delete()
+
 # class FreelancerSkillViewSet(viewsets.ModelViewSet):
 #     queryset = FreelancerSkill.objects.all()
 #     serializer_class = FreelancerSkillSerializer
