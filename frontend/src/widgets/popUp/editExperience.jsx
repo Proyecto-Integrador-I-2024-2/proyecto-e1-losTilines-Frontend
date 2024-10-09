@@ -103,7 +103,7 @@ export const EditExperiencePopup = ({ open, onOpen, experiences, setExperiences 
                 <Button variant="text" color="red" onClick={() => onOpen(false)} className="mr-2">
                     Cancel
                 </Button>
-                <Button variant="gradient" color="green" onClick={handleSave}>
+                <Button variant="gradient" color="cyan" onClick={handleSave}>
                     {selectedExperience !== null ? "Save Changes" : "Add Experience"}
                 </Button>
             </DialogFooter>
