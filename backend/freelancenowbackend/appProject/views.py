@@ -1,79 +1,22 @@
-from rest_framework import generics, status
+from rest_framework import generics, status, viewsets
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from app.models import Project, Company, ProjectFreelancer, ProjectStatus, UserCompany
-from .serializers import ProjectSerializer
-
-
-# Listar todos los proyectos
-class ProjectListView(generics.ListAPIView):
-    queryset = Project.objects.all()
-    serializer_class = ProjectSerializer
-    permission_classes = [AllowAny]
-
-
-# Listar proyectos por compañía
-class ProjectByCompanyView(generics.ListAPIView):
-    serializer_class = ProjectSerializer
-    permission_classes = [AllowAny]
-
-    def get_queryset(self):
-        company_id = self.kwargs['company_id']
-        return Project.objects.filter(company_id=company_id)
-
-
-# Listar proyectos por freelancer
-class ProjectByFreelancerView(generics.ListAPIView):
-    serializer_class = ProjectSerializer
-    permission_classes = [AllowAny]
-
-    def get_queryset(self):
-        user_id = self.kwargs['user_id']
-        project_ids = ProjectFreelancer.objects.filter(freelancer_id=user_id).values_list('project_id', flat=True)
-        return Project.objects.filter(id__in=project_ids)
-
-
-# Listar proyectos para Project Managers
-class ProjectListForManagersView(generics.ListAPIView):
-    serializer_class = ProjectSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-        if not user.groups.filter(name='Project Manager').exists():
-            raise PermissionDenied("You do not have permission to view this list.")
-        return Project.objects.all()
-
-
-# Listar proyectos para Freelancers
-class ProjectListForFreelancersView(generics.ListAPIView):
-    serializer_class = ProjectSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-        if not user.groups.filter(name='Freelancer').exists():
-            raise PermissionDenied("You do not have permission to view this list.")
-        return Project.objects.filter(user=user)
-
-
-# Listar proyectos para Area Admins
-class ProjectListForAdminView(generics.ListAPIView):
-    serializer_class = ProjectSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-        if not user.groups.filter(name='Area Admin').exists():
-            raise PermissionDenied("You do not have permission to view this list.")
-        return Project.objects.all()
+from .serializers import *
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import *
 
 
 # Crear proyecto
-class ProjectCreateView(generics.CreateAPIView):
+class ProjectViewSet(viewsets.ModelViewSet):
+    queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ProjectFilter
+
+
 
     def perform_create(self, serializer):
         user = self.request.user
@@ -95,3 +38,11 @@ class ProjectCreateView(generics.CreateAPIView):
 
         # Guardar el proyecto con el usuario, la compañía y el estado inicial
         serializer.save(user=user, company=company, status=status)
+
+
+class ProjectFreelancerViewSet(viewsets.ModelViewSet):
+    queryset = ProjectFreelancer.objects.all()
+    permission_classes = [AllowAny] #Change
+    serializer_class = ProjectFreelancerSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ProjectsFreelancerFilter
