@@ -135,8 +135,12 @@ class LoginView(APIView):
             )
 
         token, created = Token.objects.get_or_create(user=user)
+        
+        user_roles = UserRole.objects.filter(user = user).select_related('role')
+        roles = [user_role.role.name for user_role in user_roles]
         return Response({
             'token': token.key,
             'user_id': user.id,
-            'email': user.email
+            'email': user.email,
+            'roles': roles
         }, status=status.HTTP_200_OK)
