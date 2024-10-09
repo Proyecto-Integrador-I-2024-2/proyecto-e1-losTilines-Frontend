@@ -23,6 +23,7 @@ import { TableWithCheckBox } from "@/widgets/tables";
 import { useState } from "react";
 
 function Dashboard() {
+
   //utils
 
   const navigateTo = useNavigate();
@@ -51,6 +52,12 @@ function Dashboard() {
 
   const { data: workersData, isLoading: workersLoading } = useWorkers();
 
+
+  /**
+   * These consts are used to create a new area. 
+   * 
+   */
+
   const handleAreaNameChange = (name) => {
     setAreaName(name);
     console.log("Nombre del área seleccionado:", name);
@@ -74,9 +81,6 @@ function Dashboard() {
       return false;
     }
   };
-
-
-  //Popup to create areea and select its area admin.
 
   const createArea = (
     <>
