@@ -1,70 +1,74 @@
 from rest_framework import serializers
-from app.models import Area, User, UserCompany, UserRole
-from appAuth.serializers import UserSerializer
-from django.contrib.auth.models import Group
+from app.models import Company, Project
+from app.serializers import UserSerializer
 
-class AreaSerializer(serializers.ModelSerializer):
+class RelatedProjectSerializer(serializers.ModelSerializer):
+    project_manager = serializers.SerializerMethodField()
+
     class Meta:
-        model = Area
-        fields = ['id', 'name', 'user']
-        
-    def validate_name(self, value):
-        business_manager = self.context['request'].user
-        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
-        
-        if user_company_instance is None:
-            raise serializers.ValidationError("No se encontró la compañía asociada con este Business Manager.")
-        
-        if Area.objects.filter(name=value, company=user_company_instance.company).exists():
-            raise serializers.ValidationError("El nombre del área debe ser único por compañía.")
-        
-        return value
+        model = Project
+        fields = ['id', 'name', 'status', 'project_manager']
 
-    def validate_user(self, value):
-        if value and not value.groups.filter(name='Area Admin').exists():
-            raise serializers.ValidationError("El usuario debe pertenecer al grupo 'Area Admin'.")
-        return value
-    
-class GroupSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Group
-        fields = ['id', 'name'] 
-
-
-class UserCompanySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserCompany
-        fields = ['id', 'company', 'user', 'area']
-    
-    def validate_user(self, value):
-        """Custom validation to ensure user is not a freelancer."""
-        if value.groups.filter(name="Freelancer").exists():
-            raise serializers.ValidationError("This user type cannot be in a company.")
-        return value
-    
-
-class UserRoleSerializer(serializers.ModelSerializer):
+    def get_project_manager(self, obj):
+        # Usamos obj directamente para acceder al usuario relacionado
+        if obj.user:
+            return f"{obj.user.first_name} {obj.user.last_name}"
+        return None
+ 
+class WorkerSerializer(UserSerializer):
     role = serializers.SerializerMethodField()
+    company = serializers.SerializerMethodField()
     area = serializers.SerializerMethodField()
+    related_projects = serializers.SerializerMethodField()
 
-    class Meta:
-        model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'phone_number', 'created_at', 'role', 'area']
+    class Meta(UserSerializer.Meta):
+        fields = UserSerializer.Meta.fields + ['role', 'company', 'area', 'related_projects']
 
     def get_role(self, obj):
-        user_role = UserRole.objects.filter(user=obj).first()
+        user_role = getattr(obj.userrole_set.first(), 'role', None)
         if user_role:
-            return {
-                "id": user_role.role.id,
-                "name": user_role.role.name
-            }
+            return user_role.name
+        return None
+
+    def get_company(self, obj):
+        user_company = obj.usercompany_set.first()
+        if user_company:
+            return user_company.company.id
         return None
 
     def get_area(self, obj):
-        user_company = UserCompany.objects.filter(user=obj).first()
+        user_company = obj.usercompany_set.first()
         if user_company and user_company.area:
-            return {
-                "id": user_company.area.id,
-                "name": user_company.area.name
-            }
-        return None# Si el área es nula o no existe, retorna None
+            return user_company.area.id
+        return None
+
+    def get_related_projects(self, obj):
+        user_role = obj.userrole_set.first()
+        if not user_role:
+            return []
+
+        role_name = user_role.role.name
+
+        if role_name == 'Business Manager':
+            companies = Company.objects.filter(user=obj)
+            projects = Project.objects.filter(
+                user__usercompany__company__in=companies
+            ).distinct()
+
+        elif role_name == 'Area Admin':
+            user_company = obj.usercompany_set.select_related('company', 'area').first()
+            if user_company and user_company.area:
+                projects = Project.objects.filter(
+                    user__usercompany__company=user_company.company, 
+                    user__usercompany__area=user_company.area
+                ).distinct().union(Project.objects.filter(user=obj).distinct())
+            else:
+                projects = Project.objects.filter(user=obj).distinct()
+
+        elif role_name == 'Project Manager':
+            projects = Project.objects.filter(user=obj).distinct()
+
+        else:
+            projects = Project.objects.none()
+
+        return RelatedProjectSerializer(projects, many=True).data
