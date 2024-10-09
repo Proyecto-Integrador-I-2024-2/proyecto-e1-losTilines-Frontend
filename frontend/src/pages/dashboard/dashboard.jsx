@@ -40,6 +40,9 @@ function Dashboard() {
 
   const user = useUser();
 
+
+  user.data && console.log("User data:", user.data);  
+
   const createAreaHook = useCreateArea();
 
   //GET DATA FROM CUSTOM HOOKS
@@ -72,7 +75,6 @@ function Dashboard() {
     }
   };
 
-  const spinner = <Spinner className=" h-8 w-8" />;
 
   //Popup to create areea and select its area admin.
 
