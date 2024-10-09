@@ -2,23 +2,33 @@ import { ListCard, ListRowWithImage } from "@/widgets/list";
 import ListRowStructure from "@/widgets/list/listRowStructure";
 import { NumberInfo } from "@/widgets/statistics/numberInfo";
 import Chart from "@/widgets/statistics/chart";
-import { Button, Card, Typography } from "@material-tailwind/react";
-import { Link } from "react-router-dom";
+import {
+  Button,
+  Card,
+  Spinner,
+  Typography,
+  Input,
+} from "@material-tailwind/react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   useUser,
   useAreas,
   useAdminAreas,
   useCreateArea,
+  useWorkers,
+  useQueryParams,
 } from "@/hooks";
-import useWorkers from "@/hooks/useWorkers";
-import { CreateArea } from "@/widgets/popUp";
-import { projectsData } from "@/data";
-import { CustomListItem } from "@/widgets/horList";
+import { PopUp } from "@/widgets/popUp";
 import { TableWithCheckBox } from "@/widgets/tables";
-import workerCompanies from "@/data/workersAreas";
 import { useState } from "react";
 
 function Dashboard() {
+  //utils
+
+  const navigateTo = useNavigate();
+  const { getParams, setParams } = useQueryParams();
+  const params = getParams();
+
   //STATES
 
   const [selectId, setSelectedId] = useState(null);
@@ -30,26 +40,16 @@ function Dashboard() {
 
   const user = useUser();
 
-  const createAreaHook = useCreateArea();
 
+  user.data && console.log("User data:", user.data);  
+
+  const createAreaHook = useCreateArea();
 
   //GET DATA FROM CUSTOM HOOKS
 
   const { data: areas, isLoading: areasLoading } = useAreas();
 
   const { data: workersData, isLoading: workersLoading } = useWorkers();
-
-  //LOGS
-
-  console.log("WORKERS: ", workersData);
-
-  console.log("USUARIO: ", user.data);
-
-  console.log("AREAS IDENTIFICADAS", areas);
-
-  console.log(sessionStorage.getItem("token"));
-
-  console.log("AREA ADMINS: ", adminAreasAvailables.data);
 
   const handleAreaNameChange = (name) => {
     setAreaName(name);
@@ -66,28 +66,48 @@ function Dashboard() {
     } else {
       alert(
         "Please selecet an area and a user." +
-        " Nombre de area:" +
-        areaName +
-        ". Id:" +
-        selectId
+          " Nombre de area:" +
+          areaName +
+          ". Id:" +
+          selectId
       );
       return false;
     }
   };
 
-  //POPUP to create areea and select its area admmin.
+
+  //Popup to create areea and select its area admin.
+
   const createArea = (
-    <CreateArea
-      description={"New area"}
-      setAreaName={handleAreaNameChange}
-      submitFunc={handleAreaCreation}
-    >
-      <TableWithCheckBox
-        content={workersData}
-        selectedId={selectId}
-        setSelectedId={setSelectedId}
-      />
-    </CreateArea>
+    <>
+      <PopUp
+        buttonDescription={"New area"}
+        title={"Create New Area"}
+        submitFunc={handleAreaCreation}
+      >
+        <div className="px-2 space-y-2">
+          <Typography>
+            Please enter the name of the new company being created
+          </Typography>
+
+          <div className="flex flex-row justify-center items-center w-full md:w-full ">
+            <Input onChange={handleAreaNameChange} label="Area name"></Input>
+          </div>
+
+          <Typography>
+            Select the user in charge of managing the area:
+          </Typography>
+        </div>
+
+        <div className=" overflow-auto h-80 ">
+          <TableWithCheckBox
+            content={workersData}
+            selectedId={selectId}
+            setSelectedId={setSelectedId}
+          />
+        </div>
+      </PopUp>
+    </>
   );
 
   return (
@@ -95,12 +115,10 @@ function Dashboard() {
       {/* Columna izquierda */}
       <section className="w-full h-96 flex flex-col md:mb-0 md:w-1/3 md:h-full md:max-h-none md:mr-6">
         <ListCard
-          numberOfItems={33}
           title={"Areas"}
-          hasAdd={true}
-          hasSeeAll={true}
-          newDialog={createArea}
-          route={"areas/"}
+          subtitle={"Areas availables"}
+          hasSeeAll={() => navigateTo("areas/")}
+          addContent={createArea}
         >
           {areas != undefined ? (
             areas.map((area, index) => (
@@ -112,7 +130,9 @@ function Dashboard() {
               />
             ))
           ) : (
-            <div>Cargando...</div>
+            <div className="flex flex-col justify-center items-center">
+              <Spinner className=" h-8 w-8" />
+            </div>
           )}
         </ListCard>
       </section>
@@ -127,9 +147,8 @@ function Dashboard() {
               <ListCard
                 title={"Workers"}
                 hasAdd={false}
-                hasSeeAll={true}
-                addDescription={"New worker"}
-                route={"workers/"}
+                addContent={false}
+                hasSeeAll={() => navigateTo("workers/")}
               >
                 {workersData != undefined ? (
                   workersData.map((worker, index) => (
@@ -141,11 +160,18 @@ function Dashboard() {
                     />
                   ))
                 ) : (
-                  <div>Cargando...</div>
+                  <div className="flex flex-col justify-center items-center">
+                    <Spinner className=" h-8 w-8" />
+                  </div>
                 )}
               </ListCard>
             </div>
-            <ListCard title={"Finance"} hasAdd={false} hasSeeAll={true} route={"finance/"}>
+            <ListCard
+              title={"Finance"}
+              hasAdd={false}
+              hasSeeAll={true}
+              route={"finance/"}
+            >
               <NumberInfo
                 description={"Total investment in projects"}
                 number={"$2.500.000"}
