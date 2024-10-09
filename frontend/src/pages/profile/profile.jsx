@@ -13,6 +13,12 @@ import {
     Tabs,
     TabsHeader,
     Tab,
+    Dialog,
+    DialogHeader,
+    DialogBody,
+    DialogFooter,
+    Input,
+    Textarea,
     Switch,
     Tooltip,
     Button,
@@ -37,35 +43,75 @@ import { GitButton } from "@/widgets/custom";
 import { usePortfolio, useUser } from "@/hooks";
 import useSkills from "@/hooks/useSkills";
 import useExperiences from "@/hooks/useExperiences";
+import { EditButton } from "@/widgets/buttons";
+import { EditExperiencePopup, EditProfilePopUp, EditSkillsPopup } from "@/widgets/popUp";
+import { defaultExperiences, defaultSkills } from "@/data";
 
 
+export function Profile() {
+    const imgFreeSrc = "/img/bruce-mars.jpeg"
+    const imgSrc = "/img/company/icesi.png";
+    // const { data: userData, isLoading: isUserLoading } = useUser();
+    // const { data: skillsData, isLoading: isSkillsLoading } = useSkills(userData.id);
+    // const { data: experiencesData, isLoading: isExperiencesLoading } = useExperiences(userData.id);
+    // const { data: portfolioData, isLoading: isPortfolioLoading } = usePortfolio(userData.id);
 
-function Profile() {
-    const { data: userData, isLoading: isUserLoading } = useUser();
-    const { data: skillsData, isLoading: isSkillsLoading } = useSkills(userData.id);
-    const { data: experiencesData, isLoading: isExperiencesLoading } = useExperiences(userData.id);
-    const { data: portfolioData, isLoading: isPortfolioLoading } = usePortfolio(userData.id);
+    const userData = {}
+    const skillsData = {}
+    const experiencesData = {}
+    const portfolioData = {}
+
+    const isUserLoading = false;
+    const isSkillsLoading = false;
+    const isExperiencesLoading = false;
+    const isPortfolioLoading = false;
+
 
     console.log("Portofolio", portfolioData)
     console.log("User", userData)
+    console.log("Skills data", skillsData)
 
-    const [isFreelancer, setIsFreelancer] = useState(false);
+    const userExample = {
+        id: 1,
+        email: "email.com",
+        first_name: "first",
+        last_name: "last",
+        phone_number: "123456",
+        role: "Freelancer",
+        description: "Happy to find a new job using Freelance Now!",
+    }
+    const { id, email, first_name, last_name, phone_number, role } = userExample;
 
 
-    console.log(skillsData)
+
+
+
+
+    // ----------------------- 
+
+    const [isFreelancer, setIsFreelancer] = useState(true);
+    const [isEditable, setIsEditable] = useState(true);
+    const [showProfilePopUp, setShowProfilePopUp] = useState(false);
+    const [showExperiencePopUp, setShowExperiencePopUp] = useState(false);
+    const [showSkillsPopUp, setShowSkillsPopUp] = useState(false);
 
     useEffect(() => {
         if (userData && userData.role) {
             setIsFreelancer(userData.role === "Freelancer");
+            // setIsFreelancer(true);
         }
     }, [userData]);
 
-    console.log(userData)
+    function handleProfilePopup() {
+        setShowProfilePopUp(pop => !pop);
+    }
+    function handleExperiencePopUp() {
+        setShowExperiencePopUp(pop => !pop);
+    }
+    function handleSkillsPopUp() {
+        setShowSkillsPopUp(pop => !pop);
+    }
 
-    const imgSrc = "/img/company/icesi.png";
-    const imgFreeSrc = "/img/bruce-mars.jpeg"
-
-    const { id, email, first_name, last_name, phone_number, role } = userData;
 
     return (
         <div className="w-full h-full">
@@ -137,11 +183,8 @@ function Profile() {
                                             </div>
                                         ),
                                     }}
-                                    action={
-                                        <Tooltip content="Edit Profile">
-                                            <PencilIcon className="h-4 w-4 cursor-pointer text-blue-gray-500" />
-                                        </Tooltip>
-                                    }
+                                    editable={isEditable}
+                                    onEdit={handleProfilePopup}
                                 />}
                                 {
                                     isPortfolioLoading ? "Loading..." : <GitButton url={portfolioData[0]?.Url} />
@@ -149,9 +192,13 @@ function Profile() {
 
                             </div>
 
-                            <div className="h-96 mb-2">
+                            <div className="h-96">
                                 {isFreelancer ?
-                                    isExperiencesLoading ? "Loading.." : <ExperienceSection experiences={experiencesData} />
+                                    isExperiencesLoading ?
+                                        "Loading.." :
+                                        <>
+                                            <ExperienceSection experiences={experiencesData} editable={isEditable} onEdit={handleExperiencePopUp} />
+                                        </>
                                     :
                                     <div className="h-full">
                                         <Typography variant="h6" color="blue-gray" className="mb-4">
@@ -175,8 +222,10 @@ function Profile() {
                             <div className="h-96">
                                 {isFreelancer ?
                                     (isSkillsLoading ? "Loading..." :
-                                        <SkillsSection sectionName={"Skills"} skills={skillsData} />) :
-                                    <SkillsSection sectionName={"Tech Stack"} />
+                                        <SkillsSection sectionName={"Skills"} skills={skillsData} editable={isEditable} onEdit={handleSkillsPopUp} />)
+                                    // <SkillsSection sectionName={"Skills"} />)
+                                    :
+                                    <SkillsSection sectionName={"Tech Stack"} editable={false} />
                                 }
                             </div>
                         </div>
@@ -197,6 +246,9 @@ function Profile() {
                     </CustomList>
                 </CardBody>
             </Card>
+            <EditProfilePopUp open={showProfilePopUp} onOpen={setShowProfilePopUp} profile={userExample} onChange={{}} />
+            <EditExperiencePopup open={showExperiencePopUp} onOpen={setShowExperiencePopUp} experiences={defaultExperiences} setExperiences={{}} />
+            <EditSkillsPopup open={showSkillsPopUp} onOpen={setShowSkillsPopUp} skills={defaultSkills} setSkills={{}} />
         </div>
     );
 }

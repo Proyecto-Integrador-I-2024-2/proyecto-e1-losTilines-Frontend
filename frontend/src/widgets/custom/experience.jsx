@@ -1,45 +1,20 @@
-import { Card, Typography, IconButton } from "@material-tailwind/react";
+import { Card, Typography, IconButton, Tooltip } from "@material-tailwind/react";
+import { PencilIcon } from "@heroicons/react/20/solid";
+import { EditButton } from "../buttons";
+import { defaultExperiences } from "@/data";
 
-const defaultExperiences = [
-    {
-        role: "Frontend Developer",
-        company: "Tech Solutions Inc.",
-        duration: "Jan 2022 - Present",
-        description:
-            "Developed and maintained user interfaces using React and Tailwind CSS. Collaborated with backend developers to integrate REST APIs and optimize performance.",
-    },
-    {
-        role: "UI/UX Designer",
-        company: "Creative Minds Studio",
-        duration: "Jun 2020 - Dec 2021",
-        description:
-            "Designed user-friendly interfaces and enhanced user experience for multiple web applications. Worked closely with clients to deliver pixel-perfect designs.",
-    },
-    {
-        role: "UI/UX Designer",
-        company: "Creative Minds Studio",
-        duration: "Jun 2020 - Dec 2021",
-        description:
-            "Designed user-friendly interfaces and enhanced user experience for multiple web applications. Worked closely with clients to deliver pixel-perfect designs.",
-    },
-    {
-        role: "Full Stack Developer",
-        company: "Innovatech",
-        duration: "Mar 2018 - May 2020",
-        description:
-            "Built full-stack web applications using Node.js, React, and PostgreSQL. Collaborated in an Agile environment, focusing on delivering new features.",
-    },
-];
-
-export function ExperienceSection({ experiences }) {
+export function ExperienceSection({ experiences, editable, onEdit }) {
 
     const experiencesToUse = experiences && experiences.length > 0 ? experiences : defaultExperiences;
 
     return (
         <div className="h-full">
-            <Typography variant="h6" color="blue-gray" className="mb-4">
-                Work Experience
-            </Typography>
+            <div className="flex flex-row items-center justify-between">
+                <Typography variant="h6" color="blue-gray" className="">
+                    Work Experience
+                </Typography>
+                {editable && (<EditButton toolTip="Edit Work Experience" onClick={onEdit} />)}
+            </div>
             <div className="space-y-6 h-full overflow-y-auto no-scrollbar">
                 {experiencesToUse.map((exp, index) => (
                     <Card key={index} shadow={true} className="p-6">
