@@ -156,14 +156,6 @@ function NavList() {
         </ListItem>
       </Typography>
       <NavListMenu />
-      <Typography
-        as="a"
-        href="#"
-        variant="small"
-        color="blue-gray"
-        className="font-medium"
-      >
-      </Typography>
     </List>
   );
 }
@@ -184,8 +176,6 @@ export function NavigationTopBar() {
       <div className="flex items-center justify-between text-blue-gray-900">
         <Link to="/">
           <Typography
-            as="a"
-            href="#"
             variant="h6"
             className="mr-4 cursor-pointer py-1.5 lg:ml-2"
           >

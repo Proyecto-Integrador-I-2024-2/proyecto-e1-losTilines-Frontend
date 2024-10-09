@@ -91,7 +91,7 @@ export function EditProfilePopUp({ profile, open, onOpen, onChange }) {
                 <Button variant="text" color="red" onClick={handleOpen} className="mr-2">
                     Cancel
                 </Button>
-                <Button variant="gradient" color="green" onClick={handleSave}>
+                <Button variant="gradient" color="cyan" onClick={handleSave}>
                     Save Changes
                 </Button>
             </DialogFooter>

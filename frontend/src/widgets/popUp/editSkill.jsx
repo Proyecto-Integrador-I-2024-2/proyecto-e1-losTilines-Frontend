@@ -51,7 +51,7 @@ export function EditSkillsPopup({ open, onOpen, skills, setSkills }) {
 
     return (
         <Dialog open={open} handler={onOpen} size="md" className="overflow-auto">
-            <DialogHeader>Editar Habilidades</DialogHeader>
+            <DialogHeader>Edit Skills</DialogHeader>
             <DialogBody divider className="max-h-96 overflow-y-auto">
                 <div className="grid grid-cols-1 gap-4">
                     {skills.map((skill, index) => (
@@ -95,8 +95,8 @@ export function EditSkillsPopup({ open, onOpen, skills, setSkills }) {
                 <Button variant="text" color="red" onClick={() => onOpen(false)} className="mr-2">
                     Cancelar
                 </Button>
-                <Button variant="gradient" color="green" onClick={handleSave}>
-                    {selectedSkill !== null ? "Guardar Cambios" : "Agregar Habilidad"}
+                <Button variant="gradient" color="cyan" onClick={handleSave}>
+                    {selectedSkill !== null ? "Save changes" : "Add skill"}
                 </Button>
             </DialogFooter>
         </Dialog>
