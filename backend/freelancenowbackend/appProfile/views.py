@@ -29,6 +29,8 @@ class FreelancerDetailViewSet(viewsets.ModelViewSet):
 class FreelancerSkillViewSet(viewsets.ModelViewSet):
     queryset = FreelancerSkill.objects.all()
     serializer_class = FreelancerSkillSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = FreelancerSkillFilter
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
