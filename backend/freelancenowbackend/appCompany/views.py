@@ -10,7 +10,7 @@ from rest_framework.exceptions import ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 
-class CompanyDetailViewSet(viewsets.ModelViewSet):
+class CompanyDetailViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanyDetailSerializer
     lookup_field = 'id' 
