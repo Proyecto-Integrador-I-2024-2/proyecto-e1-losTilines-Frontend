@@ -22,6 +22,7 @@ import {
     Switch,
     Tooltip,
     Button,
+    Spinner,
 } from "@material-tailwind/react";
 
 import {
@@ -40,9 +41,7 @@ import { CustomListItem } from "@/widgets/horList";
 import { ExperienceSection } from "@/widgets/custom";
 import { SkillsSection } from "@/widgets/custom";
 import { GitButton } from "@/widgets/custom";
-import { usePortfolio, useUser } from "@/hooks";
-import useSkills from "@/hooks/useSkills";
-import useExperiences from "@/hooks/useExperiences";
+import { useFreelancer, useUser } from "@/hooks";
 import { EditButton } from "@/widgets/buttons";
 import { EditExperiencePopup, EditProfilePopUp, EditSkillsPopup } from "@/widgets/popUp";
 import { defaultExperiences, defaultSkills } from "@/data";
@@ -51,17 +50,18 @@ import { defaultExperiences, defaultSkills } from "@/data";
 export function Profile() {
     const imgFreeSrc = "/img/bruce-mars.jpeg"
     const imgSrc = "/img/company/icesi.png";
-    // const { data: userData, isLoading: isUserLoading } = useUser();
+    const { data: userData, isLoading: isUserLoading } = useUser();
+    const { data: freelancerData, isLoading: isFreelancerLoading } = useFreelancer();
     // const { data: skillsData, isLoading: isSkillsLoading } = useSkills(userData.id);
     // const { data: experiencesData, isLoading: isExperiencesLoading } = useExperiences(userData.id);
     // const { data: portfolioData, isLoading: isPortfolioLoading } = usePortfolio(userData.id);
 
-    const userData = {}
+    // const userData = {}
     const skillsData = {}
     const experiencesData = {}
     const portfolioData = {}
 
-    const isUserLoading = false;
+    // const isUserLoading = false;
     const isSkillsLoading = false;
     const isExperiencesLoading = false;
     const isPortfolioLoading = false;
@@ -69,6 +69,7 @@ export function Profile() {
 
     console.log("Portofolio", portfolioData)
     console.log("User", userData)
+    console.log("Freelancer", freelancerData)
     console.log("Skills data", skillsData)
 
     const userExample = {
@@ -76,28 +77,35 @@ export function Profile() {
         email: "email.com",
         first_name: "first",
         last_name: "last",
-        phone_number: "123456",
+        phone_number: null,
         role: "Freelancer",
         description: "Happy to find a new job using Freelance Now!",
     }
-    const { id, email, first_name, last_name, phone_number, role } = userExample;
 
-
-
+    const { id, email, first_name, last_name, phone_number, role } = userData || userExample;
+    const {
+        description,
+        country,
+        city,
+        portfolio,
+        skills,
+        experience_set,
+        projects
+    } = freelancerData || { description: "", country: "", city: "", portfolio: [], skills: [], experience_set: [], projects: [] };
 
 
 
     // ----------------------- 
 
-    const [isFreelancer, setIsFreelancer] = useState(true);
+    const [isFreelancer, setIsFreelancer] = useState(false);
     const [isEditable, setIsEditable] = useState(true);
     const [showProfilePopUp, setShowProfilePopUp] = useState(false);
     const [showExperiencePopUp, setShowExperiencePopUp] = useState(false);
     const [showSkillsPopUp, setShowSkillsPopUp] = useState(false);
 
     useEffect(() => {
-        if (userData && userData.role) {
-            setIsFreelancer(userData.role === "Freelancer");
+        if (userData) {
+            setIsFreelancer(sessionStorage.getItem("role") === "Freelancer");
             // setIsFreelancer(true);
         }
     }, [userData]);
@@ -130,7 +138,7 @@ export function Profile() {
                                 />
                                 <div>
                                     <Typography variant="h5" color="blue-gray" className="mb-1">
-                                        {isUserLoading ? "Loading..." : `${first_name} ${last_name}`}
+                                        {isUserLoading ? <Spinner /> : `${first_name} ${last_name}`}
                                     </Typography>
                                     <Typography
                                         variant="small"
@@ -168,13 +176,13 @@ export function Profile() {
                             <div>
                                 {!isUserLoading && <ProfileInfoCard
                                     title="Profile Information"
-                                    description="Happy to find a new job using Freelance Now!"
+                                    description={description}
                                     details={{
                                         "first name": first_name,
                                         "last name": last_name,
-                                        mobile: phone_number,
+                                        mobile: phone_number || "Not provided",
                                         email: email,
-                                        location: "USA",
+                                        location: `${city}, ${country}`,
                                         social: (
                                             <div className="flex items-center gap-4">
                                                 <i className="fa-brands fa-facebook text-blue-700" />
@@ -222,8 +230,9 @@ export function Profile() {
                             <div className="h-96">
                                 {isFreelancer ?
                                     (isSkillsLoading ? "Loading..." :
-                                        <SkillsSection sectionName={"Skills"} skills={skillsData} editable={isEditable} onEdit={handleSkillsPopUp} />)
-                                    // <SkillsSection sectionName={"Skills"} />)
+                                        <SkillsSection sectionName={"Skills"} skills={skills} editable={isEditable} onEdit={handleSkillsPopUp} />)
+                                    // <SkillsSection sectionName={"Skills"} skills={skillsData} editable={isEditable} onEdit={handleSkillsPopUp} />)
+                                    // <SkillsSection sectionName={"skills"} />)
                                     :
                                     <SkillsSection sectionName={"Tech Stack"} editable={false} />
                                 }
