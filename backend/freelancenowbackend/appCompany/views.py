@@ -1,5 +1,5 @@
 from .serializers import WorkerSerializer, CompanyDetailSerializer
-from .filters import WorkerFilter
+from .filters import WorkerFilter, CompanyFilter
 from app.models import User, UserRole, Project, Area, Company
 from app.serializers import AreaSerializer
 from django.contrib.auth.models import Group 
@@ -15,6 +15,9 @@ class CompanyDetailViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CompanyDetailSerializer
     lookup_field = 'id' 
     permission_classes = [AllowAny]
+
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = CompanyFilter
 
 class WorkerViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny] 
