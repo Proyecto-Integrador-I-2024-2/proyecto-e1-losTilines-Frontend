@@ -1,6 +1,6 @@
-from .serializers import WorkerSerializer
+from .serializers import WorkerSerializer, CompanyDetailSerializer
 from .filters import WorkerFilter
-from app.models import User, UserRole, Project, Area
+from app.models import User, UserRole, Project, Area, Company
 from app.serializers import AreaSerializer
 from django.contrib.auth.models import Group 
 from rest_framework.permissions import AllowAny 
@@ -9,6 +9,12 @@ from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
+
+class CompanyDetailViewSet(viewsets.ModelViewSet):
+    queryset = Company.objects.all()
+    serializer_class = CompanyDetailSerializer
+    lookup_field = 'id' 
+    permission_classes = [AllowAny]
 
 class WorkerViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny] 
