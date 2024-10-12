@@ -198,8 +198,8 @@ class AreaViewSet(viewsets.ModelViewSet):
             raise ValidationError("El Area Admin debe pertenecer a la compañía especificada.")
         
         # Validar que el Area Admin no tenga un área asignada (a menos que sea el mismo área que se está actualizando)
-        if area_admin.usercompany_set.filter(area__isnull=False).exists() and (area is None or area_admin != area.user):
-            raise ValidationError("El Area Admin ya tiene un área asignada.")
+        # if area_admin.usercompany_set.filter(area__isnull=False).exists() and (area is None or area_admin != area.user):
+        #     raise ValidationError("El Area Admin ya tiene un área asignada.")
 
         # Validar que el nombre del área sea único
         if area is None:  # Para creación
