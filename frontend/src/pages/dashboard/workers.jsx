@@ -4,7 +4,7 @@ import { ChartCustom } from "@/widgets/statistics";
 import { TableTwoColums } from "@/widgets/tables";
 import { workerData } from "@/data";
 import { Card, Input, Spinner } from "@material-tailwind/react";
-import { useAreas, useWorkersRoleArea, useCompanyRoles, useUser, useFreelancerProjects, } from "@/hooks";
+import { useAreas, useWorkersRoleArea, useCompanyRoles, useUser } from "@/hooks";
 import { TrashIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
 

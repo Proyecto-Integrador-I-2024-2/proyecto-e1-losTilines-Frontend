@@ -34,7 +34,9 @@ const getSkillIcon = (skillName) => {
 
 
 export function SkillsSection({ sectionName, skills, editable, onEdit }) {
-    const skillsToUse = skills && skills.length > 0 ? skills : defaultSkills;
+    // const skillsToUse = skills && skills.length > 0 ? skills : defaultSkills;
+    const isThereSkills = skills && skills.length > 0
+    const skillsToUse = skills;
     return (
         <div className="h-full">
             <div className="flex flex-row items-center justify-between">
@@ -44,7 +46,7 @@ export function SkillsSection({ sectionName, skills, editable, onEdit }) {
                 {editable && (<EditButton toolTip="Edit Skills" onClick={onEdit} />)}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 h-full overflow-y-auto p-2 no-scrollbar">
-                {skillsToUse.map((skill, index) => (
+                {isThereSkills ? (skillsToUse.map((skill, index) => (
                     <Card key={index} shadow={true} className="p-6 flex items-center">
                         <div className="text-blue-500 text-3xl mr-4 pb-4">{skill.icon ? skill.icon : getSkillIcon(skill.skill_name)}</div>
                         <div className="w-full">
@@ -59,7 +61,11 @@ export function SkillsSection({ sectionName, skills, editable, onEdit }) {
                             <Progress value={skill.level} color="blue" />
                         </div>
                     </Card>
-                ))}
+                ))) : <div className="flex flex-col items-center justify-start h-full">
+                    <Typography variant="h6" color="blue-gray" className="text-center">
+                        No skills added yet
+                    </Typography>
+                </div>}
             </div>
         </div>
     );
