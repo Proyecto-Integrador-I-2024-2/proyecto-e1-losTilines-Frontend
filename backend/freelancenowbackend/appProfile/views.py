@@ -58,33 +58,37 @@ class FreelancerSkillViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("You can only delete your own skills.")
         instance.delete()
 
-# class FreelancerSkillViewSet(viewsets.ModelViewSet):
-#     queryset = FreelancerSkill.objects.all()
-#     serializer_class = FreelancerSkillSerializer
+class ExperienceViewSet(viewsets.ModelViewSet):
+    queryset = Experience.objects.all()
+    serializer_class = ExperienceSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['freelancer']
 
-#     def get_permissions(self):
-#         if self.action in ['list', 'retrieve']:
-#             return [AllowAny()]
-#         elif self.action in ['create', 'update', 'partial_update']:
-#             return [IsAuthenticated(), IsOwnerOrReadOnly()]
-#         return super().get_permissions()
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            permission_classes = [IsAuthenticated]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
 
-#     def perform_create(self, serializer):
-#         serializer.save(freelancer=self.request.user)
+    def perform_create(self, serializer):
+        user = self.request.user
+        try:
+            freelancer = Freelancer.objects.get(user=user)
+            serializer.save(freelancer=freelancer)
+        except Freelancer.DoesNotExist:
+            raise PermissionDenied("You must be a freelancer to add experiences.")
 
-#     def perform_update(self, serializer):
-#         freelancer = self.request.user.freelancer
-#         serializer.save(freelancer=freelancer)
+    def perform_update(self, serializer):
+        instance = self.get_object()
+        if instance.freelancer.user != self.request.user:
+            raise PermissionDenied("You can only update your own experiences.")
+        serializer.save()
 
-# class ExperienceViewSet(viewsets.ModelViewSet):
-#     queryset = Experience.objects.all()
-#     serializer_class = ExperienceSerializer
-#     permission_classes = [AllowAny]
-#     filter_backends = [DjangoFilterBackend]
-#     filterset_class = ExperienceFilter
-
-#     def perform_create(self, serializer):
-#         serializer.save(freelancer=self.request.user)
+    def perform_destroy(self, instance):
+        if instance.freelancer.user != self.request.user:
+            raise PermissionDenied("You can only delete your own experiences.")
+        instance.delete()
 
 class SkillViewSet(viewsets.ModelViewSet):
     queryset = Skill.objects.all()

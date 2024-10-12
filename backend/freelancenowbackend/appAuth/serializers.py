@@ -15,7 +15,6 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         return user   
 
-    
 class FreelancerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Freelancer
