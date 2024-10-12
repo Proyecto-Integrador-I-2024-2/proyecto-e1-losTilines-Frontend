@@ -27,6 +27,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("The user does not belong to any company.")
         
         # Asignar estado inicial por defecto
+        stat = ""
         if user.groups.filter(name='Project Manager').exists():
             stat = "Pending"
         else:

@@ -10,7 +10,7 @@ class FreelancerDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Freelancer
-        fields = ['id', 'user', 'description', 'country', 'city', 'portfolio', 'skills', 'experience_set', 'projects']
+        fields = ['user', 'description', 'country', 'city', 'portfolio', 'skills', 'experience_set', 'projects']
 
     def get_projects(self, obj):
         # Obtener proyectos únicos asociados al freelancer (tanto de milestones como de ProjectFreelancer)
