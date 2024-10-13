@@ -7,7 +7,6 @@ import {
 export function ListCard({
   title,
   hasSeeAll,
-  hasAdd,
   children,
   subtitle,
   addContent
@@ -25,7 +24,7 @@ export function ListCard({
         {subtitle && <Typography color="black">{subtitle}</Typography>}
       </header>
 
-      <div className="h-full overflow-auto">{children}</div>
+      <div className="h-full space-y-4 overflow-auto">{children}</div>
 
       <div className="flex flex-row justify-center space-x-4 my-4">
         {hasSeeAll && (

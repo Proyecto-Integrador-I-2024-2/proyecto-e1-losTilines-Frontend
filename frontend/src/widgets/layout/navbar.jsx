@@ -177,9 +177,7 @@ export function NavigationTopBar() {
       <div className="flex items-center justify-between text-blue-gray-900">
         <Link to="/">
           <Typography
-            as="a"
-            href="#"
-            variant="h6"
+              variant="h6"
             className="mr-4 cursor-pointer py-1.5 lg:ml-2"
           >
             Freelance Now
