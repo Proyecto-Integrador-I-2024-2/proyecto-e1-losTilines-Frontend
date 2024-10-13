@@ -1,7 +1,7 @@
 from .serializers import WorkerSerializer
 from .filters import WorkerFilter
 from app.models import User, UserRole, Project, Area
-from app.serializers import AreaSerializer
+from .serializers import AreaSerializer
 from django.contrib.auth.models import Group 
 from rest_framework.permissions import AllowAny 
 from rest_framework import status, viewsets
@@ -164,6 +164,9 @@ class AreaViewSet(viewsets.ModelViewSet):
     serializer_class = AreaSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['company', 'user']
+
+    def get_object(self):
+        return super().get_object()
 
     def create(self, request, *args, **kwargs):
         area_name = request.data.get('name')
