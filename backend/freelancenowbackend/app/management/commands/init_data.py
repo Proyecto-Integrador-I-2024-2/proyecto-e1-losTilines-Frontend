@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from app.models import (
     UserRole, Notification, UserNotification, Company, Area, UserCompany,
     Freelancer, SkillType, Skill, FreelancerSkill, Experience, Comment,
-    ProjectStatus, Project, ProjectFreelancer, ProjectSkill, Milestone, Deliverable, Payment,
+    Status, Project, ProjectFreelancer, ProjectSkill, Milestone, Deliverable, Payment,
 )
 
 User = get_user_model()
@@ -353,7 +353,7 @@ class Command(BaseCommand):
         project_statuses = []
         for i in range(1, 4):
             name = f'Estado {i}'
-            project_status, created = ProjectStatus.objects.get_or_create(name=name)
+            project_status, created = Status.objects.get_or_create(name=name)
             if created:
                 self.stdout.write(self.style.SUCCESS(f'Estado de Proyecto "{name}" creado'))
             else:

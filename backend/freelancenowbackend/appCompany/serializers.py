@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from app.models import Company, Project
-from app.serializers import UserSerializer
+from app.models import Company, Project, Area
+from app.serializers import UserSerializer, CompanySerializer
 
 class RelatedProjectSerializer(serializers.ModelSerializer):
     project_manager = serializers.SerializerMethodField()
@@ -72,3 +72,11 @@ class WorkerSerializer(UserSerializer):
             projects = Project.objects.none()
 
         return RelatedProjectSerializer(projects, many=True).data
+    
+
+class AreaSerializer(serializers.ModelSerializer):
+    company = CompanySerializer()  
+    user = UserSerializer() 
+    class Meta:
+        model = Area
+        fields = ['id', 'name', 'company', 'user']
