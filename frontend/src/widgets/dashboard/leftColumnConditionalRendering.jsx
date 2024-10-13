@@ -16,7 +16,7 @@ export function LeftColumnRows({ setSelectedId, contentInfo }) {
           // Lógica condicional basada en el rol
           if (role === "Business Manager") {
             rowName = item.name;
-            chipValue = item.user;
+            chipValue = item.user.name;
 
           } else {
             rowName = item.name;

@@ -138,7 +138,6 @@ function Dashboard() {
         setQueryParams({ freelancer: user.id });
 
         setMidColumnTitle("My milestones")
-
       }
     }
   }, [user]);
@@ -187,7 +186,7 @@ function Dashboard() {
                 hasSeeAll={() => navigateTo("workers/")}
               >
 
-              
+
 
 
 
