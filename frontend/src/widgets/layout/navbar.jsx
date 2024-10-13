@@ -41,9 +41,9 @@ function NavListMenu() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   const renderItems = nestedMenuItems.map(({ title }, key) => (
-    <a href="#" key={key}>
+    <div key={key}>
       <MenuItem>{title}</MenuItem>
-    </a>
+    </div>
   ));
 
   return (
@@ -156,14 +156,7 @@ function NavList() {
         </ListItem>
       </Typography>
       <NavListMenu />
-      <Typography
-        as="a"
-        href="#"
-        variant="small"
-        color="blue-gray"
-        className="font-medium"
-      >
-      </Typography>
+      
     </List>
   );
 }

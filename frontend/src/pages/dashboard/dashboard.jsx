@@ -1,5 +1,4 @@
-import { ListCard, ListRowWithImage } from "@/widgets/list";
-import ListRowStructure from "@/widgets/list/listRowStructure";
+import { ListCard } from "@/widgets/list";
 import { NumberInfo } from "@/widgets/statistics/numberInfo";
 import Chart from "@/widgets/statistics/chart";
 import {
@@ -10,63 +9,119 @@ import {
   Input,
 } from "@material-tailwind/react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  useUser,
-  useAreas,
-  useAdminAreas,
-  useCreateArea,
-  useWorkers,
-  useQueryParams,
-} from "@/hooks";
+import { useUser, useCreateArea, useWorkers, useQueryParams } from "@/hooks";
 import { PopUp } from "@/widgets/popUp";
 import { TableWithCheckBox } from "@/widgets/tables";
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import apiClient from "@/services/apiClient";
+import { FaIgloo } from "react-icons/fa";
+import { useQuery } from "@tanstack/react-query";
 function Dashboard() {
-
   //utils
 
   const navigateTo = useNavigate();
   const { getParams, setParams } = useQueryParams();
-  const params = getParams();
 
   //STATES
 
   const [selectId, setSelectedId] = useState(null);
-  const [areaName, setAreaName] = useState(null);
 
-  //CUSTOM HOOKS
+  //TanksQuery
 
-  const adminAreasAvailables = useAdminAreas();
+  const { data: user, isLoading: userLoading } = useUser();
 
-  const user = useUser();
-
-
-  user.data && console.log("User data:", user.data);  
+  const { data: workersData, isLoading: workersLoading } = useWorkers();
 
   const createAreaHook = useCreateArea();
 
   //GET DATA FROM CUSTOM HOOKS
 
-  const { data: areas, isLoading: areasLoading } = useAreas();
 
-  const { data: workersData, isLoading: workersLoading } = useWorkers();
+  //Define initial data loading based on the user roles
+
+  const [leftColumnTitle, setLeftColumnTitle] = useState("");
 
 
-  /**
-   * These consts are used to create a new area. 
-   * 
-   */
+  
+  const [queryParams, setQueryParams] = useState({});
+
+  const [urlFetch, setUrlFetch] = useState("");
+
+
+  useEffect(() =>{
+
+    console.log("INFO LEFT COLUMN CONTENT:", leftColumnContent)
+
+  }, [leftColumnContent])
+
+
+  const { data: dataLeftColumn, error, isLoading } = useQuery(
+    ["LeftColumnDashboard", urlFetch, queryParams],
+    async () => {
+      if (urlFetch) {
+        const response = await apiClient.get(urlFetch, {
+          params: queryParams,
+        });
+        return response.data;
+      }
+      return null;
+    },
+    {
+      enabled: !!urlFetch,
+    }
+  );
+
+
+
+
+  useEffect(() => {
+    if (!userLoading) {
+
+      if (sessionStorage.getItem("role") === "Business Manager") {
+        console.log("dentro  del useEffect");
+
+        setLeftColumnTitle("Areas");
+        setParams({ rows: "areas" });
+
+        setUrlFetch("areas/");
+        setQueryParams({ company: user.company });
+      }
+
+      if (sessionStorage.getItem("role") === "Area Admin") {
+        setLeftColumnTitle("Area projects");
+        setParams({ rows: "projects" });
+      }
+
+      if (sessionStorage.getItem("role") === "Project Manager") {
+        ("projects");
+        setParams({ rows: "projects" });
+        setLeftColumnContent(user.related_projects)
+
+      }
+
+      if (sessionStorage.getItem("role") === "Freelancer") {
+        setLeftColumnTitle("projects");
+        setParams({ rows: "projects" });
+      }
+    }
+  }, [user]);
 
   const handleAreaNameChange = (name) => {
-    setAreaName(name);
+    setLeftColumnTitle(name);
     console.log("Nombre del área seleccionado:", name);
   };
 
   const handleAreaCreation = async () => {
-    if (areaName != null && areaName.length > 0 && selectId != null) {
-      console.log("Area name: ", areaName);
-      await createAreaHook.mutateAsync({ name: areaName, user: selectId });
+    if (
+      leftColumnTitle != null &&
+      leftColumnTitle.length > 0 &&
+      selectId != null
+    ) {
+      console.log("Area name: ", leftColumnTitle);
+      await createAreaHook.mutateAsync({
+        name: leftColumnTitle,
+        user: selectId,
+      });
 
       alert("Area created succesfully.");
       return true;
@@ -74,7 +129,7 @@ function Dashboard() {
       alert(
         "Please selecet an area and a user." +
           " Nombre de area:" +
-          areaName +
+          leftColumnTitle +
           ". Id:" +
           selectId
       );
@@ -119,26 +174,10 @@ function Dashboard() {
       {/* Columna izquierda */}
       <section className="w-full h-96 flex flex-col md:mb-0 md:w-1/3 md:h-full md:max-h-none md:mr-6">
         <ListCard
-          title={"Areas"}
-          subtitle={"Areas availables"}
+          title={leftColumnTitle}
           hasSeeAll={() => navigateTo("areas/")}
           addContent={createArea}
-        >
-          {areas != undefined ? (
-            areas.map((area, index) => (
-              <ListRowStructure
-                key={index}
-                rowName={area.name}
-                statistics={""}
-                chipValue={"$1.500.230"}
-              />
-            ))
-          ) : (
-            <div className="flex flex-col justify-center items-center">
-              <Spinner className=" h-8 w-8" />
-            </div>
-          )}
-        </ListCard>
+        ></ListCard>
       </section>
 
       {/* Columna derecha */}
@@ -153,27 +192,12 @@ function Dashboard() {
                 hasAdd={false}
                 addContent={false}
                 hasSeeAll={() => navigateTo("workers/")}
-              >
-                {workersData != undefined ? (
-                  workersData.map((worker, index) => (
-                    <ListRowWithImage
-                      key={index}
-                      rowName={worker.first_name + " " + worker.last_name}
-                      description={worker.email}
-                      chipValue={worker.area}
-                    />
-                  ))
-                ) : (
-                  <div className="flex flex-col justify-center items-center">
-                    <Spinner className=" h-8 w-8" />
-                  </div>
-                )}
-              </ListCard>
+              ></ListCard>
             </div>
             <ListCard
               title={"Finance"}
               hasAdd={false}
-              hasSeeAll={true}
+              hasSeeAll={() => {}}
               route={"finance/"}
             >
               <NumberInfo

@@ -16,13 +16,16 @@ const fetchUser = async () => {
 
     var userType;
 
-    if(sessionStorage.getItem("role") === "Business Manager") userType = "business-managers";
-    if(sessionStorage.getItem("role") === "Project Manager") userType = "project-managers";
-    if(sessionStorage.getItem("role") === "Area Admin") userType = "admin-areas";
-    if(sessionStorage.getItem("role") === "Freelancer") userType = "freelancers";   
+    if(sessionStorage.getItem("role") === "Freelancer") {
+        
+        userType = "freelancer"
+    }else{
+
+        userType = "workers"
+
+    }
 
     const url  = `${userType}/${id}/`
-
     console.log("URL: " + url)
     const{data} = await apiClient.get(url);
     console.log("Despues del await ")   
