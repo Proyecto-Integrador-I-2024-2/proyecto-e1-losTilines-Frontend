@@ -8,11 +8,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { SpinnerCustom } from "../layout";
 
 export function CreateAreaPopUp() { 
+
+
+  const { data: user, isLoading: isUserLoading } = useUser();
+
   const [areaName, setAreaName] = useState("");
 
   const [selectId, setSelectedId] = useState(null);
 
-  const { data: user, isLoading: isUserLoading } = useUser();
 
   const [infoFetch, setInfoFetch] = useState("");
 
@@ -26,12 +29,18 @@ export function CreateAreaPopUp() {
   };
 
   const { data: adminsAvailable, isLoading: isLoadingAdminAvailable } =
-    useQuery(["AdminsAvailable"], async () => {
+    useQuery(["AdminsAvailable", user?.company], async () => {
       const { data } = await apiClient.get("workers", {
         params: { company: user.company, role: "Area Admin " },
       });
       return data;
-    });
+    },
+
+    {
+        enabled: !!user?.company,
+    }
+
+);
 
   const handleAreaCreation = async () => {
     if (areaName != null && areaName.length > 0 && selectId != null) {
