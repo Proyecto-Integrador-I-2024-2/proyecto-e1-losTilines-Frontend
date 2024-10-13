@@ -10,9 +10,11 @@ import {
 import { HomeIcon, Cog6ToothIcon, ChatBubbleLeftEllipsisIcon } from "@heroicons/react/24/solid";
 import { SkillsSection } from "@/widgets/custom"; 
 import { ProjectView } from "@/widgets/cards";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; // Importa useNavigate
+
 
 export function ProjectDetail() {
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col w-full h-screen gap-2 overflow-hidden bg-origin-padding"> {/* Usar overflow-hidden para evitar el scroll innecesario */}
       
@@ -26,7 +28,7 @@ export function ProjectDetail() {
                   <HomeIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
                   Project Detail
                 </Tab>
-                <Tab value="milestones">
+                <Tab value="milestones" onClick={() => navigate('/milestones')}>
                   <ChatBubbleLeftEllipsisIcon className="-mt-0.5 mr-2 inline-block h-5 w-5" />
                   Milestones
                 </Tab>
