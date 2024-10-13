@@ -10,8 +10,9 @@ class ProjectFilter(django_filters.FilterSet):
     worker = django_filters.NumberFilter(field_name='user_id', lookup_expr='icontains')
 
     area = django_filters.NumberFilter(field_name='user_id__usercompany__area_id')
-   
 
+    freelancer = django_filters.NumberFilter(field_name='projectfreelancer__freelancer__user_id')
+   
 
     class Meta:
         model = Project
