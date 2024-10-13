@@ -17,30 +17,6 @@ export function ProjectDetail() {
   const navigate = useNavigate();
   return (
     <div className="flex flex-col w-full h-screen gap-2 overflow-hidden bg-origin-padding"> {/* Usar overflow-hidden para evitar el scroll innecesario */}
-      
-      {/* Sección 1: Navegación */}
-      <div className="h-auto pt-5 pr-5 pl-5 justify-center items-center"> {/* flex para alinearlo en una fila */}
-        <Card className="border border-blue-gray-100 shadow-sm p-2 w-full"> {/* flex-grow para que ocupe todo el ancho */}
-          <CardBody className="p-2"> {/* Reducir padding interno */}
-            <Tabs value="details">
-              <TabsHeader>
-                <Tab value="details">
-                  <HomeIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
-                  Project Detail
-                </Tab>
-                <Tab value="milestones" onClick={() => navigate('/milestones')}>
-                  <ChatBubbleLeftEllipsisIcon className="-mt-0.5 mr-2 inline-block h-5 w-5" />
-                  Milestones
-                </Tab>
-                <Tab value="board">
-                  <Cog6ToothIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
-                  Board
-                </Tab>
-              </TabsHeader>
-            </Tabs>
-          </CardBody>
-        </Card>
-      </div>
 
       {/* Sección 2 y 3: Información del Proyecto y Habilidades Requeridas en dos columnas */}
       <div className="flex w-full flex-1 p-5 pb-5"> {/* flex-1 para ocupar el espacio restante */}

@@ -53,13 +53,13 @@ class FreelancerSerializer(serializers.ModelSerializer):
         fields = ['user', 'description', 'country', 'city']
 
 # ---------------------- PROJECTS ---------------------- #
-class ProjectStatusSerializer(serializers.ModelSerializer):
+class StatusSerializer(serializers.ModelSerializer):
     class Meta: 
-        model = ProjectStatus
+        model = Status
         fields = ['id', 'name']
 
 class ProjectSerializer(serializers.ModelSerializer):
-    status = ProjectStatusSerializer()  
+    status = StatusSerializer()  
 
     class Meta:
         model = Project

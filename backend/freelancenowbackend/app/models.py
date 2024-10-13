@@ -181,7 +181,7 @@ class Comment(models.Model):
         super().save(*args, **kwargs)
 
 # ---------------------- PROJECTS ---------------------- #
-class ProjectStatus(models.Model):
+class Status(models.Model):
     name = models.CharField(max_length=30, unique=True)
 
     def __str__(self):
@@ -194,7 +194,7 @@ class Project(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     budget = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.00)])
     file = models.FileField(upload_to='uploads/', blank=True, null=True)
-    status = models.ForeignKey(ProjectStatus, on_delete=models.CASCADE, blank=True, null=True)
+    status = models.ForeignKey(Status, on_delete=models.CASCADE, blank=True, null=True)
     image = models.ImageField(upload_to='uploads/', blank=True, null=True)
 
     def __str__(self):
@@ -226,6 +226,7 @@ class Milestone(models.Model):
     freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     file = models.FileField(upload_to='uploads/', blank=True, null=True)
+    status = models.ForeignKey(Status, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
         return self.name
