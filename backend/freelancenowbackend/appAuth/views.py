@@ -87,6 +87,7 @@ class ProjectManagerViewSet(BaseUserViewSet):
 
     def perform_create(self, serializer):
         super().perform_create(serializer, 'Project Manager')
+        User.objects.create(user=serializer.save())
 
 class AdminAreaViewSet(BaseUserViewSet):
     queryset = User.objects.filter(groups__name='Area Admin')
@@ -94,6 +95,7 @@ class AdminAreaViewSet(BaseUserViewSet):
 
     def perform_create(self, serializer):
         super().perform_create(serializer, 'Area Admin')
+        User.objects.create(user=serializer.save())
 
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()

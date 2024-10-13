@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from app.models import Company, Project, Area, ProjectSkill, Freelancer
-from app.serializers import UserSerializer, CompanySerializer, ProjectSerializer
+from app.serializers import UserSerializer, ProjectSerializer
 from django.db.models import Count, Avg
 
 class FreelancerSerializer(serializers.ModelSerializer):
@@ -125,3 +125,10 @@ class WorkerSerializer(UserSerializer):
             projects = Project.objects.none()
 
         return RelatedProjectSerializer(projects, many=True).data
+
+class AreaSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    company = CompanyDetailSerializer()
+    class Meta:
+        model = Area
+        fields = ['id', 'name', 'company', 'user']
