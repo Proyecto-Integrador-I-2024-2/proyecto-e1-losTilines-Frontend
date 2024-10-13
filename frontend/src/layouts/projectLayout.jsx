@@ -4,7 +4,7 @@ import { NavigationTopBar } from "@/widgets/layout";
 
 export function ProjectLayout() {
   return (
-    <div className="w-full h-full">
+    <div className="flex flex-col min-h-screen h-screen md:h-screen  overflow">
       <NavigationTopBar />
 
       <Routes>
