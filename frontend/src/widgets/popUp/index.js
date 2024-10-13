@@ -1,1 +1,1 @@
-export * from  "@/widgets/popUp/createArea"
+export * from  "@/widgets/popUp/popUp"

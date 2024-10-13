@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from app.models import Company, Project, ProjectSkill, Freelancer
-from app.serializers import UserSerializer, ProjectSerializer
+from app.models import Company, Project, Area, ProjectSkill, Freelancer
+from app.serializers import UserSerializer, CompanySerializer, ProjectSerializer
 from django.db.models import Count, Avg
 
 class FreelancerSerializer(serializers.ModelSerializer):

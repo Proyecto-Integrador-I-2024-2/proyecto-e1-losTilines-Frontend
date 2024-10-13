@@ -2,7 +2,7 @@ from rest_framework import generics, status, viewsets
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from app.models import Project, Company, ProjectFreelancer, ProjectStatus, UserCompany
+from app.models import Project, Company, ProjectFreelancer, Status, UserCompany
 from .serializers import *
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import *
@@ -27,12 +27,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("The user does not belong to any company.")
         
         # Asignar estado inicial por defecto
-        stat = ""
-        if user.groups.filter(name='Project Manager').exists():
-            stat = "Pending"
-        else:
-            stat = "Started"
-        status, _ = ProjectStatus.objects.get_or_create(name=stat)
+        status, _ = Status.objects.get_or_create(name="Started")  # Obtiene o crea el estado "Started"
 
         # Guardar el proyecto con el usuario, la compañía y el estado inicial
         serializer.save(user=user, status=status)
