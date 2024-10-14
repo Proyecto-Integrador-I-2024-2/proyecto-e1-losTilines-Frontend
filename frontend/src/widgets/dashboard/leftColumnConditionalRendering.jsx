@@ -16,11 +16,11 @@ export function LeftColumnRows({ setSelectedId, contentInfo }) {
           // Lógica condicional basada en el rol
           if (role === "Business Manager") {
             rowName = item.name;
-            chipValue = item.user.name;
+            chipValue = `${item.user.email}`
 
           } else {
             rowName = item.name;
-            chipValue = item.budget;
+            chipValue = `$ ${item.budget}`;
             chipValue2 = item.status;
           }
 

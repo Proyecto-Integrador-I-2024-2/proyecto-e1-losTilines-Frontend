@@ -3,13 +3,20 @@ import { NumberInfo } from "@/widgets/statistics/numberInfo";
 import Chart from "@/widgets/statistics/chart";
 import { Button, Card, Spinner } from "@material-tailwind/react";
 import { Link, useNavigate } from "react-router-dom";
-import { useUser, useCreateArea, useWorkers, useQueryParams } from "@/hooks";
+import {
+  useUser,
+  useCreateArea,
+  useWorkers,
+  useQueryParams,
+  useCustomFethc,
+} from "@/hooks";
 import { useState, useEffect } from "react";
 import apiClient from "@/services/apiClient";
 import { useQuery } from "@tanstack/react-query";
 import { CreateAreaPopUp } from "@/widgets/areaWidgets";
 import ListRowStructure from "@/widgets/list/listRowStructure";
-import { LeftColumnRows } from "@/widgets/dashboard";
+import { LeftColumnRows, MidColumnRows } from "@/widgets/dashboard";
+import { SpinnerCustom } from "@/widgets/layout";
 function Dashboard() {
   //Utils
 
@@ -21,6 +28,8 @@ function Dashboard() {
   const { data: user, isLoading: userLoading } = useUser();
 
   const createAreaHook = useCreateArea();
+
+  const role = sessionStorage.getItem("role");
 
   //TanksQuery
 
@@ -34,27 +43,25 @@ function Dashboard() {
 
   const [urlFetchMidColumn, setUrlFetchMidColumn] = useState("");
 
-  const [midColumnTitle, setMidColumnTitle]= useState("");
+  const [midColumnTitle, setMidColumnTitle] = useState("");
+
+  const fetchIdenfierMidColumn =
+    role === "Business Manager"
+      ? "Workers"
+      : role === "Area Admin"
+      ? "Workers"
+      : role === "Project Manager"
+      ? "FreelancersHired"
+      : "Milestones";
 
   const {
     data: dataMidColumn,
     error: midColumnError,
     isLoading: isLoadingMidColumn,
-  } = useQuery(
-    ["MidColumnDashboard", urlFetchMidColumn, queryParamsMidColumn],
-    async () => {
-      if (urlFetchMidColumn) {
-        const response = await apiClient.get(urlFetchMidColumn, {
-          params: queryParamsMidColumn,
-        });
-        return response.data;
-      }
-      return null;
-    },
-
-    {
-      enabled: !!urlFetchMidColumn,
-    }
+  } = useCustomFethc(
+    fetchIdenfierMidColumn,
+    urlFetchMidColumn,
+    queryParamsMidColumn
   );
 
   /**
@@ -71,32 +78,18 @@ function Dashboard() {
 
   const [leftColumnTitle, setLeftColumnTitle] = useState("");
 
+  const fetchIdenfierLeftColum =
+    role === "Business Manager" ? "Areas" : "projects";
+
   const {
     data: dataLeftColumn,
     error: errorLeftColumn,
     isLoading: isLoadingLeftColumn,
-  } = useQuery(
-    ["LeftColumnDashboard", urlFetch, queryParams],
-    async () => {
-      if (urlFetch) {
-        const response = await apiClient.get(urlFetch, {
-          params: queryParams,
-        });
-        return response.data;
-      }
-      return null;
-    },
-    {
-      enabled: !!urlFetch,
-    }
-  );
-
-  //Conditional render based on user role
+  } = useCustomFethc(fetchIdenfierLeftColum, urlFetch, queryParams);
 
   useEffect(() => {
     if (!userLoading) {
       if (sessionStorage.getItem("role") === "Business Manager") {
-
         setLeftColumnTitle("Areas");
         setParams({ rows: "areas" });
 
@@ -105,7 +98,7 @@ function Dashboard() {
 
         setUrlFetchMidColumn("workers/");
         setQueryparamsMidColum({ company: user.company });
-        setMidColumnTitle("Workers")
+        setMidColumnTitle("Workers");
       }
 
       if (sessionStorage.getItem("role") === "Area Admin") {
@@ -116,8 +109,7 @@ function Dashboard() {
 
         setUrlFetchMidColumn("workers/");
         setQueryparamsMidColum({ area: user.area });
-        setMidColumnTitle(`${user.area}'s workers`)
-
+        setMidColumnTitle(`Area workers`);
       }
 
       if (sessionStorage.getItem("role") === "Project Manager") {
@@ -127,8 +119,7 @@ function Dashboard() {
         setQueryParams({ worker: user.id });
 
         //Falta definir la ruta de fetch para MidColumn
-        setMidColumnTitle("Hired freelancers")
-
+        setMidColumnTitle("Hired freelancers");
       }
 
       if (sessionStorage.getItem("role") === "Freelancer") {
@@ -137,7 +128,7 @@ function Dashboard() {
         setUrlFetch("projects/");
         setQueryParams({ freelancer: user.id });
 
-        setMidColumnTitle("My milestones")
+        setMidColumnTitle("My milestones");
       }
     }
   }, [user]);
@@ -155,10 +146,17 @@ function Dashboard() {
       <section className="w-full h-96 flex flex-col md:mb-0 md:w-1/3 md:h-full md:max-h-none md:mr-6">
         <ListCard
           title={leftColumnTitle}
-          hasSeeAll={() => navigateTo("areas/")}
+          hasSeeAll={
+            sessionStorage.getItem("role") === "Business Manager"
+              ? () => navigateTo("areas/")
+              : () => navigateTo("projects/")
+          }
           addContent={
-            <CreateAreaPopUp
-            />
+            sessionStorage.getItem("role") === "Business Manager" ? (
+              <CreateAreaPopUp />
+            ) : (
+              false
+            )
           }
         >
           {isLoadingLeftColumn ? (
@@ -176,33 +174,29 @@ function Dashboard() {
 
       <div className="flex flex-col  md:w-2/3  ">
         <section className="flex flex-col h-auto min-h-0 w-full mb-2 my-4 md:my-0 md:flex-row md:h-1/2  ">
-          {/* Aquí iría el contenido para trabajadores y finanzas */}
-
-          <div className="flex flex-col h-auto w-full md:space-x-6  md:flex-row  md:h-full">
+          {/*MidColumn section */}
+          <section className="flex flex-col h-auto w-full md:space-x-6  md:flex-row  md:h-full">
             <div className="h-96 my-4 md:my-0 md:h-full md:w-full">
               <ListCard
                 title={midColumnTitle}
                 addContent={false}
                 hasSeeAll={() => navigateTo("workers/")}
               >
+                {!isLoadingMidColumn? (
 
+                  <MidColumnRows contentInfo={dataMidColumn} />
 
-
-
+                ) : (<SpinnerCustom/>)}
 
               </ListCard>
             </div>
-            <ListCard
-              title={"Finance"}
-              hasAdd={false}
-              hasSeeAll={() => {}}
-            >
+            <ListCard title={"Finance"} hasAdd={false} hasSeeAll={() => {}}>
               <NumberInfo
                 description={"Total investment in projects"}
                 number={"$2.500.000"}
               />
             </ListCard>
-          </div>
+          </section>
         </section>
 
         {/* Statistics content */}

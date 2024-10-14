@@ -15,7 +15,7 @@ export function ListRowStructure({
   setSelected
 }) {
   return (
-    <ListItem className="flex-row justify-between">
+    <ListItem className="flex flex-col justify-start items-start md:flex-row md:justify-between">
       <div className="flex flex-col justify-start">
         <Typography color="black" variant="lead">
           { rowName !=  undefined? rowName :"No rowname assigned"  }
@@ -27,16 +27,19 @@ export function ListRowStructure({
         {chipValue && (
           <Chip
             variant="ghost"
-            className="w-28 flex items-center justify-center"
+            className="flex items-center justify-center"
             size="lg"
             value={chipValue}
           />
         )}
 
         {chipValue2 && (
+
+          
+
           <Chip
             variant="ghost"
-            className="w-28 flex items-center justify-center"
+            className=" flex items-center justify-center"
             size="lg"
             value={chipValue2}
           />

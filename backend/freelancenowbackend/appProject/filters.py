@@ -7,7 +7,7 @@ print(connection.queries)
 
 class ProjectFilter(django_filters.FilterSet):
     #Proyectos de un WORKER
-    worker = django_filters.NumberFilter(field_name='user_id', lookup_expr='icontains')
+    worker = django_filters.NumberFilter(field_name='user_id')
 
     area = django_filters.NumberFilter(field_name='user_id__usercompany__area_id')
 

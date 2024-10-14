@@ -30,8 +30,8 @@ export function CreateAreaPopUp() {
 
   const { data: adminsAvailable, isLoading: isLoadingAdminAvailable } =
     useQuery(["AdminsAvailable", user?.company], async () => {
-      const { data } = await apiClient.get("workers", {
-        params: { company: user.company, role: "Area Admin " },
+      const { data } = await apiClient.get("admin-areas/", {
+        params: { area: "none" },
       });
       return data;
     },
