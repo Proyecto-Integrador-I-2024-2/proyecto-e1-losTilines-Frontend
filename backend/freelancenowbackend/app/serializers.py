@@ -9,6 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'email', 'first_name', 'last_name', 'phone_number', 'created_at', 'profile_picture', 'is_active', 'is_staff']
 
 class UserRoleSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
     role_name = serializers.CharField(source='role.name')
 
     class Meta:
