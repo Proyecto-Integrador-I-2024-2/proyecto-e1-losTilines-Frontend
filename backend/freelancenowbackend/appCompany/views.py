@@ -1,6 +1,6 @@
-from .serializers import WorkerSerializer
-from .filters import WorkerFilter
-from app.models import User, UserRole, Project, Area
+from .serializers import WorkerSerializer, CompanyDetailSerializer
+from .filters import WorkerFilter, CompanyFilter
+from app.models import User, UserRole, Project, Area, Company
 from .serializers import AreaSerializer
 from django.contrib.auth.models import Group 
 from rest_framework.permissions import AllowAny 
@@ -9,6 +9,15 @@ from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
+
+class CompanyDetailViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Company.objects.all()
+    serializer_class = CompanyDetailSerializer
+    lookup_field = 'id' 
+    permission_classes = [AllowAny]
+
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = CompanyFilter
 
 class WorkerViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny] 
@@ -201,8 +210,8 @@ class AreaViewSet(viewsets.ModelViewSet):
             raise ValidationError("El Area Admin debe pertenecer a la compañía especificada.")
         
         # Validar que el Area Admin no tenga un área asignada (a menos que sea el mismo área que se está actualizando)
-        if area_admin.usercompany_set.filter(area__isnull=False).exists() and (area is None or area_admin != area.user):
-            raise ValidationError("El Area Admin ya tiene un área asignada.")
+        # if area_admin.usercompany_set.filter(area__isnull=False).exists() and (area is None or area_admin != area.user):
+        #     raise ValidationError("El Area Admin ya tiene un área asignada.")
 
         # Validar que el nombre del área sea único
         if area is None:  # Para creación

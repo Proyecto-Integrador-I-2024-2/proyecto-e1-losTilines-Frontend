@@ -1,5 +1,5 @@
 import django_filters
-from app.models import Skill, Experience, User
+from app.models import Skill, FreelancerSkill
 
 class SkillFilter(django_filters.FilterSet):
     user = django_filters.NumberFilter(field_name='freelancerskill__freelancer__id', lookup_expr='icontains')
@@ -8,9 +8,9 @@ class SkillFilter(django_filters.FilterSet):
         model = Skill
         fields = ['user']
 
-class ExperienceFilter(django_filters.FilterSet):
-    user = django_filters.NumberFilter(field_name='freelancer_id')
+class FreelancerSkillFilter(django_filters.FilterSet):
+    user = django_filters.NumberFilter(field_name='freelancer__id', lookup_expr='icontains')
 
     class Meta:
-        model = Experience
+        model = FreelancerSkill
         fields = ['user']
