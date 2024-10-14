@@ -119,7 +119,7 @@ class UserCompany(models.Model):
 
 # ---------------------- FREELANCERS ---------------------- #
 class Freelancer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     description = models.CharField(max_length=2000, blank=True)
     country = models.CharField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)

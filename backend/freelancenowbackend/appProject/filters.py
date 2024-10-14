@@ -1,11 +1,9 @@
 import django_filters
 from app.models import Project, ProjectFreelancer
 
-
 class ProjectFilter(django_filters.FilterSet):
     #Proyectos de un WORKER
-    worker = django_filters.NumberFilter(field_name='user_id', lookup_expr='icontains')
-
+    worker = django_filters.NumberFilter(field_name='user_id')
 
     class Meta:
         model = Project
