@@ -12,6 +12,12 @@ from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import FreelancerFilter, WorkerFilter, CompanyFilter
+from app.serializers import UserRoleSerializer
+
+class UserRoleViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = UserRole.objects.all()
+    permission_classes = [AllowAny]
+    serializer_class = UserRoleSerializer
 
 class BaseUserFreeViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
