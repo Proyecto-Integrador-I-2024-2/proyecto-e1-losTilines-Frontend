@@ -1,5 +1,5 @@
 import django_filters
-from app.models import User, Area
+from app.models import User, Company
 
 class WorkerFilter(django_filters.FilterSet):
     company = django_filters.NumberFilter(field_name='usercompany__company__id')
@@ -9,3 +9,10 @@ class WorkerFilter(django_filters.FilterSet):
     class Meta:
         model = User
         fields = ['company', 'role', 'area']
+
+class CompanyFilter(django_filters.FilterSet):
+    userId = django_filters.NumberFilter(field_name='usercompany__user_id', lookup_expr='exact')
+
+    class Meta:
+        model = Company
+        fields = ['userId']

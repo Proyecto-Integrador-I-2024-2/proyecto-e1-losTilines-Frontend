@@ -12,6 +12,12 @@ from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import FreelancerFilter, WorkerFilter, CompanyFilter
+from app.serializers import UserRoleSerializer
+
+class UserRoleViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = UserRole.objects.all()
+    permission_classes = [AllowAny]
+    serializer_class = UserRoleSerializer
 
 class BaseUserFreeViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
@@ -81,6 +87,7 @@ class ProjectManagerViewSet(BaseUserViewSet):
 
     def perform_create(self, serializer):
         super().perform_create(serializer, 'Project Manager')
+        User.objects.create(user=serializer.save())
 
 class AdminAreaViewSet(BaseUserViewSet):
     queryset = User.objects.filter(groups__name='Area Admin')
@@ -88,6 +95,7 @@ class AdminAreaViewSet(BaseUserViewSet):
 
     def perform_create(self, serializer):
         super().perform_create(serializer, 'Area Admin')
+        User.objects.create(user=serializer.save())
 
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()

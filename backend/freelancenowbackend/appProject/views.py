@@ -7,7 +7,6 @@ from .serializers import *
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import *
 
-
 # Crear proyecto
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
@@ -16,14 +15,10 @@ class ProjectViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = ProjectFilter
 
-
-
     def perform_create(self, serializer):
         user = self.request.user
-
         # Verificar si el usuario pertenece al grupo 'Project Manager' o 'Area Admin'
-        if not (user.groups.filter(name='Project Manager').exists() or 
-                user.groups.filter(name='Area Admin').exists()):
+        if (user.groups.filter(name='Freelancer').exists()):
             raise PermissionDenied("You do not have permission to create a project.")
 
         # Obtener la compañía asociada al usuario
@@ -31,14 +26,11 @@ class ProjectViewSet(viewsets.ModelViewSet):
         if user_company is None:
             raise PermissionDenied("The user does not belong to any company.")
         
-        company = user_company.company  # Obtén la compañía de la relación UserCompany
-
         # Asignar estado inicial por defecto
         status, _ = Status.objects.get_or_create(name="Started")  # Obtiene o crea el estado "Started"
 
         # Guardar el proyecto con el usuario, la compañía y el estado inicial
-        serializer.save(user=user, company=company, status=status)
-
+        serializer.save(user=user, status=status)
 
 class ProjectFreelancerViewSet(viewsets.ModelViewSet):
     queryset = ProjectFreelancer.objects.all()
