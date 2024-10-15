@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from app.models import Project, ProjectFreelancer
+from app.models import Project, ProjectFreelancer, Milestone
 from django.core.exceptions import ValidationError
+from app.serializers import FreelancerSerializer
 
 # Serializador para los freelancers asociados a un proyecto
 class ProjectFreelancerSerializer(serializers.ModelSerializer):
@@ -22,4 +23,19 @@ class ProjectSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if 'budget' in data and data['budget'] < 0:
             raise serializers.ValidationError("Budget must be a positive value.")
+        return data
+    
+
+class MilestoneSerializer(serializers.ModelSerializer):
+    freelancer = FreelancerSerializer(read_only=True)  # Rellenar automáticamente con el usuario actual
+    project = ProjectSerializer(read_only=True)  # Lo llenaremos en el viewset
+
+    class Meta:
+        model = Milestone
+        fields = '__all__'
+        read_only_fields = ['freelancer', 'project', 'due_date']
+
+    # Validar el presupuesto u otras reglas de milestone si es necesario
+    def validate(self, data):
+        # Puedes agregar más validaciones aquí si lo necesitas
         return data
