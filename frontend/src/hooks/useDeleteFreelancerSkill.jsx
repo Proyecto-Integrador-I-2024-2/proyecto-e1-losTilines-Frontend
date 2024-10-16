@@ -31,4 +31,4 @@ export const useDeleteFreelancerSkill = () => {
     });
 }
 
-export default useDeleteFreelancerExperience;
+export default useDeleteFreelancerSkill;
