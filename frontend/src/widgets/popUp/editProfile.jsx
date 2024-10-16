@@ -18,7 +18,6 @@ export function EditProfilePopUp({ profile, open, onOpen, onChange }) {
     const [formData, setFormData] = useState(
         profile
     );
-    const { data, isLoading, error, refetch } = onChange(formData);
 
 
     const handleOpen = () => onOpen((prev) => !prev);
@@ -30,14 +29,14 @@ export function EditProfilePopUp({ profile, open, onOpen, onChange }) {
 
     const handleSave = () => {
         // Aquí puedes agregar la lógica para guardar los datos
-        refetch();
+        onChange(formData);
         console.log("Datos guardados:", formData);
-        setOpen(false);
+        onOpen((prev) => !prev);
     };
 
     return (
         <Dialog open={open} handler={handleOpen} size="md">
-            <DialogHeader className="text-xl font-semibold text-center">Edit Your Profile</DialogHeader>
+            <DialogHeader>Edit Your Profile</DialogHeader>
             <DialogBody divider>
                 <div className="grid gap-6">
                     {/* First Name */}

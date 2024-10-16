@@ -41,7 +41,7 @@ import { CustomListItem } from "@/widgets/horList";
 import { ExperienceSection } from "@/widgets/custom";
 import { SkillsSection } from "@/widgets/custom";
 import { GitButton } from "@/widgets/custom";
-import { useCompany, useEditWorkerProfile, useFreelancer, useUser } from "@/hooks";
+import { useCompany, useDeleteFreelancerExperience, useEditFreelancerExperience, useEditWorkerProfile, useFreelancer, useUser } from "@/hooks";
 import { EditButton } from "@/widgets/buttons";
 import { EditExperiencePopup, EditProfilePopUp, EditSkillsPopup } from "@/widgets/popUp";
 import { defaultExperiences, defaultSkills } from "@/data";
@@ -50,9 +50,9 @@ import { defaultExperiences, defaultSkills } from "@/data";
 export function Profile() {
     const imgFreeSrc = "/img/bruce-mars.jpeg"
     const imgSrc = "/img/company/icesi.png";
-    const { data: userData, isLoading: isUserLoading } = useUser();
-    const { data: freelancerData, isLoading: isFreelancerLoading } = useFreelancer();
-    const { data: companyData, isLoading: isCompanyLoading } = useCompany();
+    const { data: userData, isLoading: isUserLoading, refetch: userRefetch } = useUser();
+    const { data: freelancerData, isLoading: isFreelancerLoading, refetch: freelancerRefetch } = useFreelancer();
+    const { data: companyData, isLoading: isCompanyLoading, refetch: companyRefetch } = useCompany();
 
     console.log("User", userData)
     console.log("Freelancer", freelancerData)
@@ -130,6 +130,40 @@ export function Profile() {
             setProjectsToUse(companyData.at(0).projects);
         }
     }, [isFreelancer, projects, companyData]);
+
+    // ----------------------- Mutations -----------------------
+
+    // Worker/Freelancer User Data
+    const updateWorker = useEditWorkerProfile();
+    function handleEditWorkerProfile(body) {
+        updateWorker.mutate(body, {
+            onSuccess: () => {
+                userRefetch();
+            },
+        });
+    }
+
+    // Freelancer Experience Data
+    const updateExperience = useEditFreelancerExperience();
+    function handleEditExperience(id, body) {
+        console.log("ID", id);
+        console.log("Body", body);
+        updateExperience.mutate({ id, body }, {
+            onSuccess: () => {
+                freelancerRefetch();
+            },
+        });
+    }
+    const deleteExperience = useDeleteFreelancerExperience();
+    function handleDeleteExperience(id) {
+        console.log("ID", id);
+        deleteExperience.mutate({ id }, {
+            onSuccess: () => {
+                freelancerRefetch();
+            },
+        });
+    }
+
 
 
     function handleProfilePopup() {
@@ -295,8 +329,8 @@ export function Profile() {
             </Card>
             {isFreelancerLoading ? <Spinner /> :
                 <>
-                    <EditProfilePopUp open={showProfilePopUp} onOpen={setShowProfilePopUp} profile={userData} onChange={useEditWorkerProfile} />
-                    <EditExperiencePopup open={showExperiencePopUp} onOpen={setShowExperiencePopUp} experiences={experience_set} setExperiences={{}} />
+                    <EditProfilePopUp open={showProfilePopUp} onOpen={setShowProfilePopUp} profile={userData} onChange={handleEditWorkerProfile} />
+                    <EditExperiencePopup open={showExperiencePopUp} onOpen={setShowExperiencePopUp} experiences={experience_set} editExperience={handleEditExperience} addExperience={{}} deleteExperience={handleDeleteExperience} />
                     <EditSkillsPopup open={showSkillsPopUp} onOpen={setShowSkillsPopUp} skills={skills} setSkills={{}} />
                 </>
             }

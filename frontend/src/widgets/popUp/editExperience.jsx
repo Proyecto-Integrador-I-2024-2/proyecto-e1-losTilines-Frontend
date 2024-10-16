@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Dialog, DialogHeader, DialogBody, DialogFooter, Input, Textarea, Button, IconButton } from "@material-tailwind/react";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 
-export const EditExperiencePopup = ({ open, onOpen, experiences, setExperiences }) => {
+export const EditExperiencePopup = ({ open, onOpen, experiences, editExperience, addExperience, deleteExperience }) => {
     const [selectedExperience, setSelectedExperience] = useState(null);
     const [newExperience, setNewExperience] = useState({
         occupation: "",
@@ -16,9 +16,17 @@ export const EditExperiencePopup = ({ open, onOpen, experiences, setExperiences 
             const updatedExperiences = experiences.map((exp, index) =>
                 index === selectedExperience ? newExperience : exp
             );
-            setExperiences(updatedExperiences);
+
+            let selectedCurrentExperience;
+            for (let i = 0; i < experiences.length; i++) {
+                if (i === selectedExperience) {
+                    selectedCurrentExperience = experiences[i];
+                    break;
+                }
+            }
+            editExperience(selectedCurrentExperience.id, newExperience);
         } else {
-            setExperiences([...experiences, newExperience]);
+            addExperience(newExperience);
         }
         setNewExperience({ occupation: "", start_date: "", final_date: "", description: "" });
         setSelectedExperience(null);
@@ -32,8 +40,7 @@ export const EditExperiencePopup = ({ open, onOpen, experiences, setExperiences 
     };
 
     const handleDelete = (index) => {
-        const updatedExperiences = experiences.filter((_, i) => i !== index);
-        setExperiences(updatedExperiences);
+        deleteExperience(experiences[index].id);
     };
 
     const handleChange = (e) => {
