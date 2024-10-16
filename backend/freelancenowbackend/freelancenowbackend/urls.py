@@ -30,6 +30,7 @@ urlpatterns = [
     path('', include('appProfile.urls')),
     path('', include('appCompany.urls')),
     path('', include('appProject.urls')),
+    path('', include('appComunication.urls')),
 ]
 
 if settings.DEBUG:

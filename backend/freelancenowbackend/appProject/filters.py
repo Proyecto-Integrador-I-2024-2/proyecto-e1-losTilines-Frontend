@@ -1,5 +1,5 @@
 import django_filters
-from app.models import Project, ProjectFreelancer
+from app.models import Project, ProjectFreelancer, Milestone
 from django.db import connection
 
 print(connection.queries)
@@ -26,3 +26,13 @@ class ProjectsFreelancerFilter(django_filters.FilterSet):
     class Meta:
         model = ProjectFreelancer
         fields = ['freelancer']
+
+
+# class MilestoneFilter(django_filters.FilterSet):
+#     project = django_filters.NumberFilter()
+#     freelancer = django_filters.NumberFilter(field_name='')
+
+#     class Meta:
+#         model = Milestone
+#         fields = ['project', 'freelancer']
+
