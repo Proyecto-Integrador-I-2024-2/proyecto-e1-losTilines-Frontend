@@ -41,7 +41,7 @@ import { CustomListItem } from "@/widgets/horList";
 import { ExperienceSection } from "@/widgets/custom";
 import { SkillsSection } from "@/widgets/custom";
 import { GitButton } from "@/widgets/custom";
-import { useCompany, useDeleteFreelancerExperience, useDeleteFreelancerSkill, useEditFreelancerExperience, useEditFreelancerSkill, useEditWorkerProfile, useFreelancer, useUser } from "@/hooks";
+import { useAddFreelancerSkill, useCompany, useDeleteFreelancerExperience, useDeleteFreelancerSkill, useEditFreelancerExperience, useEditFreelancerSkill, useEditWorkerProfile, useFreelancer, useUser } from "@/hooks";
 import { EditButton } from "@/widgets/buttons";
 import { EditExperiencePopup, EditProfilePopUp, EditSkillsPopup } from "@/widgets/popUp";
 import { defaultExperiences, defaultSkills } from "@/data";
@@ -164,6 +164,15 @@ export function Profile() {
         });
     }
     // Freelancer Skill Data
+    const addSkill = useAddFreelancerSkill();
+    function handleAddSkill(body) {
+        console.log("BODY DE LA BENDITA SKILL A AÑADIR", body);
+        addSkill.mutate({ body }, {
+            onSuccess: () => {
+                freelancerRefetch();
+            },
+        });
+    }
     const updateSkill = useEditFreelancerSkill();
     function handleEditSkill(id, body) {
         console.log("ID", id);
@@ -349,9 +358,9 @@ export function Profile() {
             </Card>
             {isFreelancerLoading ? <Spinner /> :
                 <>
-                    <EditProfilePopUp open={showProfilePopUp} onOpen={setShowProfilePopUp} profile={userData} onChange={handleEditWorkerProfile} />
+                    <EditProfilePopUp open={showProfilePopUp} onOpen={setShowProfilePopUp} profile={userData || userExample} onChange={handleEditWorkerProfile} />
                     <EditExperiencePopup open={showExperiencePopUp} onOpen={setShowExperiencePopUp} experiences={experience_set} editExperience={handleEditExperience} addExperience={{}} deleteExperience={handleDeleteExperience} />
-                    <EditSkillsPopup open={showSkillsPopUp} onOpen={setShowSkillsPopUp} skills={skills} editSkill={handleEditSkill} addSkill={{}} deleteSkill={handleDeleteSkill} />
+                    <EditSkillsPopup open={showSkillsPopUp} onOpen={setShowSkillsPopUp} skills={skills} editSkill={handleEditSkill} addSkill={handleAddSkill} deleteSkill={handleDeleteSkill} />
                 </>
             }
         </div>

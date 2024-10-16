@@ -9,19 +9,45 @@ import {
 import { FreelancerCard, ProjectCard } from "@/widgets/cards";
 import { CustomList } from "@/widgets/horList";
 import { CustomListItem } from "@/widgets/horList";
-import { projectsData } from "@/data";
+// import { projectsData } from "@/data";
 import { IconButton } from "@material-tailwind/react";
-const Homepage = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
+import { useProjects } from "@/hooks";
+import { useNavigate } from "react-router-dom"; // Importa useNavigate
 
+
+const Homepage = () => {
+  const { data: projectsData, isLoading: isProjectsLoading, refetch: projectsRefetch } = useProjects();
+  const navigate = useNavigate();
+  const [activeIndex, setActiveIndex] = useState(0);
   const handleScroll = (direction) => {
     const newIndex = (activeIndex + direction + projectsData.length) % projectsData.length;
     setActiveIndex(newIndex);
   };
 
-  const handleSeeMore = () => {
-    window.location.href = "";
-  };
+  const role = sessionStorage.getItem("role");
+
+
+
+  if (!projectsData) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+        <h1 className="text-5xl font-bold mb-4 animate-bounce">OOPS!</h1>
+        <p className="text-lg mb-6 text-center">
+          Necesitas estar logeado para ver más información. ¡Inicia sesión para continuar!
+        </p>
+        <Button
+          onClick={() => navigate('/auth/sign-in')}
+          className="bg-white text-blue-600 hover:bg-blue-200 transition-all duration-300"
+        >
+          Iniciar sesión
+        </Button>
+      </div>
+    )
+  }
+
+
+
+
 
   return (
     <div className="justify-center items-center">
@@ -47,9 +73,6 @@ const Homepage = () => {
                 project={project}
                 isActive={index === activeIndex}
               />
-              // <CustomListItem key={project.id}
-              //   {...project}
-              // />
             ))}
           </CustomList>
         </CardBody>
