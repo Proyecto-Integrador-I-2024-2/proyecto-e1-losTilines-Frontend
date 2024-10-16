@@ -10,7 +10,7 @@ import {
 } from "@material-tailwind/react";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 
-export function EditSkillsPopup({ open, onOpen, skills, setSkills }) {
+export function EditSkillsPopup({ open, onOpen, skills, editSkill, addSkill, deleteSkill }) {
     const [selectedSkill, setSelectedSkill] = useState(null);
     const [newSkill, setNewSkill] = useState({
         skill_name: "",
@@ -20,13 +20,20 @@ export function EditSkillsPopup({ open, onOpen, skills, setSkills }) {
     const handleSave = () => {
         if (selectedSkill !== null) {
             // Editar habilidad existente
-            const updatedSkills = skills.map((skill, index) =>
-                index === selectedSkill ? newSkill : skill
-            );
-            setSkills(updatedSkills);
+            // const updatedSkills = skills.map((skill, index) =>
+            //     index === selectedSkill ? newSkill : skill
+            // );
+            let selectedCurrentSkill;
+            for (let i = 0; i < skills.length; i++) {
+                if (i === selectedSkill) {
+                    selectedCurrentSkill = skills[i];
+                    break;
+                }
+            }
+            editSkill(selectedCurrentSkill.id, newSkill);
         } else {
             // Agregar nueva habilidad
-            setSkills([...skills, newSkill]);
+            addSkill(newSkill);
         }
         setNewSkill({ skill_name: "", level: "" });
         setSelectedSkill(null);
@@ -40,8 +47,8 @@ export function EditSkillsPopup({ open, onOpen, skills, setSkills }) {
     };
 
     const handleDelete = (index) => {
-        const updatedSkills = skills.filter((_, i) => i !== index);
-        setSkills(updatedSkills);
+        deleteSkill(skills[index].id);
+
     };
 
     const handleChange = (e) => {
