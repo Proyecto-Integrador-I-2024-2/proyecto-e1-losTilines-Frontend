@@ -13,9 +13,9 @@ export const EditExperiencePopup = ({ open, onOpen, experiences, editExperience,
 
     const handleSave = () => {
         if (selectedExperience !== null) {
-            const updatedExperiences = experiences.map((exp, index) =>
-                index === selectedExperience ? newExperience : exp
-            );
+            // const updatedExperiences = experiences.map((exp, index) =>
+            //     index === selectedExperience ? newExperience : exp
+            // );
 
             let selectedCurrentExperience;
             for (let i = 0; i < experiences.length; i++) {
