@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "@/services/apiClient"; 
 
-export const useCustomFethc = (identifier, urlFetch, queryParams) => {
+export const useCustomFethc = (identifier, urlFetch, queryParams, options = { }) => {
   return useQuery(
     [identifier], // Clave única para la consulta
     async () => {
@@ -14,7 +14,7 @@ export const useCustomFethc = (identifier, urlFetch, queryParams) => {
       return null; // Devuelve null si no hay urlFetch
     },
     {
-      enabled: !!urlFetch, // Solo se ejecuta si urlFetch es verdadero
+      enabled: !!urlFetch && options.enabled, ...options // Solo se ejecuta si urlFetch es verdadero
     }
   );
 };

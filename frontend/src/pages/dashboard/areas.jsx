@@ -1,28 +1,80 @@
 import { CollapseCustom, PopoverCustom, SelectCustom } from "@/widgets/buttons";
-import { ChartCustom } from "@/widgets/statistics";
-import { TableThreeColumns } from "@/widgets/tables";
-import { areasData } from "@/data";
-import { Card, Input } from "@material-tailwind/react";
+import { Card, Input, Typography } from "@material-tailwind/react";
 
-import { TrashIcon, BookmarkSquareIcon} from "@heroicons/react/24/solid";
-import ListAreasCollapse from "@/widgets/list/listCollapseAreas";
+import { ListAreasCollapse } from "@/widgets/areaWidgets";
+import { useCustomFethc, useUser } from "@/hooks";
+import { SpinnerCustom } from "@/widgets/layout";
+import { useEffect, useState } from "react";
+import apiClient from "@/services/apiClient";
+
 
 function Areas() {
-  //Info for collapse buttons.
-
   const addContent =
     "Give this code to your workers to add them to your team #42123";
 
   //Info for select buttons.
-  const sortContent = ["name"];
+  const sortContent = ["Area name"]; 
 
   const areaInfo = ["Area1", "Area2", "Area3", "Area4"];
 
   //Info for table creation.
 
-  const TABLE_HEAD = ["Worker", "Project Name", "Status"];
+
+  const [projectsByArea, setProjectsByArea] = useState([]); 
+
+  const { data: user, isLoading: isLoadingUser } = useUser();
+
+  const { data: areas, isLoading: isLoadingAreas } = useCustomFethc(
+    "Areas",
+    "areas/",
+    { company: user?.company },
+    { enabled: !!user }
+  );
+
+  useEffect(() => {
+    //Fetch projects by area 
+
+    if(!isLoadingAreas && areas.length > 0 ){
+
+      const fetchProjects = async () => {
+
+
+        const fetchPromises  = areas.map((area) =>{
+
+          const fetchProject = async () => {
+            const { data } = await apiClient.get("projects/", {
+              params: { area: area.id },
+            });
+            return data;
+          };
+          return fetchProject();
+        })
+
+        const projectData= await Promise.all(fetchPromises);
+
+
+
+        const projectMap = {}
+
+        areas.forEach((area, index) => {
+          projectMap[area.id] = projectData[index];
+        });
+
+
+        console.log("PROJECTS BY AREA: ", projectMap);  
+        setProjectsByArea(projectMap);
+        
+
+      }
+
+       fetchProjects();
+    
+    }
+  }, [isLoadingAreas])
+
 
   return (
+    
     <Card
       className="flex  flex-col items-center 
                 h-full w-full p-2   
@@ -41,54 +93,37 @@ function Areas() {
               label={"Select type"}
             />
           </CollapseCustom>
-          <CollapseCustom title={"Filter"}>
-            <SelectCustom
-              label={"area"}
-              description={"filter by"}
-              options={areaInfo}
-            />
-          </CollapseCustom>
+
           <PopoverCustom title={"Add"} content={addContent} />
         </section>
       </header>
 
       <main className="flex flex-col h-full w-full mt-2   overflow-y-auto">
-        {areasData.map((area) => (
-          <ListAreasCollapse
-            AreasCollapse
-            key={area.id}
-            title={area.area}
-            rowName={area.admin}
-            chipValue1={area.quantity}
-            chipValue2={area.budget}
-          >
-            <div className="flex flex-col w-full  space-y-2">
-              <div className="flex flex-row w-full md:space-x-4  my-2 md:  md:items-center md:justify-center md:mx-auto md:w-1/2 ">
-                <SelectCustom
-                  description={"Assign area"}
-                  options={areaInfo}
-                  label={"area"}
-                />
+        {isLoadingUser || isLoadingAreas ? (
+          <SpinnerCustom />
+        ) : (
 
-                <div className="flex flex-row justify-center items-center   ">
-                <BookmarkSquareIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
+          areas.map((area) => (
+                      
+            <ListAreasCollapse 
+              key={area.id}
 
-                <TrashIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
-            
-                </div>
-               
-              </div>
-              <div className="flex flex-col w-full space-y-6  md:flex-row md:space-y-0 ">
-                <TableThreeColumns
-                  titles={TABLE_HEAD}
-                  content={area.projects}
-                />
-              </div>
-            </div>
-          </ListAreasCollapse>
-        ))}
+              areaId={area.id}  
+              title={area.name}
+              projects={projectsByArea[area.id]}
+              chipValue2={1000000}
+              currentAreaAdmin={area.user}
+            >
+             
+            </ListAreasCollapse>
+          )) 
+        
+        
+        )}
       </main>
     </Card>
+
+  
   );
 }
 

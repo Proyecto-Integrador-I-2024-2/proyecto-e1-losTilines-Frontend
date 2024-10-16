@@ -3,6 +3,7 @@ import {
     Typography,
     CardBody,
     Chip,
+    Avatar,
   
   } from "@material-tailwind/react";
    
@@ -34,7 +35,7 @@ import {
   
             <tbody>
               {content.map(
-                ({id, status, projectName, worker}  , index) => {
+                ({id, status_name, name, user}  , index) => {
                   const isLast = index === content.length - 1;
                   const classes = isLast
                     ? "p-4"
@@ -44,13 +45,24 @@ import {
                     <tr key={id}>
 
                       <td className={classes}>
+
+
+                        <div className="flex flex-row items-center space-x-2">
+                        
+                        <Avatar size="sm" src={user.profile_picture}/>
+                        
                         <Typography
                           variant="small"
                           color="blue-gray"
                           className="font-normal"
                         > 
-                          {worker}
+                          {`${user.first_name} ${user.last_name}`}
                         </Typography>
+
+
+
+
+                        </div>
                       </td>
   
                       <td className={classes}>
@@ -59,7 +71,7 @@ import {
                           color="blue-gray"
                           className="font-normal"
                         > 
-                          {projectName}
+                          {name}
                         </Typography>
                       </td>
                       <td className={classes}>
@@ -67,8 +79,8 @@ import {
                           <Chip
                             variant="ghost"
                             size="sm"
-                            value={status}
-                            color={status === "done"? "green" : "cyan"}
+                            value={status_name}
+                            color={status_name === "Completed"? "green" : "cyan"}
                           />
                         </div>
                       </td>

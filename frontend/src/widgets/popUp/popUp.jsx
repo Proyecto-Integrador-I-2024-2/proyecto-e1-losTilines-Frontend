@@ -10,27 +10,25 @@ import {
 } from "@material-tailwind/react";
 
 export function PopUp({
-  buttonDescription,
   title,
-  setAreaName,
   submitFunc,
   children,
+  open,
+  setOpen,
+  handleOpen,
 }) {
-  const [open, setOpen] = useState(false);
-  
-  const handleOpen = () => setOpen(!open);
-
   const handleConfirm = async () => {
-    const result = await submitFunc();
-
-    if (result) setOpen(!open);
+    setOpen(!open);
   };
+
+  const handleClose = async () => {
+    setOpen(!open);
+  };
+
+  console.log("OPEN: ", open);
 
   return (
     <>
-      <Button onClick={handleOpen} variant="gradient">
-        {buttonDescription}
-      </Button>
       <Dialog className="w-full  " open={open} handler={handleOpen}>
         <DialogHeader className="flex flex-row justify-center items-center">
           {title}
@@ -42,7 +40,7 @@ export function PopUp({
           <Button
             variant="text"
             color="gray"
-            onClick={handleOpen}
+            onClick={handleClose}
             className="mr-1"
           >
             <span>Cancel</span>
