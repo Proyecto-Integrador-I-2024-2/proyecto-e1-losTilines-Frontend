@@ -7,7 +7,7 @@ print(connection.queries)
 
 class ProjectFilter(django_filters.FilterSet):
     #Proyectos de un WORKER
-    worker = django_filters.NumberFilter(field_name='user_id', lookup_expr='icontains')
+    worker = django_filters.NumberFilter(field_name='user_id')
 
     area = django_filters.NumberFilter(field_name='user_id__usercompany__area_id')
 
@@ -28,9 +28,11 @@ class ProjectsFreelancerFilter(django_filters.FilterSet):
         fields = ['freelancer']
 
 
-class MilestoneFilter(django_filters.FilterSet):
-    project = django_filters.NumberFilter()
+# class MilestoneFilter(django_filters.FilterSet):
+#     project = django_filters.NumberFilter()
+#     freelancer = django_filters.NumberFilter(field_name='')
 
-    class Meta:
-        model = Milestone
-        fields = []
+#     class Meta:
+#         model = Milestone
+#         fields = ['project', 'freelancer']
+

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from app.models import Project, ProjectFreelancer, Milestone
 from django.core.exceptions import ValidationError
-from app.serializers import FreelancerSerializer
+from app.serializers import FreelancerSerializer, UserSerializer, StatusSerializer
 
 # Serializador para los freelancers asociados a un proyecto
 class ProjectFreelancerSerializer(serializers.ModelSerializer):
@@ -13,7 +13,8 @@ class ProjectFreelancerSerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
     freelancers = ProjectFreelancerSerializer(source='projectfreelancer_set', many=True, read_only=True)
     company = serializers.StringRelatedField(read_only=True)
-
+    user = UserSerializer(read_only=True)  # Rellenar automáticamente con el usuario actual
+    status = StatusSerializer(read_only=True)  # Rellenar automáticamente con el estado actual
     class Meta:
         model = Project
         fields = '__all__'
@@ -33,7 +34,9 @@ class MilestoneSerializer(serializers.ModelSerializer):
     class Meta:
         model = Milestone
         fields = '__all__'
-        read_only_fields = ['freelancer', 'project', 'due_date']
+        read_only_fields = ['freelancer', 'project']
+
+    due_date = serializers.DateField(required=True) 
 
     # Validar el presupuesto u otras reglas de milestone si es necesario
     def validate(self, data):
