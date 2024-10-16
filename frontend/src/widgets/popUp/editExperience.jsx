@@ -50,7 +50,7 @@ export const EditExperiencePopup = ({ open, onOpen, experiences, setExperiences 
                         <div key={index} className="flex justify-between items-center p-4 border rounded-lg shadow-sm">
                             <div className="pr-4">
                                 <p className="font-bold">{exp.occupation}</p>
-                                <p>{exp.duration || `${exp.start_date} - ${exp.final_date}`}</p>
+                                <p>{exp.duration || `${exp.start_date} - ${exp.final_date || "Present"}`}</p>
                                 <p>{exp.description}</p>
                             </div>
                             <div className="flex space-x-2">

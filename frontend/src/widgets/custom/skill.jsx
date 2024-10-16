@@ -55,10 +55,10 @@ export function SkillsSection({ sectionName, skills, editable, onEdit }) {
                                     {skill.skill_name}
                                 </Typography>
                                 <Typography variant="small" className="text-blue-gray-600">
-                                    {skill.level}%
+                                    {skill.level || skill.average_level}%
                                 </Typography>
                             </div>
-                            <Progress value={skill.level} color="blue" />
+                            <Progress value={skill.level || skill.average_level} color="blue" />
                         </div>
                     </Card>
                 ))) : <div className="flex flex-col items-center justify-start h-full">

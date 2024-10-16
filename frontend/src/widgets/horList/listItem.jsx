@@ -53,7 +53,7 @@ export function CustomListItem({ img, title, tag, description, members, route })
                         view project
                     </Button>
                 </Link>
-                <div>
+                {/* <div>
                     {members.map(({ img, name }, key) => (
                         <Tooltip key={name} content={name}>
                             <Avatar
@@ -66,7 +66,7 @@ export function CustomListItem({ img, title, tag, description, members, route })
                             />
                         </Tooltip>
                     ))}
-                </div>
+                </div> */}
             </CardFooter>
         </Card>
     )
