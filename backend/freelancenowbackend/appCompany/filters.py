@@ -16,3 +16,5 @@ class CompanyFilter(django_filters.FilterSet):
     class Meta:
         model = Company
         fields = ['userId']
+        
+        

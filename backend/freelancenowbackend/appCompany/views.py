@@ -186,16 +186,6 @@ class AreaViewSet(viewsets.ModelViewSet):
 
         return Response(AreaSerializer(area).data, status=status.HTTP_201_CREATED)
 
-    def update(self, request, *args, **kwargs):
-        area = self.get_object()
-        area_name = request.data.get('name')
-        company_id = request.data.get('company')
-        area_admin_id = request.data.get('user')
-
-        area = self.validate_area(area_name, company_id, area_admin_id, area=area)
-
-        return Response(AreaSerializer(area).data, status=status.HTTP_200_OK)
-
     def destroy(self, request, *args, **kwargs):
         area = self.get_object()
         self.delete_area_and_projects(area)

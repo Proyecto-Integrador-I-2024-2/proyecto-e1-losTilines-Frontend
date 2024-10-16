@@ -6,28 +6,23 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   useUser,
   useCreateArea,
-  useWorkers,
   useQueryParams,
   useCustomFethc,
 } from "@/hooks";
 import { useState, useEffect } from "react";
-import apiClient from "@/services/apiClient";
-import { useQuery } from "@tanstack/react-query";
 import { CreateAreaPopUp } from "@/widgets/areaWidgets";
-import ListRowStructure from "@/widgets/list/listRowStructure";
 import { LeftColumnRows, MidColumnRows } from "@/widgets/dashboard";
 import { SpinnerCustom } from "@/widgets/layout";
 function Dashboard() {
   //Utils
 
   const navigateTo = useNavigate();
+
   const { getParams, setParams } = useQueryParams();
 
   const [selectItem, setSelectecItem] = useState(null);
 
   const { data: user, isLoading: userLoading } = useUser();
-
-  const createAreaHook = useCreateArea();
 
   const role = sessionStorage.getItem("role");
 
@@ -79,7 +74,7 @@ function Dashboard() {
   const [leftColumnTitle, setLeftColumnTitle] = useState("");
 
   const fetchIdenfierLeftColum =
-    role === "Business Manager" ? "Areas" : "projects";
+    role === "Business Manager" ? "Areas" : "Projects";
 
   const {
     data: dataLeftColumn,
@@ -182,12 +177,11 @@ function Dashboard() {
                 addContent={false}
                 hasSeeAll={() => navigateTo("workers/")}
               >
-                {!isLoadingMidColumn? (
-
+                {!isLoadingMidColumn ? (
                   <MidColumnRows contentInfo={dataMidColumn} />
-
-                ) : (<SpinnerCustom/>)}
-
+                ) : (
+                  <SpinnerCustom />
+                )}
               </ListCard>
             </div>
             <ListCard title={"Finance"} hasAdd={false} hasSeeAll={() => {}}>

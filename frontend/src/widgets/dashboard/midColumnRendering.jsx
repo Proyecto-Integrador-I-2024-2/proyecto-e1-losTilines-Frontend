@@ -1,5 +1,5 @@
 import { ListRowWithImage } from "@/widgets/list";
-
+import { Typography } from "@material-tailwind/react";
 export function MidColumnRows({ contentInfo }) {
   const role = sessionStorage.getItem("role");
 
