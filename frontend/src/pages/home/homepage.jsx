@@ -10,14 +10,15 @@ import { FreelancerCard, ProjectCard } from "@/widgets/cards";
 import { CustomList } from "@/widgets/horList";
 import { CustomListItem } from "@/widgets/horList";
 // import { projectsData } from "@/data";
+// import { freelancersData } from "@/data";
 import { IconButton } from "@material-tailwind/react";
-import { useProjects } from "@/hooks";
+import { useFreelancers, useProjects } from "@/hooks";
 import { useNavigate } from "react-router-dom"; // Importa useNavigate
-import { freelancersData } from "@/data";
 
 
 const Homepage = () => {
-  const { data: projectsData, isLoading: isProjectsLoading, refetch: projectsRefetch } = useProjects();
+  const { data: projectsData, isLoading: isProjectsLoading } = useProjects();
+  const { data: freelancersData, isLoading: isFreelancersLoading } = useFreelancers();
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
   const handleScroll = (direction) => {
@@ -50,18 +51,11 @@ const Homepage = () => {
 
 
 
-  if (role === "Freelancer") {
+  if (!(role === "Freelancer")) {
     return (
       <div className="justify-center items-center">
-        <div className="w-full flex flex-row mt-4 px-4 justify-between">
-          <IconButton onClick={() => handleScroll(-1)}>
-            <i className="fa-solid fa-arrow-left" />
-          </IconButton>
-          <Typography variant="h3">Projects you might be interested in</Typography>
-          <IconButton onClick={() => handleScroll(1)}>
-            <i className="fa-solid fa-arrow-right" />
-          </IconButton>
-          {/* <Button  className="h-12 w-12 bg-gray-200 p-2"></Typography></Button> */}
+        <div className="w-full flex flex-row mt-4 px-4 items-center justify-center">
+          <Typography variant="h3">Freelancers you might be interested in</Typography>
         </div>
         <Card className="overscroll-y-none mx-3 mt-4 mb-2 lg:mx-4 border border-blue-gray-100">
           <CardBody className="overscroll-y-none h-full flex flex-row">
@@ -70,7 +64,7 @@ const Homepage = () => {
               sectionSubtitle={""}
             >
               {freelancersData.map((freelancer, index) => (
-                <FreelancerCard freelancer={freelancer} isActive={true} />
+                <FreelancerCard key={freelancer.id} freelancer={freelancer} isActive={true} />
               ))}
             </CustomList>
           </CardBody>
@@ -88,7 +82,6 @@ const Homepage = () => {
           <IconButton onClick={() => handleScroll(1)}>
             <i className="fa-solid fa-arrow-right" />
           </IconButton>
-          {/* <Button  className="h-12 w-12 bg-gray-200 p-2"></Typography></Button> */}
         </div>
         <Card className="overscroll-y-none mx-3 mt-4 mb-2 lg:mx-4 border border-blue-gray-100">
           <CardBody className="overscroll-y-none h-full flex flex-row">
