@@ -5,12 +5,20 @@ import {
     DialogBody,
     DialogFooter,
     Input,
+    Select,
+    Option,
     Button,
     IconButton,
 } from "@material-tailwind/react";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { useSkills } from "@/hooks";
 
 export function EditSkillsPopup({ open, onOpen, skills, editSkill, addSkill, deleteSkill }) {
+    const { data: skillsData, isLoading: isSkillsLoading, refetch: skillsRefetch } = useSkills();
+
+
+
+    const [skillToAdd, setSkillToAdd] = useState(null);
     const [selectedSkill, setSelectedSkill] = useState(null);
     const [newSkill, setNewSkill] = useState({
         skill_name: "",
@@ -19,24 +27,23 @@ export function EditSkillsPopup({ open, onOpen, skills, editSkill, addSkill, del
 
     const handleSave = () => {
         if (selectedSkill !== null) {
-            // Editar habilidad existente
-            // const updatedSkills = skills.map((skill, index) =>
-            //     index === selectedSkill ? newSkill : skill
-            // );
-            let selectedCurrentSkill;
-            for (let i = 0; i < skills.length; i++) {
-                if (i === selectedSkill) {
-                    selectedCurrentSkill = skills[i];
-                    break;
-                }
-            }
+            const selectedCurrentSkill = skills[selectedSkill];
             editSkill(selectedCurrentSkill.id, newSkill);
         } else {
-            // Agregar nueva habilidad
-            addSkill(newSkill);
+            if (skillToAdd) {
+                const selectedSkillData = skillsData.find(skill => skill.id === parseInt(skillToAdd));
+                const skillToAddData = {
+                    skill: selectedSkillData.id,
+                    level: newSkill.level, // Nivel introducido por el usuario
+                };
+
+                console.log("Skill to add: ", skillToAddData);
+                addSkill(skillToAddData);
+            }
         }
         setNewSkill({ skill_name: "", level: "" });
         setSelectedSkill(null);
+        setSkillToAdd(null);
         onOpen(false);
     };
 
@@ -80,13 +87,6 @@ export function EditSkillsPopup({ open, onOpen, skills, editSkill, addSkill, del
                 </div>
                 <div className="mt-6 space-y-4">
                     <Input
-                        label="Nombre de la Habilidad"
-                        name="skill_name"
-                        value={newSkill.skill_name}
-                        onChange={handleChange}
-                        required
-                    />
-                    <Input
                         label="Nivel (%)"
                         name="level"
                         type="number"
@@ -97,6 +97,21 @@ export function EditSkillsPopup({ open, onOpen, skills, editSkill, addSkill, del
                         required
                     />
                 </div>
+                <div className="mt-4">
+                    <Select
+                        label="Selecciona una habilidad para agregar"
+                        value={skillToAdd}
+                        onChange={(value) => setSkillToAdd(value)}
+                        disabled={isSkillsLoading}
+                    >
+                        {skillsData && skillsData.map((skill) => (
+                            <Option key={skill.id} value={skill.id.toString()}>
+                                {skill.name} - {skill.type}
+                            </Option>
+                        ))}
+                    </Select>
+                </div>
+
             </DialogBody>
             <DialogFooter>
                 <Button variant="text" color="red" onClick={() => onOpen(false)} className="mr-2">
