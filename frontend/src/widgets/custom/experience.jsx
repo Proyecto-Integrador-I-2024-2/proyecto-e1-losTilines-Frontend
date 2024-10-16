@@ -5,7 +5,26 @@ import { defaultExperiences } from "@/data";
 
 export function ExperienceSection({ experiences, editable, onEdit }) {
 
-    const experiencesToUse = experiences && experiences.length > 0 ? experiences : defaultExperiences;
+    const experiencesToUse = experiences && experiences.length > 0 ? experiences : [];
+
+
+    if (!(experiences && experiences.length > 0)) {
+        return (
+            <div className="h-full">
+                <div className="flex flex-row items-center justify-between">
+                    <Typography variant="h6" color="blue-gray" className="">
+                        Work Experience
+                    </Typography>
+                    {editable && (<EditButton toolTip="Edit Work Experience" onClick={onEdit} />)}
+                </div>
+                <Card shadow={true} className="p-6">
+                    <Typography variant="h5" className="text-blue-gray-800">
+                        No work experience provided
+                    </Typography>
+                </Card>
+            </div>
+        )
+    }
 
     return (
         <div className="h-full">
@@ -24,7 +43,7 @@ export function ExperienceSection({ experiences, editable, onEdit }) {
                                     {exp.occupation}
                                 </Typography>
                                 <Typography className="text-blue-gray-600">
-                                    {exp.company} &bull; {exp.duration || `${exp.start_date} to ${exp.final_date}`}
+                                    {exp.company} &bull; {exp.duration || `${exp.start_date} to ${exp.final_date || "Present"}`}
                                 </Typography>
                             </div>
                             <IconButton size="sm" className="bg-blue-500">

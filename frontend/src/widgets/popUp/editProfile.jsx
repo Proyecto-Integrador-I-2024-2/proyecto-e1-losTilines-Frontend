@@ -14,9 +14,12 @@ import { useState } from "react";
 
 export function EditProfilePopUp({ profile, open, onOpen, onChange }) {
 
+
     const [formData, setFormData] = useState(
         profile
     );
+    const { data, isLoading, error, refetch } = onChange(formData);
+
 
     const handleOpen = () => onOpen((prev) => !prev);
 
@@ -27,6 +30,7 @@ export function EditProfilePopUp({ profile, open, onOpen, onChange }) {
 
     const handleSave = () => {
         // Aquí puedes agregar la lógica para guardar los datos
+        refetch();
         console.log("Datos guardados:", formData);
         setOpen(false);
     };
@@ -78,13 +82,13 @@ export function EditProfilePopUp({ profile, open, onOpen, onChange }) {
                     />
 
                     {/* Description */}
-                    <Textarea
+                    {/* <Textarea
                         label="Description"
                         name="description"
                         value={formData.description}
                         onChange={handleChange}
                         size="lg"
-                    />
+                    /> */}
                 </div>
             </DialogBody>
             <DialogFooter className="justify-end">

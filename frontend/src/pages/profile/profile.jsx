@@ -41,7 +41,7 @@ import { CustomListItem } from "@/widgets/horList";
 import { ExperienceSection } from "@/widgets/custom";
 import { SkillsSection } from "@/widgets/custom";
 import { GitButton } from "@/widgets/custom";
-import { useFreelancer, useUser } from "@/hooks";
+import { useCompany, useEditWorkerProfile, useFreelancer, useUser } from "@/hooks";
 import { EditButton } from "@/widgets/buttons";
 import { EditExperiencePopup, EditProfilePopUp, EditSkillsPopup } from "@/widgets/popUp";
 import { defaultExperiences, defaultSkills } from "@/data";
@@ -52,37 +52,36 @@ export function Profile() {
     const imgSrc = "/img/company/icesi.png";
     const { data: userData, isLoading: isUserLoading } = useUser();
     const { data: freelancerData, isLoading: isFreelancerLoading } = useFreelancer();
-    // const { data: skillsData, isLoading: isSkillsLoading } = useSkills(userData.id);
-    // const { data: experiencesData, isLoading: isExperiencesLoading } = useExperiences(userData.id);
-    // const { data: portfolioData, isLoading: isPortfolioLoading } = usePortfolio(userData.id);
+    const { data: companyData, isLoading: isCompanyLoading } = useCompany();
 
-    // const userData = {}
-    const skillsData = {}
-    const experiencesData = {}
-    const portfolioData = {}
-
-    // const isUserLoading = false;
-    const isSkillsLoading = false;
-    const isExperiencesLoading = false;
-    const isPortfolioLoading = false;
-
-
-    console.log("Portofolio", portfolioData)
     console.log("User", userData)
     console.log("Freelancer", freelancerData)
-    console.log("Skills data", skillsData)
+    console.log("Company", companyData)
+
+    // User Information
 
     const userExample = {
-        id: 1,
-        email: "email.com",
-        first_name: "first",
-        last_name: "last",
-        phone_number: null,
-        role: "Freelancer",
-        description: "Happy to find a new job using Freelance Now!",
+        id: null,
+        email: "email not provided",
+        first_name: "first name not provided",
+        last_name: "last name not provided",
+        phone_number: "phone not provided",
     }
 
-    const { id, email, first_name, last_name, phone_number, role } = userData || userExample;
+    const { id, email, first_name, last_name, phone_number } = userData || userExample;
+    const role = sessionStorage.getItem("role");
+    // Freelancer Information
+
+    const freelancerExample = {
+        description: "Not provided",
+        country: "Not provided",
+        city: "Not provided",
+        portfolio: [],
+        skills: [],
+        experience_set: [],
+        projects: []
+    }
+
     const {
         description,
         country,
@@ -91,13 +90,28 @@ export function Profile() {
         skills,
         experience_set,
         projects
-    } = freelancerData || { description: "", country: "", city: "", portfolio: [], skills: [], experience_set: [], projects: [] };
+    } = freelancerData || freelancerExample;
+
+    // ----------------------- Company Information -----------------------
+
+    const companyExample = {
+        id: null,
+        name: "Company not provided",
+        tax_id: "Tax ID not provided",
+        email: "Email not provided",
+        description: "Description not provided",
+        industry: "Industry not provided",
+        freelancers: [],
+        projects: [],
+        skills: []
+    }
 
 
 
-    // ----------------------- 
+    // ----------------------- State information -----------------------
 
-    const [isFreelancer, setIsFreelancer] = useState(false);
+    const [isFreelancer, setIsFreelancer] = useState(true);
+    const [projectsToUse, setProjectsToUse] = useState([]);
     const [isEditable, setIsEditable] = useState(true);
     const [showProfilePopUp, setShowProfilePopUp] = useState(false);
     const [showExperiencePopUp, setShowExperiencePopUp] = useState(false);
@@ -106,9 +120,17 @@ export function Profile() {
     useEffect(() => {
         if (userData) {
             setIsFreelancer(sessionStorage.getItem("role") === "Freelancer");
-            // setIsFreelancer(true);
         }
     }, [userData]);
+
+    useEffect(() => {
+        if (isFreelancer) {
+            setProjectsToUse(projects);
+        } else {
+            setProjectsToUse(companyData.at(0).projects);
+        }
+    }, [isFreelancer, projects, companyData]);
+
 
     function handleProfilePopup() {
         setShowProfilePopUp(pop => !pop);
@@ -146,7 +168,7 @@ export function Profile() {
                                     >
                                         {!isUserLoading && role}
                                     </Typography>
-                                    <Rating value={4} />
+                                    <Rating value={0} />
                                 </div>
                             </div>
                             {/* Quien soy yo */}
@@ -176,8 +198,8 @@ export function Profile() {
                             <div>
                                 {!isUserLoading && <ProfileInfoCard
                                     title="Profile Information"
-                                    description={description}
-                                    details={{
+                                    description={isFreelancer ? description : companyData.at(0).description}
+                                    details={isFreelancer ? {
                                         "first name": first_name,
                                         "last name": last_name,
                                         mobile: phone_number || "Not provided",
@@ -190,51 +212,62 @@ export function Profile() {
                                                 <i className="fa-brands fa-instagram text-purple-500" />
                                             </div>
                                         ),
-                                    }}
+                                    } :
+                                        {
+                                            "first name": first_name,
+                                            "last name": last_name,
+                                            mobile: phone_number || "Not provided",
+                                            email: email,
+                                        }}
                                     editable={isEditable}
                                     onEdit={handleProfilePopup}
                                 />}
                                 {
-                                    isPortfolioLoading ? "Loading..." : <GitButton url={portfolioData[0]?.Url} />
+                                    isFreelancer && (isFreelancerLoading ? <Spinner /> : portfolio && <GitButton url={portfolio} />)
                                 }
 
                             </div>
 
                             <div className="h-96">
                                 {isFreelancer ?
-                                    isExperiencesLoading ?
-                                        "Loading.." :
-                                        <>
-                                            <ExperienceSection experiences={experiencesData} editable={isEditable} onEdit={handleExperiencePopUp} />
-                                        </>
+                                    (isFreelancerLoading ?
+                                        <Spinner />
+                                        :
+                                        <ExperienceSection experiences={experience_set} editable={isEditable} onEdit={handleExperiencePopUp} />)
                                     :
-                                    <div className="h-full">
-                                        <Typography variant="h6" color="blue-gray" className="mb-4">
-                                            Freelancers that have worked here
-                                        </Typography>
-                                        <div className="space-y-6 h-full overflow-y-auto no-scrollbar">
-                                            {freelancersData.map((props) => (
-                                                <MessageCard
-                                                    key={props.name}
-                                                    {...props}
-                                                    action={
-                                                        <VscAccount />
-                                                    }
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
+                                    (isCompanyLoading ?
+                                        <Spinner />
+                                        :
+                                        <div className="h-full">
+                                            <Typography variant="h6" color="blue-gray" className="mb-4">
+                                                Freelancers that have worked here
+                                            </Typography>
+                                            <div className="space-y-6 h-full overflow-y-auto no-scrollbar">
+                                                {companyData.at(0).freelancers.map((freelancer) => (
+                                                    <MessageCard
+                                                        key={freelancer.user.name}
+                                                        img={freelancer.user.img}
+                                                        name={freelancer.user.name}
+                                                        message={freelancer.description}
+                                                        action={
+                                                            <VscAccount />
+                                                        }
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>)
                                 }
                             </div>
 
                             <div className="h-96">
                                 {isFreelancer ?
-                                    (isSkillsLoading ? "Loading..." :
+                                    (isFreelancerLoading ? <Spinner /> :
                                         <SkillsSection sectionName={"Skills"} skills={skills} editable={isEditable} onEdit={handleSkillsPopUp} />)
                                     // <SkillsSection sectionName={"Skills"} skills={skillsData} editable={isEditable} onEdit={handleSkillsPopUp} />)
                                     // <SkillsSection sectionName={"skills"} />)
                                     :
-                                    <SkillsSection sectionName={"Tech Stack"} editable={false} />
+                                    (isCompanyLoading ? <Spinner /> :
+                                        <SkillsSection sectionName={"Tech Stack"} skills={companyData.at(0).skills} editable={false} />)
                                 }
                             </div>
                         </div>
@@ -244,22 +277,32 @@ export function Profile() {
 
             <Card className="mx-3 mt-4 mb-2 lg:mx-4 border border-blue-gray-100">
                 <CardBody>
-                    {/* Aquí va la fila scrollable img, title, tag, description, members, route --->*/}
-                    <CustomList
-                        sectionTitle={"Projects"}
-                        sectionSubtitle={"Associated Projects"}
-                    >
-                        {projectsData.map((project) => (
-                            <CustomListItem key={project.title} {...project} route={"/project/detail"} />
-                        ))}
-                    </CustomList>
+                    {Array.isArray(projectsToUse) && projectsToUse.length > 0 ?
+                        <CustomList
+                            sectionTitle={"Projects"}
+                            sectionSubtitle={"Associated Projects"}
+                        >
+                            {projectsToUse.map((project) => (
+                                <CustomListItem key={project.id} title={project.name} tag={`$${project.budget}`} description={project.description} img={"https://images.unsplash.com/photo-1518770660439-4636190af475"} route={"/project/detail"} />
+                            ))}
+                        </CustomList>
+                        :
+                        <Typography variant="h6" color="blue-gray" className="text-center">
+                            No projects added yet
+                        </Typography>
+                    }
                 </CardBody>
             </Card>
-            <EditProfilePopUp open={showProfilePopUp} onOpen={setShowProfilePopUp} profile={userExample} onChange={{}} />
-            <EditExperiencePopup open={showExperiencePopUp} onOpen={setShowExperiencePopUp} experiences={defaultExperiences} setExperiences={{}} />
-            <EditSkillsPopup open={showSkillsPopUp} onOpen={setShowSkillsPopUp} skills={defaultSkills} setSkills={{}} />
+            {isFreelancerLoading ? <Spinner /> :
+                <>
+                    <EditProfilePopUp open={showProfilePopUp} onOpen={setShowProfilePopUp} profile={userData} onChange={useEditWorkerProfile} />
+                    <EditExperiencePopup open={showExperiencePopUp} onOpen={setShowExperiencePopUp} experiences={experience_set} setExperiences={{}} />
+                    <EditSkillsPopup open={showSkillsPopUp} onOpen={setShowSkillsPopUp} skills={skills} setSkills={{}} />
+                </>
+            }
         </div>
     );
 }
 
 export default Profile;
+
