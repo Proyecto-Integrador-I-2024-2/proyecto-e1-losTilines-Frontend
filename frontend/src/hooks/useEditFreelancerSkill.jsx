@@ -14,7 +14,7 @@ const patchSkill = async ({ id, body }) => {
 }
 
 // Hook que usa useMutation para editar el perfil de un trabajador
-export const useEditFreelancerExperience = () => {
+export const useEditFreelancerSkill = () => {
     const queryClient = useQueryClient(); // Necesitamos el queryClient para invalidar queries
 
     return useMutation(patchSkill, {
@@ -31,4 +31,4 @@ export const useEditFreelancerExperience = () => {
     });
 }
 
-export default useEditFreelancerExperience;
+export default useEditFreelancerSkill;
