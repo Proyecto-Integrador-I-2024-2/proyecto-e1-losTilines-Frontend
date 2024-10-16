@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from app.models import Project, ProjectFreelancer, Milestone
+from app.models import Project, ProjectFreelancer, Milestone, Status
 from django.core.exceptions import ValidationError
 from app.serializers import FreelancerSerializer, UserSerializer, StatusSerializer
 
@@ -14,7 +14,9 @@ class ProjectSerializer(serializers.ModelSerializer):
     freelancers = ProjectFreelancerSerializer(source='projectfreelancer_set', many=True, read_only=True)
     company = serializers.StringRelatedField(read_only=True)
     user = UserSerializer(read_only=True)  # Rellenar automáticamente con el usuario actual
-    status = StatusSerializer(read_only=True)  # Rellenar automáticamente con el estado actual
+    status = serializers.PrimaryKeyRelatedField(queryset=Status.objects.all())
+    status_name = serializers.CharField(source='status.name', read_only=True)
+    
     class Meta:
         model = Project
         fields = '__all__'

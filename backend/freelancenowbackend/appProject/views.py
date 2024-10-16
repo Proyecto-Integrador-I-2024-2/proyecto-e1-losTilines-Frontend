@@ -17,20 +17,27 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         user = self.request.user
-        # Verificar si el usuario pertenece al grupo 'Project Manager' o 'Area Admin'
-        if (user.groups.filter(name='Freelancer').exists()):
+        if user.groups.filter(name='Freelancer').exists():
             raise PermissionDenied("You do not have permission to create a project.")
 
-        # Obtener la compañía asociada al usuario
         user_company = UserCompany.objects.filter(user=user).first()
         if user_company is None:
             raise PermissionDenied("The user does not belong to any company.")
         
-        # Asignar estado inicial por defecto
-        status, _ = Status.objects.get_or_create(name="Pending")  # Obtiene o crea el estado "Started"
-
-        # Guardar el proyecto con el usuario, la compañía y el estado inicial
+        status, _ = Status.objects.get_or_create(name="Pending")
         serializer.save(user=user, status=status)
+
+    def partial_update(self, request, *args, **kwargs):
+        user = request.user
+        instance = self.get_object()
+
+        # Verificar permisos de modificación, por ejemplo:
+        if user.groups.filter(name='Freelancer').exists():
+            raise PermissionDenied("You do not have permission to modify this project.")
+        
+        # Lógica de actualización adicional si es necesario
+        return super().partial_update(request, *args, **kwargs)
+
 
 class ProjectFreelancerViewSet(viewsets.ModelViewSet):
     queryset = ProjectFreelancer.objects.all()
