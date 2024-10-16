@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'appProfile',
     'appCompany',
     'appProject',
+    'appComunication',
     'corsheaders',
     'django_filters',
 ]
