@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "@/services/apiClient";
 
-const fetchSkills = async () => {
+const fetchFreelancers = async () => {
 
-    var userType = "skills";
+    var userType = "freelancers";
 
     const url = `${userType}/`
 
@@ -13,13 +13,13 @@ const fetchSkills = async () => {
     return data;
 }
 
-export const useSkills = () => {
+export const useFreelancers = () => {
 
-    return useQuery(['Skills'], fetchSkills, {
+    return useQuery(['freelancersListing'], fetchFreelancers, {
         staleTime: 1000 * 60 * 3,
         cachetime: 1000 * 60 * 30,
         retry: 2,
     })
 }
 
-export default useSkills;
+export default useFreelancers;

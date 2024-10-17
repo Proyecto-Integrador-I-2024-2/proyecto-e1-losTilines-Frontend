@@ -1,3 +1,5 @@
+import { useEffect } from 'react'; // Importa useEffect
+import { useMilestones } from '@/hooks/useMilestones'; 
 import {
   Card,
   CardHeader,
@@ -5,7 +7,7 @@ import {
   Typography,
   Avatar,
 } from "@material-tailwind/react";
- 
+
 function StarIcon() {
   return (
     <svg
@@ -22,8 +24,29 @@ function StarIcon() {
     </svg>
   );
 }
- 
+
 export function MilestoneCard() {
+  const { data: milestones, isLoading, error } = useMilestones(); // Asegúrate de pasar projectId al hook
+
+  // useEffect para verificar el estado de carga y los datos
+  useEffect(() => {
+    if (!isLoading && milestones) {
+      console.log('Milestones:', milestones);
+    } else if (isLoading) {
+      console.log('Loading milestones...');
+    } else if (error) {
+      console.error('Error loading milestones:', error.message);
+    }
+  }, [isLoading, milestones, error]); // Dependencias del useEffect
+
+  if (isLoading) {
+    return <div>Loading milestones...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading milestones: {error.message}</div>;
+  }
+
   return (
     <Card color="transparent" shadow={true} className="w-full transform transition-transform duration-300 hover:scale-95">
       <CardHeader
@@ -35,18 +58,17 @@ export function MilestoneCard() {
         <div className="flex w-full flex-col gap-0.5 m-2">
           <div className="flex items-center justify-between">
             <Typography variant="h5" color="blue-gray">
-              Microsoft
+              {milestones.name} {/* Muestra el título del milestone */}
             </Typography>
 
             <Avatar
               size="lg"
               variant="circular"
-              src=""
-              alt="tania andrew"
+              src={milestones.profile_picture} // Asegúrate de que este campo exista
+              alt={milestones.name} // Asegúrate de que este campo exista
             />
-            
           </div>
-          <Typography color="blue-gray">M1: Database desing model</Typography>
+          <Typography color="blue-gray">{milestones.description}</Typography> {/* Muestra la descripción */}
         </div>
       </CardHeader>
     </Card>

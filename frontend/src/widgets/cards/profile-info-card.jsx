@@ -5,8 +5,9 @@ import {
   CardBody,
   Typography,
 } from "@material-tailwind/react";
+import { EditButton } from "../buttons";
 
-export function ProfileInfoCard({ title, description, details, action }) {
+export function ProfileInfoCard({ title, description, details, editable, onEdit }) {
   return (
     <Card color="transparent" shadow={false}>
       <CardHeader
@@ -18,7 +19,7 @@ export function ProfileInfoCard({ title, description, details, action }) {
         <Typography variant="h6" color="blue-gray">
           {title}
         </Typography>
-        {action}
+        {editable && <EditButton toolTip="Edit Profile" onClick={onEdit} />}
       </CardHeader>
       <CardBody className="p-0">
         {description && (

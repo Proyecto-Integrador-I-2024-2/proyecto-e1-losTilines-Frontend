@@ -204,8 +204,8 @@ export function NavigationTopBar() {
       <Collapse open={openNav}>
         <NavList />
         <div className="flex w-full flex-nowrap items-center gap-2 lg:hidden">
-          <Button size="sm" fullWidth onClick={() => navigate('/signup')}>Get Started</Button> {/* Redirige a /signup */}
-          <Button variant="outlined" size="sm" fullWidth onClick={() => navigate('/login')}>Log In</Button> {/* Redirige a /login */}
+          <Button size="sm" fullWidth onClick={() => navigate('/auth/sign-up')}>Get Started</Button> {/* Redirige a /signup */}
+          <Button variant="outlined" size="sm" fullWidth onClick={() => navigate('/auth/sign-in')}>Log In</Button> {/* Redirige a /login */}
         </div>
       </Collapse>
     </Navbar>
