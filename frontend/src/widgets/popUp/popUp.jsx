@@ -41,7 +41,7 @@ export function PopUp({
         <DialogFooter>
           <Button
             variant="text"
-            color="black"
+            color="gray"
             onClick={handleOpen}
             className="mr-1"
           >

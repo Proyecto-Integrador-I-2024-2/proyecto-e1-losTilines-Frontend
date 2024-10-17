@@ -1,7 +1,5 @@
 // Importaciones necesarias
-import {
-  ChevronUpDownIcon,
-} from "@heroicons/react/24/outline";
+import { ChevronUpDownIcon } from "@heroicons/react/24/outline";
 import {
   Card,
   Typography,
@@ -9,14 +7,12 @@ import {
   Avatar,
   Checkbox,
 } from "@material-tailwind/react";
-import { useState } from "react";
 
 // Definición de los encabezados de la tabla
-const TABLE_HEAD = ["Member", "Is Check?"];
+const TABLE_HEAD = ["Photo", "Name", "Email", "Is Check?"];
 
 // Componente TableWithCheckBox
 export function TableWithCheckBox({ content, selectedId, setSelectedId }) {
-
   // Función para manejar la selección del checkbox
   const handleSelect = (id) => {
     if (selectedId === id) {
@@ -24,8 +20,8 @@ export function TableWithCheckBox({ content, selectedId, setSelectedId }) {
     } else {
       setSelectedId(id);
     }
-    console.log("SELECTED ID: ", selectedId); 
-  }
+    console.log("SELECTED ID: ", selectedId);
+  };
 
   return (
     <Card className="h-full w-full">
@@ -55,7 +51,7 @@ export function TableWithCheckBox({ content, selectedId, setSelectedId }) {
           <tbody>
             {content && content.length > 0 ? (
               content.map(
-                ({ img, name, email, id }, index) => {
+                ({ img: profile_picture,first_name, last_name,  email, id }, index) => {
                   const isLast = index === content.length - 1;
                   const classes = isLast
                     ? "p-4"
@@ -64,25 +60,27 @@ export function TableWithCheckBox({ content, selectedId, setSelectedId }) {
                   return (
                     <tr key={id}>
                       <td className={classes}>
-                        <div className="flex items-center gap-3">
-                          <Avatar src={img} alt={name} size="sm" />
-                          <div className="flex flex-col">
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal"
-                            >
-                              {name}
-                            </Typography>
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal opacity-70"
-                            >
-                              {email}
-                            </Typography>
-                          </div>
-                        </div>
+                        <Avatar src={profile_picture} alt={name} size="sm" />
+                      </td>
+
+                      <td>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {`${first_name} ${last_name}`}
+                        </Typography>
+                      </td>
+
+                      <td>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal opacity-70"
+                        >
+                          {email}
+                        </Typography>
                       </td>
                       <td className={classes}>
                         <div className="w-max">
@@ -94,7 +92,7 @@ export function TableWithCheckBox({ content, selectedId, setSelectedId }) {
                       </td>
                     </tr>
                   );
-                },
+                }
               )
             ) : (
               // Mostrar una fila con un mensaje cuando no hay datos
@@ -105,7 +103,7 @@ export function TableWithCheckBox({ content, selectedId, setSelectedId }) {
                     color="blue-gray"
                     className="font-normal opacity-70"
                   >
-                   No area admins available
+                    No area admins available
                   </Typography>
                 </td>
               </tr>
