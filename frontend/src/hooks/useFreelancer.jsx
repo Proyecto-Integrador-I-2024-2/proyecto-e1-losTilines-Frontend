@@ -1,16 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "@/services/apiClient";
 
-const fetchCompany = async () => {
+const fetchFreelancer = async () => {
+
+
     console.log("Role: " + sessionStorage.getItem("role"))
     console.log("Id: " + sessionStorage.getItem("id"))
     console.log("Token: " + sessionStorage.getItem("token"))
 
     const id = sessionStorage.getItem("id");
 
-    var userType = "company";
 
-    const url = `${userType}/?userId=${id}`
+    //Define routes base on session storage, also be careful with the name of the id retriev
+    //from freelancers, well, they are from a different table.
+
+    var userType = "freelancer";
+
+    const url = `${userType}/${id}/`
 
     console.log("URL: " + url)
     const { data } = await apiClient.get(url);
@@ -18,13 +24,13 @@ const fetchCompany = async () => {
     return data;
 }
 
-export const useCompany = () => {
+export const useFreelancer = () => {
 
-    return useQuery(['Company'], fetchCompany, {
+    return useQuery(['Freelancer'], fetchFreelancer, {
         staleTime: 1000 * 60 * 3,
         cachetime: 1000 * 60 * 30,
-        retry: 2
+        retry: 2,
     })
 }
 
-export default useCompany;
+export default useFreelancer;

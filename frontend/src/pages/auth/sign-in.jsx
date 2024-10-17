@@ -11,21 +11,33 @@ export function SignIn() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  console.log("elpepe")
 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log("Entrando en el login.")
-      await login.mutateAsync({email, password});
-      navigate('/dashboard');
+      console.log("Entrando en el login.");
+      await login.mutateAsync({ email, password });
+      navigate("/dashboard");
     } catch (error) {
-      console.error('Login failed:', error.response.data);
-      alert('Login failed! Check your credentials.');
+      if (error.response) {
+        // La solicitud se realizó y el servidor respondió con un código de estado que
+        // no está en el rango de 2xx
+        console.error("Login failed:", error.response.data);
+        alert(`Login failed! ${error.response.data}`);
+      } else if (error.request) {
+        // La solicitud se hizo pero no se recibió respuesta
+        console.error("No response from server:", error.request);
+        alert("No response from the server. Please try again later.");
+      } else {
+        // Algo sucedió en la configuración de la solicitud que lanzó un error
+        console.error("Error setting up request:", error.message);
+        alert("An error occurred. Please try again.");
+      }
     }
-    
   };
+  
 
 
   return (
