@@ -5,3 +5,5 @@ export * from "@/data/projects";
 export * from "@/data/freelancers-data";
 export * from "@/data/projects-table-data";
 export * from "@/data/orders-overview-data";
+export * from "@/data/default-experience-data";
+export * from "@/data/skills-data";
