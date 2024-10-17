@@ -1,25 +1,18 @@
-from django.urls import path
-from .views import (
-    FreelancerRegisterView,
-    BusinessManagerRegisterView,
-    CreateCompanyView,
-    RegisterAreaAdminView,
-    RegisterProjectManagerView
-)
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import *
+
+router = DefaultRouter()
+router.register(r'freelancers', FreelancerViewSet, basename='freelancer')
+router.register(r'business-managers', BusinessManagerViewSet, basename='business-manager')
+router.register(r'project-managers', ProjectManagerViewSet, basename='project-manager')
+router.register(r'admin-areas', AdminAreaViewSet, basename='admin-area')
+router.register(r'companies', CompanyViewSet, basename='companies')
+router.register(r'users', UserRoleViewSet, basename='users')
 
 urlpatterns = [
-    # Registro de Freelancer
-    path('register/freelancer/', FreelancerRegisterView.as_view(), name='register_freelancer'),
-
-    # Registro de Business Manager
-    path('register/business-manager/', BusinessManagerRegisterView.as_view(), name='register_business_manager'),
-
-    # Registro de usuarios de la compañía (Area Admin, Project Manager) por el Business Manager
-    path('register/projectmanager/', RegisterProjectManagerView.as_view(), name='register_project_manager'),
-
-    # Registro de usuarios de la compañía (Area Admin, Project Manager) por el Business Manager
-    path('register/adminarea/', RegisterAreaAdminView.as_view(), name='register_area_admin'),
-
-     # Registro de compañias
-    path('create/company/', CreateCompanyView.as_view(), name='creation_company'),
+    path('', include(router.urls)),
 ]
+
+
+

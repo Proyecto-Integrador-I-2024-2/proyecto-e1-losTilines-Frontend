@@ -1,97 +1,80 @@
-from rest_framework import generics, status
+from rest_framework import generics, status, viewsets
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from app.models import Project, Company, ProjectFreelancer, ProjectStatus, UserCompany
-from .serializers import ProjectSerializer
-
-
-# Listar todos los proyectos
-class ProjectListView(generics.ListAPIView):
-    queryset = Project.objects.all()
-    serializer_class = ProjectSerializer
-    permission_classes = [AllowAny]
-
-
-# Listar proyectos por compañía
-class ProjectByCompanyView(generics.ListAPIView):
-    serializer_class = ProjectSerializer
-    permission_classes = [AllowAny]
-
-    def get_queryset(self):
-        company_id = self.kwargs['company_id']
-        return Project.objects.filter(company_id=company_id)
-
-
-# Listar proyectos por freelancer
-class ProjectByFreelancerView(generics.ListAPIView):
-    serializer_class = ProjectSerializer
-    permission_classes = [AllowAny]
-
-    def get_queryset(self):
-        user_id = self.kwargs['user_id']
-        project_ids = ProjectFreelancer.objects.filter(freelancer_id=user_id).values_list('project_id', flat=True)
-        return Project.objects.filter(id__in=project_ids)
-
-
-# Listar proyectos para Project Managers
-class ProjectListForManagersView(generics.ListAPIView):
-    serializer_class = ProjectSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-        if not user.groups.filter(name='Project Manager').exists():
-            raise PermissionDenied("You do not have permission to view this list.")
-        return Project.objects.all()
-
-
-# Listar proyectos para Freelancers
-class ProjectListForFreelancersView(generics.ListAPIView):
-    serializer_class = ProjectSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-        if not user.groups.filter(name='Freelancer').exists():
-            raise PermissionDenied("You do not have permission to view this list.")
-        return Project.objects.filter(user=user)
-
-
-# Listar proyectos para Area Admins
-class ProjectListForAdminView(generics.ListAPIView):
-    serializer_class = ProjectSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-        if not user.groups.filter(name='Area Admin').exists():
-            raise PermissionDenied("You do not have permission to view this list.")
-        return Project.objects.all()
-
+from app.models import Project, Company, ProjectFreelancer, Status, UserCompany, Milestone, Freelancer
+from .serializers import *
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import *
 
 # Crear proyecto
-class ProjectCreateView(generics.CreateAPIView):
+class ProjectViewSet(viewsets.ModelViewSet):
+    queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ProjectFilter
 
     def perform_create(self, serializer):
         user = self.request.user
-
-        # Verificar si el usuario pertenece al grupo 'Project Manager' o 'Area Admin'
-        if not (user.groups.filter(name='Project Manager').exists() or 
-                user.groups.filter(name='Area Admin').exists()):
+        if user.groups.filter(name='Freelancer').exists():
             raise PermissionDenied("You do not have permission to create a project.")
 
-        # Obtener la compañía asociada al usuario
         user_company = UserCompany.objects.filter(user=user).first()
         if user_company is None:
             raise PermissionDenied("The user does not belong to any company.")
         
-        company = user_company.company  # Obtén la compañía de la relación UserCompany
+        status, _ = Status.objects.get_or_create(name="Pending")
+        serializer.save(user=user, status=status)
 
-        # Asignar estado inicial por defecto
-        status, _ = ProjectStatus.objects.get_or_create(name="Started")  # Obtiene o crea el estado "Started"
+    def partial_update(self, request, *args, **kwargs):
+        user = request.user
+        instance = self.get_object()
 
-        # Guardar el proyecto con el usuario, la compañía y el estado inicial
-        serializer.save(user=user, company=company, status=status)
+        # Verificar permisos de modificación, por ejemplo:
+        if user.groups.filter(name='Freelancer').exists():
+            raise PermissionDenied("You do not have permission to modify this project.")
+        
+        # Lógica de actualización adicional si es necesario
+        return super().partial_update(request, *args, **kwargs)
+
+
+class ProjectFreelancerViewSet(viewsets.ModelViewSet):
+    queryset = ProjectFreelancer.objects.all()
+    permission_classes = [AllowAny] #Change
+    serializer_class = ProjectFreelancerSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ProjectsFreelancerFilter
+
+#------------------------------------------------------------------------#
+
+class MilestoneViewSet(viewsets.ModelViewSet):
+    queryset = Milestone.objects.all()
+    serializer_class = MilestoneSerializer
+    permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    #filterset_class = [MilestoneFilter]
+    filterset_fields = ['project', 'freelancer']
+
+    def perform_create(self, serializer):
+    # Obtenemos el usuario que está realizando la solicitud
+        user = self.request.user
+
+        # Verificamos si el usuario es un freelancer
+        if not user.groups.filter(name='Freelancer').exists():
+            raise PermissionDenied("Only freelancers can create milestones.")
+
+        # Obtenemos el perfil del freelancer asociado al usuario
+        try:
+            freelancer = Freelancer.objects.get(user=user)
+        except Freelancer.DoesNotExist:
+            raise ValidationError("Freelancer profile not found.")
+
+        # Buscar el proyecto asociado al freelancer en ProjectFreelancer
+        project_freelancer = ProjectFreelancer.objects.filter(freelancer=freelancer).first()
+
+        if not project_freelancer:
+            raise ValidationError("You are not assigned to any project.")
+
+        # Creamos el milestone asociándolo automáticamente al freelancer y al proyecto
+        serializer.save(freelancer=freelancer, project=project_freelancer.project)

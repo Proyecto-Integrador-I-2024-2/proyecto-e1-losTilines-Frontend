@@ -1,311 +1,250 @@
-from rest_framework import generics, permissions, status
-from app.models import Area, User, UserCompany, Project, UserRole
-from .serializers import AreaSerializer, GroupSerializer, UserCompanySerializer, UserRoleSerializer
-from appAuth.serializers import UserSerializer
-from rest_framework.exceptions import PermissionDenied, ValidationError
-from rest_framework.permissions import IsAuthenticated
+from .serializers import WorkerSerializer, CompanyDetailSerializer
+from .filters import WorkerFilter, CompanyFilter
+from app.models import User, UserRole, Project, Area, Company
+from .serializers import AreaSerializer
+from django.contrib.auth.models import Group 
+from rest_framework.permissions import AllowAny 
+from rest_framework import status, viewsets
 from rest_framework.response import Response
-from django.contrib.auth.models import Group
+from rest_framework.exceptions import ValidationError
+from django_filters.rest_framework import DjangoFilterBackend
+from django.shortcuts import get_object_or_404
 
-class ListGroupsView(generics.ListAPIView):
-    serializer_class = GroupSerializer
-    permission_classes = [permissions.AllowAny]
+class CompanyDetailViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Company.objects.all()
+    serializer_class = CompanyDetailSerializer
+    lookup_field = 'id' 
+    permission_classes = [AllowAny]
 
-    def get_queryset(self):
-        return Group.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = CompanyFilter
 
-class WorkingAreaListView(generics.ListAPIView):
+class WorkerViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny] 
+    queryset = User.objects.filter(is_active=True)
+    serializer_class = WorkerSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = WorkerFilter
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        worker = self.get_object()
+        
+        new_role = request.data.get('role', None)
+        is_active = request.data.get('is_active', None)
+
+        # Obtener el rol actual del usuario
+        current_role = worker.userrole_set.first()
+
+        # Manejo de Cambio de Rol
+        if new_role:
+            if current_role and current_role.role.name == 'Area Admin' and new_role == 'Project Manager':
+                self.handle_area_admin_to_project_manager(worker, request, new_role)
+            
+            elif current_role and current_role.role.name == 'Project Manager' and new_role == 'Area Admin':
+                self.handle_project_manager_to_area_admin(worker, new_role)
+        
+        # Manejo de Desactivación de Usuario
+        if is_active is not None and not is_active:
+            self.handle_deactivation(worker, request)
+
+        # Actualizar información general del usuario
+        serializer = self.get_serializer(worker, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def handle_area_admin_to_project_manager(self, worker, request, new_role):
+        worker_company = worker.usercompany_set.first()
+
+        # Si tiene un área asignada, necesitamos reasignar el área
+        if worker_company and worker_company.area:
+            new_admin_id = request.data.get('new_admin_id')
+            if not new_admin_id:
+                raise ValidationError("You must assign another Area Admin before changing to Project Manager.")
+
+            # Reasignar el área a otro "Area Admin"
+            try:
+                new_admin = User.objects.get(pk=new_admin_id)
+                new_admin_role = UserRole.objects.filter(user=new_admin).first()
+
+                if new_admin_role.role.name != 'Area Admin':
+                    raise ValidationError("The new user must have the role of Area Admin.")
+                if new_admin.usercompany_set.filter(area__isnull=False).exists():
+                    raise ValidationError("The new Admin Area is already managing another area.")
+
+                # Reasignar el área
+                worker_company.area.user = new_admin
+                worker_company.area.save()
+
+            except User.DoesNotExist:
+                raise ValidationError("The new Admin Area is invalid.")
+
+        # Actualizar el grupo del usuario
+        try:
+            project_manager_group = Group.objects.get(name=new_role)
+            worker.groups.clear()  # Limpiar grupos anteriores
+            worker.groups.add(project_manager_group)  # Añadir el nuevo grupo
+            worker.save()
+        except Group.DoesNotExist:
+            raise ValidationError(f"The role {new_role} does not exist.")
+
+        # Cambiar el rol a "Project Manager" en UserRole
+        current_role = worker.userrole_set.first()
+        current_role.role = project_manager_group
+        current_role.save()
+
+    def handle_project_manager_to_area_admin(self, worker, new_role):
+        current_role = worker.userrole_set.first()
+
+        # Actualizar el grupo del usuario
+        try:
+            area_admin_group = Group.objects.get(name=new_role)
+            worker.groups.clear()  # Limpiar grupos anteriores
+            worker.groups.add(area_admin_group)  # Añadir el nuevo grupo
+            worker.save()
+        except Group.DoesNotExist:
+            raise ValidationError(f"The role {new_role} does not exist.")
+
+        # Cambiar el rol a "Area Admin" en UserRole
+        current_role.role = area_admin_group
+        worker_company = worker.usercompany_set.first()
+
+        # Desasignar el área actual del usuario si tiene
+        if worker_company:
+            worker_company.area = None
+            worker_company.save()
+
+        current_role.save()
+
+    def handle_deactivation(self, worker, request):
+
+        current_role = worker.userrole_set.first()
+        
+        if current_role.role.name == 'Area Admin':
+            worker_company = worker.usercompany_set.first()
+            
+            if worker_company and worker_company.area:
+                new_admin_id = request.data.get('new_admin_id')
+                if not new_admin_id:
+                    raise ValidationError("You must assign another Admin Area before deactivating this user.")
+
+                # Reasignar el área a otro "Area Admin"
+                try:
+                    new_admin = User.objects.get(pk=new_admin_id)
+                    new_admin_role = UserRole.objects.filter(user=new_admin).first()
+
+                    if new_admin_role.role.name != 'Area Admin':
+                        raise ValidationError("The new user must have the Area Admin role.")
+                    if new_admin.usercompany_set.filter(area__isnull=False).exists():
+                        raise ValidationError("The new Admin Area is already managing another area.")
+
+                    worker_company.area.user = new_admin
+                    worker_company.area.save()
+
+                except User.DoesNotExist:
+                    raise ValidationError("The new Admin Area is invalid.")
+
+        elif current_role.role.name == 'Project Manager':
+            projects = Project.objects.filter(user=worker)
+            new_pm_id = request.data.get('new_pm_id')
+            if not new_pm_id:
+                raise ValidationError("You must assign another Project Manager before deactivating this user.")
+            
+            # Reasignar los proyectos a otro "Project Manager"
+            try:
+                new_pm = User.objects.get(pk=new_pm_id)
+                new_pm_role = UserRole.objects.filter(user=new_pm).first()
+
+                if new_pm_role.role.name != 'Project Manager':
+                    raise ValidationError("The new user must have the Project Manager role.")
+
+                for project in projects:
+                    project.user = new_pm
+                    project.save()
+
+            except User.DoesNotExist:
+                raise ValidationError("The new Project Manager is not valid.")
+            
+class AreaViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
     queryset = Area.objects.all()
     serializer_class = AreaSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        business_manager = self.request.user
-        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
-
-        if user_company_instance is None:
-            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
-
-        return Area.objects.filter(company=user_company_instance.company)
-
-class WorkingAreaDetailView(generics.RetrieveAPIView):
-    queryset = Area.objects.all()
-    serializer_class = AreaSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['company', 'user']
 
     def get_object(self):
-        business_manager = self.request.user
-        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
+        return super().get_object()
 
-        if user_company_instance is None:
-            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
+    def create(self, request, *args, **kwargs):
+        area_name = request.data.get('name')
+        company_id = request.data.get('company')
+        area_admin_id = request.data.get('user')
 
-        # Asegurarse de que el área pertenece a la compañía del Business Manager
-        area = super().get_object()
-        if area.company != user_company_instance.company:
-            raise PermissionDenied("No tienes permiso para ver esta área de trabajo.")
+        area = self.validate_area(area_name, company_id, area_admin_id)
+
+        return Response(AreaSerializer(area).data, status=status.HTTP_201_CREATED)
+
+    def update(self, request, *args, **kwargs):
+        area = self.get_object()
+        area_name = request.data.get('name')
+        company_id = request.data.get('company')
+        area_admin_id = request.data.get('user')
+
+        area = self.validate_area(area_name, company_id, area_admin_id, area=area)
+
+        return Response(AreaSerializer(area).data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        area = self.get_object()
+        self.delete_area_and_projects(area)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def validate_area(self, area_name, company_id, area_admin_id, area=None):
+        # Obtener el Area Admin
+        area_admin = get_object_or_404(User, pk=area_admin_id)
+        
+        # Validar si el Area Admin pertenece a la compañía
+        if not area_admin.usercompany_set.filter(company__id=company_id).exists():
+            raise ValidationError("El Area Admin debe pertenecer a la compañía especificada.")
+        
+        # Validar que el Area Admin no tenga un área asignada (a menos que sea el mismo área que se está actualizando)
+        # if area_admin.usercompany_set.filter(area__isnull=False).exists() and (area is None or area_admin != area.user):
+        #     raise ValidationError("El Area Admin ya tiene un área asignada.")
+
+        # Validar que el nombre del área sea único
+        if area is None:  # Para creación
+            if Area.objects.filter(name=area_name, company__id=company_id).exists():
+                raise ValidationError("El nombre del área ya existe en esta compañía.")
+        else:  # Para actualización
+            if Area.objects.filter(name=area_name, company__id=company_id).exclude(id=area.id).exists():
+                raise ValidationError("El nombre del área ya existe en esta compañía.")
+
+        # Crear o actualizar el área
+        if area is None:  # Creación
+            area = Area(name=area_name, company_id=company_id, user=area_admin)
+            area.save()
+        else:  # Actualización
+            area.name = area_name
+            area.company_id = company_id
+            area.user = area_admin
+            area.save()
 
         return area
 
-class WorkingAreaCreationView(generics.CreateAPIView):
-    queryset = Area.objects.all()
-    serializer_class = AreaSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def perform_create(self, serializer):
-        business_manager = self.request.user
-        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
-
-        if user_company_instance is None:
-            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
-
-        company = user_company_instance.company
-        user_id = self.request.data.get("user")
-        if user_id:
-            try:
-                user = User.objects.get(id=user_id)
-                if not user.groups.filter(name='Area Admin').exists():
-                    raise ValidationError("El usuario debe pertenecer al grupo 'Area Admin'.")
-
-                if Area.objects.filter(user=user, company=company).exists():
-                    raise ValidationError("El usuario ya está administrando un área en esta compañía.")
-
-            except User.DoesNotExist:
-                raise ValidationError("El usuario especificado no existe.")
-        else:
-            raise ValidationError("Se debe proporcionar un usuario.")
-
-        area = serializer.save(company=company, user=user)
-        UserCompany.objects.filter(user=user, company=company).update(area=area)
-
-class WorkingAreaUpdateView(generics.UpdateAPIView):
-    queryset = Area.objects.all()
-    serializer_class = AreaSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def perform_update(self, serializer):
-        business_manager = self.request.user
-        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
-
-        if user_company_instance is None:
-            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
-
-        company = user_company_instance.company
-        area = self.get_object()
-
-        if area.company != company:
-            raise PermissionDenied("No tienes permiso para actualizar esta área de trabajo.")
-
-        # Obtener el nuevo usuario del request
-        new_user_id = self.request.data.get("user")
-        if new_user_id:
-            try:
-                new_user = User.objects.get(id=new_user_id)
-                if not new_user.groups.filter(name='Area Admin').exists():
-                    raise ValidationError("El usuario debe pertenecer al grupo 'Area Admin'.")
-
-                UserCompany.objects.filter(area=area, company=company).update(user=new_user)
-
-            except User.DoesNotExist:
-                raise ValidationError("El usuario especificado no existe.")
-        else:
-            raise ValidationError("Se debe proporcionar un usuario.")
-
-        serializer.save(company=company, user=new_user)
-
-class WorkingAreaDeleteView(generics.DestroyAPIView):
-    queryset = Area.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
-
-    def perform_destroy(self, instance):
-        business_manager = self.request.user
-        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
-
-        if user_company_instance is None:
-            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
-
-        if instance.company != user_company_instance.company:
-            raise PermissionDenied("No tienes permiso para eliminar esta área de trabajo.")
-
-        UserCompany.objects.filter(area=instance, company=user_company_instance.company).update(area=None)
-
-        instance.delete()
-
-class ListCompanyWorkersView(generics.ListAPIView):
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        business_manager = self.request.user
-
-        # Verifica que el usuario logueado sea un Business Manager
-        if not business_manager.groups.filter(name="Business Manager").exists():
-            raise ValidationError("No tienes permiso para ver esta información.")
-
-        # Obtener la compañía asociada al Business Manager
-        user_company_instance = UserCompany.objects.select_related('company').filter(user=business_manager).first()
-        if user_company_instance is None:
-            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
-
-        # Obtener todos los UserCompany relacionados con la misma compañía, excluyendo al Business Manager
-        user_companies = UserCompany.objects.select_related('area').filter(company=user_company_instance.company).exclude(user=business_manager)
-
-        # Extraer los IDs de usuario
-        user_ids = user_companies.values_list('user__id', flat=True)
-
-        # Retornar los usuarios filtrados
-        return User.objects.filter(id__in=user_ids)
-
-class ListCompanyWorkersRoleAreaView(generics.ListAPIView):
-    serializer_class = UserRoleSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        business_manager = self.request.user
-
-        # Verifica que el usuario logueado sea un Business Manager
-        if not business_manager.groups.filter(name="Business Manager").exists():
-            raise ValidationError("No tienes permiso para ver esta información.")
-
-        # Obtener la compañía asociada al Business Manager
-        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
-        if user_company_instance is None:
-            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
-        
-        # Retorna los usuarios que pertenezcan a la misma compañía como instancias de User
-        user_ids = UserCompany.objects.filter(company=user_company_instance.company).values_list('user', flat=True)
-        return User.objects.filter(id__in=user_ids).exclude(id=business_manager.id)  # Excluye al Business Manager
-
-class RetrieveWorkerView(generics.RetrieveAPIView):
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        business_manager = self.request.user
-
-        # Verifica si el usuario pertenece al grupo "Business Manager"
-        if not business_manager.groups.filter(name="Business Manager").exists():
-            raise ValidationError("No tienes permiso para ver esta información.")
-
-        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
-        if user_company_instance is None:
-            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
-
-        user_ids = UserCompany.objects.filter(company=user_company_instance.company).values_list('user', flat=True)
-        return User.objects.filter(id__in=user_ids)
-
-    def get(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
-
-class UpdateWorkerView(generics.UpdateAPIView):
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        business_manager = self.request.user
-
-        if not business_manager.groups.filter(name="Business Manager").exists():
-            raise ValidationError("No tienes permiso para actualizar esta información.")
-
-        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
-        if user_company_instance is None:
-            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
-
-        user_ids = UserCompany.objects.filter(company=user_company_instance.company).values_list('user', flat=True)
-        return User.objects.filter(id__in=user_ids)
-
-    def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        data = request.data
-
-        current_role = instance.groups.values_list('name', flat=True).first()
-
-        if 'role' in data:
-            new_worker_id = data.get('new_worker')
-
-            # Verifica si el Area Admin o el Project Manager no están asociados
-            if current_role == "Area Admin" and not UserCompany.objects.filter(user=instance).exists():
-                # Se permite eliminar sin reemplazo
-                pass
-
-            elif current_role == "Project Manager":
-                # Se permite eliminar sin reemplazo
-                pass
-            
-            else:
-                # Si hay un nuevo trabajador, valida
-                if new_worker_id:
-                    new_worker = User.objects.get(id=new_worker_id)
-                    new_worker_role = new_worker.groups.values_list('name', flat=True).first()
-                    if new_worker_role != current_role:
-                        raise ValidationError(f"El trabajador que estás intentando asignar no tiene el rol de {current_role}.")
-                else:
-                    raise ValidationError(f"Debes proporcionar el trabajador que reemplazará al {current_role}.")
-
-        return super().update(request, *args, **kwargs)
-
-class DeleteWorkerView(generics.DestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        business_manager = self.request.user
-
-        if not business_manager.groups.filter(name="Business Manager").exists():
-            raise ValidationError("No tienes permiso para eliminar esta información.")
-
-        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
-        if user_company_instance is None:
-            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
-
-        user_ids = UserCompany.objects.filter(company=user_company_instance.company).values_list('user', flat=True)
-        return User.objects.filter(id__in=user_ids)
-
-    def delete(self, request, *args, **kwargs):
-        instance = self.get_object()
-        data = request.data
-
-        current_role = instance.groups.values_list('name', flat=True).first()
-
-        # Verifica si el Area Admin o el Project Manager no están asociados
-        if current_role == "Area Admin" and not UserCompany.objects.filter(user=instance).exists():
-            # Se permite eliminar sin reemplazo
-            instance.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-
-        elif current_role == "Project Manager" and not Project.objects.filter(user=instance).exists():
-            # Se permite eliminar sin reemplazo
-            instance.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-
-        # Si el trabajador es asociado, requiere reemplazo
-        new_worker_id = data.get('new_worker')
-        if not new_worker_id:
-            raise ValidationError(f"Debes proporcionar el trabajador que reemplazará al {current_role}.")
-
-        # Validar que el nuevo trabajador sea del mismo rol
-        new_worker = User.objects.get(id=new_worker_id)
-        new_worker_role = new_worker.groups.values_list('name', flat=True).first()
-        if new_worker_role != current_role:
-            raise ValidationError(f"El trabajador que estás intentando asignar no tiene el rol de {current_role}.")
-
-        instance.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
-class ListingAdminAreaAvailableView(generics.ListAPIView):
-    serializer_class = UserCompanySerializer
-    permission_classes = [IsAuthenticated]
-    
-    def get_queryset(self):
-        business_manager = self.request.user
-        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
-        area_admins = User.objects.filter(groups__name="Area Admin")
-        assigned_admins = UserCompany.objects.filter(area__isnull=False).values_list('user_id', flat=True)
-        available_admins = area_admins.exclude(id__in=assigned_admins)
-
-        if user_company_instance is None:
-            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
-
-        return UserCompany.objects.filter(user__in=available_admins)
-
+    def delete_area_and_projects(self, area):
+        # Eliminar todos los proyectos relacionados al área
+        projects = Project.objects.filter(user__usercompany__area=area)
+        projects.delete()
+
+        # Desasociar el Area Admin de su área
+        area.user.usercompany_set.filter(area=area).update(area=None)
+
+        # Desasociar a los Project Managers del área
+        project_managers = User.objects.filter(usercompany__area=area, userrole__role__name="Project Manager")
+        for pm in project_managers:
+            pm.usercompany_set.filter(area=area).update(area=None)
+
+        # Eliminar el área
+        area.delete()

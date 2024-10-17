@@ -7,9 +7,8 @@ from django.contrib.auth import get_user_model
 
 from app.models import (
     UserRole, Notification, UserNotification, Company, Area, UserCompany,
-    Freelancer, SkillType, Skill, FreelancerSkill, Experience, Portfolio, Comment,
-    ProjectStatus, Project, ProjectFreelancer, ProjectSkill, Milestone, Deliverable, Payment,
-    Country, City
+    Freelancer, SkillType, Skill, FreelancerSkill, Experience, Comment,
+    Status, Project, ProjectFreelancer, ProjectSkill, Milestone, Deliverable, Payment,
 )
 
 User = get_user_model()
@@ -292,7 +291,7 @@ class Command(BaseCommand):
             level = 50 + i * 10
             try:
                 freelancer_skill, created = FreelancerSkill.objects.get_or_create(
-                    freelancer=freelancer,
+                    freelancer = Freelancer.objects.get(user__email=f"freelancer1@example.com"),
                     skill=skill,
                     defaults={
                         'level': level
@@ -312,7 +311,7 @@ class Command(BaseCommand):
         for i, freelancer in enumerate(freelancers):
             try:
                 experience, created = Experience.objects.get_or_create(
-                    freelancer=freelancer,
+                    freelancer = Freelancer.objects.get(user__email=f"freelancer1@example.com"),
                     start_date=timezone.now().date(),
                     occupation=f'Ocupación {i+1}',
                     company=f'Compañía {i+1}',
@@ -327,33 +326,13 @@ class Command(BaseCommand):
                 continue
             experiences.append(experience)
 
-        # Crear portafolios
-        portfolios = []
-        for i, freelancer in enumerate(freelancers):
-            try:
-                portfolio, created = Portfolio.objects.get_or_create(
-                    freelancer=freelancer,
-                    date=timezone.now().date(),
-                    project_name=f'Proyecto {i+1}',
-                    url=f'http://example.com/portafolio/{i+1}',
-                    description=f'Descripción del portafolio {i+1}'
-                )
-                if created:
-                    self.stdout.write(self.style.SUCCESS(f'Portafolio "{portfolio.project_name}" para "{freelancer.email}" creado'))
-                else:
-                    self.stdout.write(self.style.WARNING(f'Portafolio "{portfolio.project_name}" ya existe para "{freelancer.email}"'))
-            except ValueError as e:
-                self.stdout.write(self.style.ERROR(f'Error al crear portafolio: {str(e)}'))
-                continue
-            portfolios.append(portfolio)
-
         # Crear comentarios
         comments = []
         for i, freelancer in enumerate(freelancers):
             writer = project_managers[i % len(project_managers)]
             try:
                 comment, created = Comment.objects.get_or_create(
-                    freelancer=freelancer,
+                    freelancer = Freelancer.objects.get(user__email=f"freelancer1@example.com"),
                     writer=writer,
                     defaults={
                         'title': f'Título del comentario {i+1}',
@@ -374,7 +353,7 @@ class Command(BaseCommand):
         project_statuses = []
         for i in range(1, 4):
             name = f'Estado {i}'
-            project_status, created = ProjectStatus.objects.get_or_create(name=name)
+            project_status, created = Status.objects.get_or_create(name=name)
             if created:
                 self.stdout.write(self.style.SUCCESS(f'Estado de Proyecto "{name}" creado'))
             else:
@@ -399,9 +378,7 @@ class Command(BaseCommand):
                         'start_date': start_date,
                         'user': user,
                         'budget': budget,
-                        'area': area,
-                        'company': company,
-                        'status': project_statuses[i - 1].name
+                        'status': project_statuses[i - 1]
                     }
                 )
                 if created:
@@ -420,7 +397,7 @@ class Command(BaseCommand):
             try:
                 project_freelancer, created = ProjectFreelancer.objects.get_or_create(
                     project=project,
-                    freelancer=freelancer
+                    freelancer = Freelancer.objects.get(user__email=f"freelancer1@example.com"),
                 )
                 if created:
                     self.stdout.write(self.style.SUCCESS(f'Freelancer "{freelancer.email}" asignado al proyecto "{project.name}"'))
