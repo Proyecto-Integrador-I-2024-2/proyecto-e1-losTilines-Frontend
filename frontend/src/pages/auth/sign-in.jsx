@@ -61,7 +61,7 @@ export function SignIn() {
             label={
               <Typography variant="small" color="gray" className="flex items-center justify-start font-medium">
                 I agree the&nbsp;
-                <a href="#" className="font-normal text-black transition-colors hover:text-gray-900 underline">Terms and Conditions</a>
+                <p  className="font-normal text-black transition-colors hover:text-gray-900 underline">Terms and Conditions</p>
               </Typography>
             }
             containerProps={{ className: "-ml-2.5" }}

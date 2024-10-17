@@ -9,28 +9,35 @@ import {
   Avatar,
 } from "@material-tailwind/react";
 
-export function ListRowWithImage({ rowName, description, chipValue }) {
+export function ListRowWithImage({ avatar, rowName, description, chipValue }) {
   return (
-    <ListItem className="flex-row justify-between">
-      <div className="flex flex-row justify-start">
+    <ListItem className="flex-row w-full justify-start">
+      <section>
         <Avatar
           variant="circular"
-          alt="user 1"
           className="border-2 border-white hover:z-10 focus:z-10"
-          src="/img/people/persona1.jpg"
+          src={avatar}
         />
+      </section>
+
+      <main className="flex w-full flex-col md:flex-row md:justify-between space-y-2 ">
         <div className="flex flex-col justify-center ml-3">
           <Typography className="font-medium" color="black" variant="paragraph">
             {rowName}
           </Typography>
           <Typography color="blue-gray" size="sm">
-            {description} 
+            {description}
           </Typography>
         </div>
-      </div>
-      <div>
-        <Chip variant="ghost" className="w-28 flex items-center justify-center"  value={chipValue} />
-      </div>
+
+        <div className="ml-3 flex md:flex-col md:justify-center md:items-end">
+          <Chip
+            variant="ghost"
+            className="w-fit flex items-center justify-center"
+            value={chipValue}
+          />
+        </div>
+      </main>
     </ListItem>
   );
 }

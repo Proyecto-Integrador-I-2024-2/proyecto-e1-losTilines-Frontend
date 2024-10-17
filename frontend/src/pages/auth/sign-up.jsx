@@ -230,12 +230,11 @@ export function SignUp() {
                 className="flex items-center justify-start font-medium"
               >
                 I agree the&nbsp;
-                <a
-                  href="#"
+                <p
                   className="font-normal text-black transition-colors hover:text-gray-900 underline"
                 >
                   Terms and Conditions
-                </a>
+                </p>
               </Typography>
             }
             containerProps={{ className: "-ml-2.5" }}
