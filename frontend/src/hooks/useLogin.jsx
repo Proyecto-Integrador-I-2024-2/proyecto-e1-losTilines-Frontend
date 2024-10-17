@@ -18,7 +18,11 @@ export const useLogin = () => {
         onSuccess: (data) => {
 
             sessionStorage.setItem('token', data.token);
+            sessionStorage.setItem('role', data.roles);
+            sessionStorage.setItem('id', data.user_id);
+
             queryClient.invalidateQueries(['User']);
+            
             alert('Login successful!');
     
         },

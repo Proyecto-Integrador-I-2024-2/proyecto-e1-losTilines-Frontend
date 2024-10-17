@@ -15,7 +15,7 @@ export function ProjectCard({ project, isActive }) {
     >
       <CardHeader shadow={false} floated={false} className="h-96">
         <img
-          src={project.img}
+          src={project.image || "https://i.pinimg.com/originals/d6/62/39/d66239c5145af6335cb3e9196a4c06b6.gif"}
           alt="card-image"
           className="h-full w-full object-cover"
         />
@@ -23,10 +23,10 @@ export function ProjectCard({ project, isActive }) {
       <CardBody>
         <div className="mb-2 flex items-center justify-between">
           <Typography color="blue-gray" className="font-medium">
-            {project.title}
+            {project.name}
           </Typography>
           <Typography color="blue-gray" className="font-medium">
-            {project.tag}
+            {project.budget}
           </Typography>
         </div>
         <Typography

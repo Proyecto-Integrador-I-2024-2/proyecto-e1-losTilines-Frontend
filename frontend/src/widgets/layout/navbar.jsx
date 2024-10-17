@@ -41,9 +41,9 @@ function NavListMenu() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   const renderItems = nestedMenuItems.map(({ title }, key) => (
-    <a href="#" key={key}>
+    <div key={key}>
       <MenuItem>{title}</MenuItem>
-    </a>
+    </div>
   ));
 
   return (
@@ -156,14 +156,7 @@ function NavList() {
         </ListItem>
       </Typography>
       <NavListMenu />
-      <Typography
-        as="a"
-        href="#"
-        variant="small"
-        color="blue-gray"
-        className="font-medium"
-      >
-      </Typography>
+      
     </List>
   );
 }
@@ -184,9 +177,7 @@ export function NavigationTopBar() {
       <div className="flex items-center justify-between text-blue-gray-900">
         <Link to="/">
           <Typography
-            as="a"
-            href="#"
-            variant="h6"
+              variant="h6"
             className="mr-4 cursor-pointer py-1.5 lg:ml-2"
           >
             Freelance Now
@@ -213,8 +204,8 @@ export function NavigationTopBar() {
       <Collapse open={openNav}>
         <NavList />
         <div className="flex w-full flex-nowrap items-center gap-2 lg:hidden">
-          <Button size="sm" fullWidth onClick={() => navigate('/signup')}>Get Started</Button> {/* Redirige a /signup */}
-          <Button variant="outlined" size="sm" fullWidth onClick={() => navigate('/login')}>Log In</Button> {/* Redirige a /login */}
+          <Button size="sm" fullWidth onClick={() => navigate('/auth/sign-up')}>Get Started</Button> {/* Redirige a /signup */}
+          <Button variant="outlined" size="sm" fullWidth onClick={() => navigate('/auth/sign-in')}>Log In</Button> {/* Redirige a /login */}
         </div>
       </Collapse>
     </Navbar>

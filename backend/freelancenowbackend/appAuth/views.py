@@ -1,106 +1,127 @@
-from rest_framework import generics, status, permissions
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework import viewsets, status
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from .serializers import UserSerializer, CompanySerializer
+from app.models import User, Group, UserRole, Freelancer, Company
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
+from rest_framework.decorators import action
+from app.models import User, UserRole, Group, UserCompany, Freelancer
+from app.permission import IsBusinessManager, IsBusinessManagerOrReadOnly, IsOwnerOrReadOnly
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
-from app.models import User, UserRole, Group, Company, UserCompany, Freelancer
-from .serializers import UserSerializer, CompanySerializer
-from rest_framework import serializers
-import logging
-from rest_framework.exceptions import PermissionDenied, ValidationError
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import FreelancerFilter, WorkerFilter, CompanyFilter
+from app.serializers import UserRoleSerializer
 
-logger = logging.getLogger(__name__)
-
-class FreelancerRegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+class UserRoleViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = UserRole.objects.all()
     permission_classes = [AllowAny]
+    serializer_class = UserRoleSerializer
 
-    def perform_create(self, serializer):
-        user = serializer.save()  
-        role, created = Group.objects.get_or_create(name='Freelancer')
+class BaseUserFreeViewSet(viewsets.ModelViewSet):
+    filter_backends = [DjangoFilterBackend]
+
+    def get_permissions(self):
+        if self.action == 'create':
+            return [AllowAny()]
+        elif self.action in ['list', 'retrieve']:
+            return [IsAuthenticated()]
+        elif self.action in ['update', 'partial_update']:
+            return [IsAuthenticated(), IsOwnerOrReadOnly()]
+        return super().get_permissions()
+
+    def perform_create(self, serializer, group_name):
+        user = serializer.save()
+        role, created = Group.objects.get_or_create(name=group_name)
         user.groups.add(role)
         UserRole.objects.create(user=user, role=role)
-        Freelancer.objects.create(user=user)
-        user.groups.add(role)
 
-class BusinessManagerRegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
+class FreelancerViewSet(BaseUserFreeViewSet):
+    queryset = User.objects.filter(groups__name='Freelancer')
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]
+    filterset_class = FreelancerFilter
 
     def perform_create(self, serializer):
-        user = serializer.save()  
-        role, created = Group.objects.get_or_create(name='Business Manager')
+        super().perform_create(serializer, 'Freelancer')
+        Freelancer.objects.create(user=serializer.save())
+
+class BusinessManagerViewSet(BaseUserFreeViewSet):
+    queryset = User.objects.filter(groups__name='Business Manager')
+    serializer_class = UserSerializer
+    filterset_class = WorkerFilter
+
+    def perform_create(self, serializer):
+        super().perform_create(serializer, 'Business Manager')
+
+class BaseUserViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated, IsBusinessManager]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = WorkerFilter
+
+    def get_queryset(self):
+        # Filtrar usuarios de la misma compañía
+        business_manager = self.request.user
+        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
+        return self.queryset.filter(usercompany__company=user_company_instance.company)
+
+    def perform_create(self, serializer, role_name):
+        business_manager = self.request.user
+        user_company_instance = UserCompany.objects.filter(user=business_manager).first()
+
+        user = serializer.save()
+        role, created = Group.objects.get_or_create(name=role_name)
         user.groups.add(role)
         UserRole.objects.create(user=user, role=role)
-        user.groups.add(role)
+        UserCompany.objects.create(company=user_company_instance.company, user=user)
 
-class CreateCompanyView(generics.CreateAPIView):
+    def update(self, request, *args, **kwargs):
+        raise PermissionDenied("Updating worker is not allowed.")
+
+    def destroy(self, request, *args, **kwargs):
+        raise PermissionDenied("Deleting worker is not allowed.")
+
+class ProjectManagerViewSet(BaseUserViewSet):
+    queryset = User.objects.filter(groups__name='Project Manager')
+    serializer_class = UserSerializer
+
+    def perform_create(self, serializer):
+        super().perform_create(serializer, 'Project Manager')
+        User.objects.create(user=serializer.save())
+
+class AdminAreaViewSet(BaseUserViewSet):
+    queryset = User.objects.filter(groups__name='Area Admin')
+    serializer_class = UserSerializer
+
+    def perform_create(self, serializer):
+        super().perform_create(serializer, 'Area Admin')
+        User.objects.create(user=serializer.save())
+
+class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsBusinessManagerOrReadOnly]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = CompanyFilter
 
-    def perform_create(self, serializer):
+    def get_queryset(self):
         user = self.request.user
+        if user.groups.filter(name='Business Manager').exists():
+            return Company.objects.filter(usercompany__user=user)
+        return Company.objects.none()
 
-        if not user.groups.filter(name='Business Manager').exists():
-            raise PermissionDenied("You must be a Business Manager to create a company.")
-            
-        serializer.save(user=user)
-
+    def perform_create(self, serializer):
         company = serializer.save()
+        UserCompany.objects.create(user=self.request.user, company=company)
 
-        UserCompany.objects.create(company=company, user=user)
+    def perform_update(self, serializer):
+        user_company_instance = UserCompany.objects.filter(user=self.request.user).first()
+        if not user_company_instance:
+            raise ValidationError({"error": "You are not associated with any company."})
+        
+        serializer.save(company=user_company_instance.company)
 
-class RegisterAreaAdminView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def perform_create(self, serializer):
-        businessmanager = self.request.user
-        user_company_instance = UserCompany.objects.filter(user=businessmanager).first()
-
-        if user_company_instance is None:
-            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
-
-        # Asegurarse que el que hace la solicitud es un Business Manager
-        if not businessmanager.groups.filter(name='Business Manager').exists():
-            raise serializers.ValidationError({"error": "Unauthorized"}, code=403)        
-
-        # Crea el usuario y asocia el rol "Area Admin"
-        area_admin_user = serializer.save()  # Guarda el usuario
-        role, created = Group.objects.get_or_create(name='Area Admin')
-        UserRole.objects.create(user=area_admin_user, role=role)
-        area_admin_user.groups.add(role)
-
-        # Asocia el nuevo área admin con la compañía
-        UserCompany.objects.create(company=user_company_instance.company, user=area_admin_user)
-
-class RegisterProjectManagerView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
-
-    def perform_create(self, serializer):
-        businessmanager = self.request.user
-        user_company_instance = UserCompany.objects.filter(user=businessmanager).first()
-
-        if user_company_instance is None:
-            raise ValidationError("No se encontró la compañía asociada con este Business Manager.")
-
-        if not businessmanager.groups.filter(name='Business Manager').exists():
-            raise serializers.ValidationError({"error": "Unauthorized"}, code=403)        
-
-        area_admin_user = serializer.save()
-        role, created = Group.objects.get_or_create(name='Project Manager')
-        UserRole.objects.create(user=area_admin_user, role=role)
-        area_admin_user.groups.add(role)
-
-        UserCompany.objects.create(company=user_company_instance.company, user=area_admin_user)
-
+#--------------------------------------------------------------------------------------------------#
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
@@ -122,9 +143,12 @@ class LoginView(APIView):
             )
 
         token, created = Token.objects.get_or_create(user=user)
+        
+        user_roles = UserRole.objects.filter(user = user).select_related('role')
+        roles = [user_role.role.name for user_role in user_roles]
         return Response({
             'token': token.key,
             'user_id': user.id,
-            'email': user.email
+            'email': user.email,
+            'roles': roles
         }, status=status.HTTP_200_OK)
-    

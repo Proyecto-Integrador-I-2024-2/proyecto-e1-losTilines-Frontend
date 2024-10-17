@@ -1,158 +1,205 @@
-import { ListCard, ListRowWithImage } from "@/widgets/list";
-import ListRowStructure from "@/widgets/list/listRowStructure";
+import { ListCard } from "@/widgets/list";
 import { NumberInfo } from "@/widgets/statistics/numberInfo";
 import Chart from "@/widgets/statistics/chart";
-import { Button, Card, Typography } from "@material-tailwind/react";
-import { Link } from "react-router-dom";
+import { Button, Card, Spinner } from "@material-tailwind/react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   useUser,
-  useAreas,
-  useAdminAreas,
   useCreateArea,
+  useWorkers,
+  useQueryParams,
+  useCustomFethc,
 } from "@/hooks";
-import useWorkers from "@/hooks/useWorkers";
-import { CreateArea } from "@/widgets/popUp";
-import { projectsData } from "@/data";
-import { CustomListItem } from "@/widgets/horList";
-import { TableWithCheckBox } from "@/widgets/tables";
-import workerCompanies from "@/data/workersAreas";
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import apiClient from "@/services/apiClient";
+import { useQuery } from "@tanstack/react-query";
+import { CreateAreaPopUp } from "@/widgets/areaWidgets";
+import ListRowStructure from "@/widgets/list/listRowStructure";
+import { LeftColumnRows, MidColumnRows } from "@/widgets/dashboard";
+import { SpinnerCustom } from "@/widgets/layout";
 function Dashboard() {
-  //STATES
+  //Utils
 
-  const [selectId, setSelectedId] = useState(null);
-  const [areaName, setAreaName] = useState(null);
+  const navigateTo = useNavigate();
+  const { getParams, setParams } = useQueryParams();
 
-  //CUSTOM HOOKS
+  const [selectItem, setSelectecItem] = useState(null);
 
-  const adminAreasAvailables = useAdminAreas();
-
-  const user = useUser();
+  const { data: user, isLoading: userLoading } = useUser();
 
   const createAreaHook = useCreateArea();
 
+  const role = sessionStorage.getItem("role");
 
-  //GET DATA FROM CUSTOM HOOKS
+  //TanksQuery
 
-  const { data: areas, isLoading: areasLoading } = useAreas();
+  /**
+   * dataMidColumn manages informaction about:
+   * 1. Freelancer milestones.
+   * 2. Workers of a company and area.
+   * 3. Freelancer related to projects of a project manager.
+   */
+  const [queryParamsMidColumn, setQueryparamsMidColum] = useState({});
 
-  const { data: workersData, isLoading: workersLoading } = useWorkers();
+  const [urlFetchMidColumn, setUrlFetchMidColumn] = useState("");
 
-  //LOGS
+  const [midColumnTitle, setMidColumnTitle] = useState("");
 
-  console.log("WORKERS: ", workersData);
+  const fetchIdenfierMidColumn =
+    role === "Business Manager"
+      ? "Workers"
+      : role === "Area Admin"
+      ? "Workers"
+      : role === "Project Manager"
+      ? "FreelancersHired"
+      : "Milestones";
 
-  console.log("USUARIO: ", user.data);
+  const {
+    data: dataMidColumn,
+    error: midColumnError,
+    isLoading: isLoadingMidColumn,
+  } = useCustomFethc(
+    fetchIdenfierMidColumn,
+    urlFetchMidColumn,
+    queryParamsMidColumn
+  );
 
-  console.log("AREAS IDENTIFICADAS", areas);
+  /**
+   * dataLeftColumns manages information abaout:
+   * 1. Areas from a business manager.
+   * 2. Area admin projects.
+   * 3. Project manager projects
+   * 4. Freelancer projects.
+   */
 
-  console.log(sessionStorage.getItem("token"));
+  const [queryParams, setQueryParams] = useState({});
 
-  console.log("AREA ADMINS: ", adminAreasAvailables.data);
+  const [urlFetch, setUrlFetch] = useState("");
 
-  const handleAreaNameChange = (name) => {
-    setAreaName(name);
-    console.log("Nombre del área seleccionado:", name);
-  };
+  const [leftColumnTitle, setLeftColumnTitle] = useState("");
 
-  const handleAreaCreation = async () => {
-    if (areaName != null && areaName.length > 0 && selectId != null) {
-      console.log("Area name: ", areaName);
-      await createAreaHook.mutateAsync({ name: areaName, user: selectId });
+  const fetchIdenfierLeftColum =
+    role === "Business Manager" ? "Areas" : "projects";
 
-      alert("Area created succesfully.");
-      return true;
-    } else {
-      alert(
-        "Please selecet an area and a user." +
-        " Nombre de area:" +
-        areaName +
-        ". Id:" +
-        selectId
-      );
-      return false;
+  const {
+    data: dataLeftColumn,
+    error: errorLeftColumn,
+    isLoading: isLoadingLeftColumn,
+  } = useCustomFethc(fetchIdenfierLeftColum, urlFetch, queryParams);
+
+  useEffect(() => {
+    if (!userLoading) {
+      if (sessionStorage.getItem("role") === "Business Manager") {
+        setLeftColumnTitle("Areas");
+        setParams({ rows: "areas" });
+
+        setUrlFetch("areas/");
+        setQueryParams({ company: user.company });
+
+        setUrlFetchMidColumn("workers/");
+        setQueryparamsMidColum({ company: user.company });
+        setMidColumnTitle("Workers");
+      }
+
+      if (sessionStorage.getItem("role") === "Area Admin") {
+        setLeftColumnTitle("Area projects");
+        setParams({ rows: "Projects" });
+        setUrlFetch("projects/");
+        setQueryParams({ area: user.area });
+
+        setUrlFetchMidColumn("workers/");
+        setQueryparamsMidColum({ area: user.area });
+        setMidColumnTitle(`Area workers`);
+      }
+
+      if (sessionStorage.getItem("role") === "Project Manager") {
+        setLeftColumnTitle("Projects");
+        setParams({ rows: "projects" });
+        setUrlFetch("projects/");
+        setQueryParams({ worker: user.id });
+
+        //Falta definir la ruta de fetch para MidColumn
+        setMidColumnTitle("Hired freelancers");
+      }
+
+      if (sessionStorage.getItem("role") === "Freelancer") {
+        setLeftColumnTitle("Projects");
+        setParams({ rows: "projects" });
+        setUrlFetch("projects/");
+        setQueryParams({ freelancer: user.id });
+
+        setMidColumnTitle("My milestones");
+      }
     }
-  };
+  }, [user]);
 
-  //POPUP to create areea and select its area admmin.
-  const createArea = (
-    <CreateArea
-      description={"New area"}
-      setAreaName={handleAreaNameChange}
-      submitFunc={handleAreaCreation}
-    >
-      <TableWithCheckBox
-        content={workersData}
-        selectedId={selectId}
-        setSelectedId={setSelectedId}
-      />
-    </CreateArea>
+  const loadingSpinner = (
+    <div className="flex flex-col justify-center items-center ">
+      <Spinner className=" h-10 w-10" />
+    </div>
   );
 
   return (
     <div className="h-full md:flex md:flex-row w-full my-2 px-2 min-h-0">
-      {/* Columna izquierda */}
+      {/* Left Column */}
+
       <section className="w-full h-96 flex flex-col md:mb-0 md:w-1/3 md:h-full md:max-h-none md:mr-6">
         <ListCard
-          numberOfItems={33}
-          title={"Areas"}
-          hasAdd={true}
-          hasSeeAll={true}
-          newDialog={createArea}
-          route={"areas/"}
+          title={leftColumnTitle}
+          hasSeeAll={
+            sessionStorage.getItem("role") === "Business Manager"
+              ? () => navigateTo("areas/")
+              : () => navigateTo("projects/")
+          }
+          addContent={
+            sessionStorage.getItem("role") === "Business Manager" ? (
+              <CreateAreaPopUp />
+            ) : (
+              false
+            )
+          }
         >
-          {areas != undefined ? (
-            areas.map((area, index) => (
-              <ListRowStructure
-                key={index}
-                rowName={area.name}
-                statistics={""}
-                chipValue={"$1.500.230"}
-              />
-            ))
+          {isLoadingLeftColumn ? (
+            loadingSpinner
           ) : (
-            <div>Cargando...</div>
+            <LeftColumnRows
+              setSelectedId={setSelectecItem}
+              contentInfo={dataLeftColumn}
+            />
           )}
         </ListCard>
       </section>
 
-      {/* Columna derecha */}
-      <section className="flex flex-col  md:w-2/3  ">
-        <div className="flex flex-col h-auto min-h-0 w-full mb-2 my-4 md:my-0 md:flex-row md:h-1/2  ">
-          {/* Aquí iría el contenido para trabajadores y finanzas */}
+      {/* Right Big Column Container*/}
 
-          <div className="flex flex-col h-auto w-full md:space-x-6  md:flex-row  md:h-full">
+      <div className="flex flex-col  md:w-2/3  ">
+        <section className="flex flex-col h-auto min-h-0 w-full mb-2 my-4 md:my-0 md:flex-row md:h-1/2  ">
+          {/*MidColumn section */}
+          <section className="flex flex-col h-auto w-full md:space-x-6  md:flex-row  md:h-full">
             <div className="h-96 my-4 md:my-0 md:h-full md:w-full">
               <ListCard
-                title={"Workers"}
-                hasAdd={false}
-                hasSeeAll={true}
-                addDescription={"New worker"}
-                route={"workers/"}
+                title={midColumnTitle}
+                addContent={false}
+                hasSeeAll={() => navigateTo("workers/")}
               >
-                {workersData != undefined ? (
-                  workersData.map((worker, index) => (
-                    <ListRowWithImage
-                      key={index}
-                      rowName={worker.first_name + " " + worker.last_name}
-                      description={worker.email}
-                      chipValue={worker.area}
-                    />
-                  ))
-                ) : (
-                  <div>Cargando...</div>
-                )}
+                {!isLoadingMidColumn? (
+
+                  <MidColumnRows contentInfo={dataMidColumn} />
+
+                ) : (<SpinnerCustom/>)}
+
               </ListCard>
             </div>
-            <ListCard title={"Finance"} hasAdd={false} hasSeeAll={true} route={"finance/"}>
+            <ListCard title={"Finance"} hasAdd={false} hasSeeAll={() => {}}>
               <NumberInfo
                 description={"Total investment in projects"}
                 number={"$2.500.000"}
               />
             </ListCard>
-          </div>
-        </div>
+          </section>
+        </section>
+
+        {/* Statistics content */}
 
         <Card className="flex w-full flex-col mb-2 p-4 h-auto items-center md:h-1/2 md:mt-2 md:mb-0">
           <div className="flex h-auto w-full flex-col md:flex-row md:h-full justify-center items-center">
@@ -169,7 +216,7 @@ function Dashboard() {
             </Button>
           </Link>
         </Card>
-      </section>
+      </div>
     </div>
   );
 }

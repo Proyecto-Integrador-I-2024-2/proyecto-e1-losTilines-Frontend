@@ -1,18 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "@/services/apiClient";
 
-const fetchUserSkills = async (userId) => {
+const fetchSkills = async () => {
 
-    const { data } = await apiClient.get(`/profile/skills/${userId}`);
+    var userType = "skills";
+
+    const url = `${userType}/`
+
+    console.log("URL: " + url)
+    const { data } = await apiClient.get(url);
+    console.log("Despues del await ")
     return data;
 }
 
-export const useSkills = (userId) => {
+export const useSkills = () => {
 
-    return useQuery(['Skill', userId], () => fetchUserSkills(userId), {
+    return useQuery(['Skills'], fetchSkills, {
+        staleTime: 1000 * 60 * 3,
         cachetime: 1000 * 60 * 30,
         retry: 2,
-        enabled: !!userId
     })
 }
 

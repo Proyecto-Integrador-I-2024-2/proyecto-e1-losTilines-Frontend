@@ -39,13 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'cities_light',
     'app',
     'appAuth',
     'appProfile',
     'appCompany',
     'appProject',
+    'appComunication',
     'corsheaders',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -73,6 +74,10 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
+    'DEFAULT_FILTER_BACKENDS': 
+    [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ],
 }
 
 ROOT_URLCONF = 'freelancenowbackend.urls'
@@ -94,6 +99,11 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'freelancenowbackend.wsgi.application'
+
+
+# Carpeta donde se almacenarán los archivos de medios
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # Database

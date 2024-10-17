@@ -1,14 +1,12 @@
 from rest_framework import serializers
 from app.models import User, Company, UserCompany, Freelancer
-from cities_light.models import City, Country
-  
     
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
 
     class Meta:
         model = User
-        fields = ['id','email', 'first_name', 'last_name', 'phone_number', 'password', 'created_at']
+        fields = ['id','email', 'first_name', 'last_name', 'phone_number', 'password', 'created_at', 'profile_picture']
 
     def create(self, validated_data):
         password = validated_data.pop('password')
@@ -17,7 +15,6 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         return user   
 
-    
 class FreelancerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Freelancer
@@ -35,15 +32,9 @@ class FreelancerSerializer(serializers.ModelSerializer):
         return instance
 
 class CompanySerializer(serializers.ModelSerializer):
-    country = serializers.PrimaryKeyRelatedField(queryset=Country.objects.all(), required=False)
-    city = serializers.PrimaryKeyRelatedField(queryset=City.objects.all(), required=False)
-
     class Meta:
         model = Company
-        fields = [
-            'tax_id', 'name', 'country', 'city', 'address', 'telephone', 'email', 
-            'description', 'industry'
-        ]  
+        fields = '__all__'  
 
     def update(self, instance, validated_data):
         instance.country = validated_data.get('country', instance.country)

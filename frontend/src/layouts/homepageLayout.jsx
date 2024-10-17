@@ -4,7 +4,7 @@ import { NavigationTopBar } from "@/widgets/layout";
 
 export function HomepageLayout() {
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-screen">
       <NavigationTopBar />
 
       <Routes>
