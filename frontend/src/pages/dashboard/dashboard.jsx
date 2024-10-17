@@ -128,6 +128,8 @@ function Dashboard() {
     }
   }, [user]);
 
+
+
   const loadingSpinner = (
     <div className="flex flex-col justify-center items-center ">
       <Spinner className=" h-10 w-10" />
