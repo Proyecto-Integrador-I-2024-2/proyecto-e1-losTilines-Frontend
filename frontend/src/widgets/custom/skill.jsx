@@ -3,16 +3,15 @@ import { FaJs, FaReact, FaNodeJs, FaPaintBrush, FaCode, FaPython, FaJava, FaData
 import { DiLinux, DiDjango, DiRuby, DiPhp, DiAngularSimple, DiMongodb } from 'react-icons/di';
 import { PencilIcon } from "@heroicons/react/20/solid";
 import { EditButton } from "../buttons";
-import { defaultSkills } from "@/data";
 
 const defaultSkills = [
     { skill_name: "JavaScript", icon: <FaJs />, level: 90 },
     { skill_name: "React", icon: <FaReact />, level: 85 },
     { skill_name: "Node.js", icon: <FaNodeJs />, level: 70 },
     { skill_name: "Linux", icon: <DiLinux />, level: 60 },
-    // { skill_name: "TypeScript", icon: <FaJs />, level: 75 },
-    // { skill_name: "Django", icon: <DiDjango />, level: 70 },
-    // { skill_name: "UI/UX Design", icon: <FaPaintBrush />, level: 80 },
+    { skill_name: "TypeScript", icon: <FaJs />, level: 75 },
+    { skill_name: "Django", icon: <DiDjango />, level: 70 },
+    { skill_name: "UI/UX Design", icon: <FaPaintBrush />, level: 80 },
     // { skill_name: "Python", icon: <FaPython />, level: 80 },
     // { skill_name: "Java", icon: <FaJava />, level: 75 },
     // { skill_name: "SQL", icon: <FaDatabase />, level: 70 },
