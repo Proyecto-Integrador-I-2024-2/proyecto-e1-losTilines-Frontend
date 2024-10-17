@@ -12,7 +12,7 @@ export function CustomList({ children, sectionTitle, sectionSubtitle }) {
             </Typography>
             <Typography
                 variant="small"
-                className="font-normal text-blue-gray-500"
+                className="font-normal text-blue-gray-500 mb-4"
             >
                 {sectionSubtitle}
             </Typography>
