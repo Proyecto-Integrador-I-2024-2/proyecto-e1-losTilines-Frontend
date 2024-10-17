@@ -7,7 +7,7 @@ import {
     Avatar,
   } from "@material-tailwind/react";
 
-export function MilestonesDetail() {
+export function MilestonesDetail( ) {
     return (
         <div className="flex flex-col w-full h-full min-h-0"> 
     
@@ -16,8 +16,8 @@ export function MilestonesDetail() {
           
           {/* Sección 2: Información del Proyecto (70%) */}
           <div className="basis-[30%] pr-2 w-full h-full overflow-auto"> 
-            <MilestoneCard></MilestoneCard>
-            <MilestoneCard></MilestoneCard>
+            <MilestoneCard ></MilestoneCard>
+            <MilestoneCard ></MilestoneCard>
           </div>
   
           {/* Sección 3: Habilidades Requeridas*/}

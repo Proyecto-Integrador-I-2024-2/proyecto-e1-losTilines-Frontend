@@ -23,7 +23,7 @@ export function ProjectDetail() {
         
         {/* Sección 2: Información del Proyecto (70%) */}
         <div className="basis-[70%] pr-2 justify-center"> 
-          <ProjectView>
+          <ProjectView projectId={2}>
 
           </ProjectView>
         </div>
