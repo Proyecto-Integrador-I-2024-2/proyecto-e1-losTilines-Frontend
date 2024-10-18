@@ -13,7 +13,11 @@ import { useState, useEffect } from "react";
 import { CreateAreaPopUp } from "@/widgets/areaWidgets";
 import { LeftColumnRows, MidColumnRows } from "@/widgets/dashboard";
 import { SpinnerCustom } from "@/widgets/layout";
+import { useNavigateWithQuery } from "@/hooks/utils";
 function Dashboard() {
+  //Open popUps logic
+  const [openCreateaArea, setOpenCreateArea] = useState(false); //This state is for open  the create area popUp
+
   //Utils
 
   const navigateTo = useNavigate();
@@ -25,6 +29,12 @@ function Dashboard() {
   const { data: user, isLoading: userLoading } = useUser();
 
   const role = sessionStorage.getItem("role");
+
+  /*-----------------------------------------------*/
+
+  //Hook use for navigate and set query params
+
+  const navigateWithQuery = useNavigateWithQuery();
 
   //TanksQuery
 
@@ -85,26 +95,37 @@ function Dashboard() {
   useEffect(() => {
     if (!userLoading) {
       if (sessionStorage.getItem("role") === "Business Manager") {
-        setLeftColumnTitle("Areas");
-        setParams({ rows: "areas" });
+        //Define the fetch route for the leftColumn
 
+        setLeftColumnTitle("Areas");
         setUrlFetch("areas/");
         setQueryParams({ company: user.company });
 
+        //Define the fetch route for the midColumn
         setUrlFetchMidColumn("workers/");
         setQueryparamsMidColum({ company: user.company });
         setMidColumnTitle("Workers");
+
+        //Define url params
+
+        setParams({ company: user.company });
       }
 
       if (sessionStorage.getItem("role") === "Area Admin") {
+        //Define the fetch route for the leftColumn
+
         setLeftColumnTitle("Area projects");
-        setParams({ rows: "Projects" });
         setUrlFetch("projects/");
         setQueryParams({ area: user.area });
+
+        //Define the fetch route for the midColumn
 
         setUrlFetchMidColumn("workers/");
         setQueryparamsMidColum({ area: user.area });
         setMidColumnTitle(`Area workers`);
+
+        //Define url params
+        setParams({ area: user.area });
       }
 
       if (sessionStorage.getItem("role") === "Project Manager") {
@@ -128,8 +149,6 @@ function Dashboard() {
     }
   }, [user]);
 
-
-
   const loadingSpinner = (
     <div className="flex flex-col justify-center items-center ">
       <Spinner className=" h-10 w-10" />
@@ -137,83 +156,104 @@ function Dashboard() {
   );
 
   return (
-    <div className="h-full md:flex md:flex-row w-full my-2 px-2 min-h-0">
-      {/* Left Column */}
+    <>
+      <div className="h-full md:flex md:flex-row w-full my-2 px-2 min-h-0">
+        {/* Left Column */}
 
-      <section className="w-full h-96 flex flex-col md:mb-0 md:w-1/3 md:h-full md:max-h-none md:mr-6">
-        <ListCard
-          title={leftColumnTitle}
-          hasSeeAll={
-            sessionStorage.getItem("role") === "Business Manager"
-              ? () => navigateTo("areas/")
-              : () => navigateTo("projects/")
-          }
-          addContent={
-            sessionStorage.getItem("role") === "Business Manager" ? (
-              <CreateAreaPopUp />
+        <section className="w-full h-96 flex flex-col md:mb-0 md:w-1/3 md:h-full md:max-h-none md:mr-6">
+          <ListCard
+            title={leftColumnTitle}
+            hasSeeAll={
+              sessionStorage.getItem("role") === "Business Manager"
+                ? () => navigateTo("areas/")
+                : () => navigateTo("projects/")
+            }
+            addContent={
+              sessionStorage.getItem("role") === "Business Manager" ? (
+                <Button
+                  onClick={() => setOpenCreateArea(!openCreateaArea)}
+                  variant="gradient"
+                >
+                  New area
+                </Button>
+              ) : (
+                false
+              )
+            }
+          >
+            {isLoadingLeftColumn ? (
+              loadingSpinner
             ) : (
-              false
-            )
-          }
-        >
-          {isLoadingLeftColumn ? (
-            loadingSpinner
-          ) : (
-            <LeftColumnRows
-              setSelectedId={setSelectecItem}
-              contentInfo={dataLeftColumn}
-            />
-          )}
-        </ListCard>
-      </section>
-
-      {/* Right Big Column Container*/}
-
-      <div className="flex flex-col  md:w-2/3  ">
-        <section className="flex flex-col h-auto min-h-0 w-full mb-2 my-4 md:my-0 md:flex-row md:h-1/2  ">
-          {/*MidColumn section */}
-          <section className="flex flex-col h-auto w-full md:space-x-6  md:flex-row  md:h-full">
-            <div className="h-96 my-4 md:my-0 md:h-full md:w-full">
-              <ListCard
-                title={midColumnTitle}
-                addContent={false}
-                hasSeeAll={() => navigateTo("workers/")}
-              >
-                {!isLoadingMidColumn ? (
-                  <MidColumnRows contentInfo={dataMidColumn} />
-                ) : (
-                  <SpinnerCustom />
-                )}
-              </ListCard>
-            </div>
-            <ListCard title={"Finance"} hasAdd={false} hasSeeAll={() => {}}>
-              <NumberInfo
-                description={"Total investment in projects"}
-                number={"$2.500.000"}
+              <LeftColumnRows
+                setSelectedId={setSelectecItem}
+                contentInfo={dataLeftColumn}
               />
-            </ListCard>
-          </section>
+            )}
+          </ListCard>
         </section>
 
-        {/* Statistics content */}
+        {/* Right Big Column Container*/}
 
-        <Card className="flex w-full flex-col mb-2 p-4 h-auto items-center md:h-1/2 md:mt-2 md:mb-0">
-          <div className="flex h-auto w-full flex-col md:flex-row md:h-full justify-center items-center">
-            <Chart description={"Monthly expenses for 2024"} type={"pie"} />
-            <Chart description={"Percentage of budget by area"} type={"bar"} />
-            <Chart
-              description={"Percentage of projects by status"}
-              type={"pie"}
-            />
-          </div>
-          <Link to="stats/">
-            <Button color="gray" size="sm" variant="outlined" className="w-32">
-              See all
-            </Button>
-          </Link>
-        </Card>
+        <div className="flex flex-col  md:w-2/3  ">
+          <section className="flex flex-col h-auto min-h-0 w-full mb-2 my-4 md:my-0 md:flex-row md:h-1/2  ">
+            {/*MidColumn section */}
+            <section className="flex flex-col h-auto w-full md:space-x-6  md:flex-row  md:h-full">
+              <div className="h-96 my-4 md:my-0 md:h-full md:w-full">
+                <ListCard
+                  title={midColumnTitle}
+                  addContent={false}
+                  hasSeeAll={() => navigateWithQuery("workers/")}
+                >
+                  {!isLoadingMidColumn ? (
+                    <MidColumnRows contentInfo={dataMidColumn} />
+                  ) : (
+                    <SpinnerCustom />
+                  )}
+                </ListCard>
+              </div>
+              <ListCard title={"Finance"} hasAdd={false} hasSeeAll={() => {}}>
+                <NumberInfo
+                  description={"Total investment in projects"}
+                  number={"$2.500.000"}
+                />
+              </ListCard>
+            </section>
+          </section>
+
+          {/* Statistics content */}
+
+          <Card className="flex w-full flex-col mb-2 p-4 h-auto items-center md:h-1/2 md:mt-2 md:mb-0">
+            <div className="flex h-auto w-full flex-col md:flex-row md:h-full justify-center items-center">
+              <Chart description={"Monthly expenses for 2024"} type={"pie"} />
+              <Chart
+                description={"Percentage of budget by area"}
+                type={"bar"}
+              />
+              <Chart
+                description={"Percentage of projects by status"}
+                type={"pie"}
+              />
+            </div>
+            <Link to="stats/">
+              <Button
+                color="gray"
+                size="sm"
+                variant="outlined"
+                className="w-32"
+              >
+                See all
+              </Button>
+            </Link>
+          </Card>
+        </div>
       </div>
-    </div>
+
+      <CreateAreaPopUp
+        open={openCreateaArea}
+        setOpen={setOpenCreateArea}
+        handleOpen={() => setOpenCreateArea(!openCreateaArea)}
+      />
+    </>
   );
 }
 

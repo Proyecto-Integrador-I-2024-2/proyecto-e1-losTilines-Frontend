@@ -29,7 +29,6 @@ export function ListAreasCollapse({
   const [remenberAreaName, setRemenberAreaName] = useState(areaName); // State used to change the area name
   const queryClient = useQueryClient();
   useEffect(() => {
-    console.log("projects", projects);
 
     if (projects) {
       const sum = projects.reduce((acc, project) => {
@@ -38,7 +37,6 @@ export function ListAreasCollapse({
 
       setProjectSumBudget(sum);
 
-      console.log("sum", sum);
     }
   }, [projects]);
 
@@ -64,11 +62,9 @@ export function ListAreasCollapse({
   const handleDoneChangeArea = (event) => {
     event.stopPropagation();
 
-    console.log("Area name", areaName);
 
     if (areaName !== "") {
       mutationPatchArea.mutate();
-      console.log("Estado", areNameChange);
       setAreaNameChange(false);
     }
   };
