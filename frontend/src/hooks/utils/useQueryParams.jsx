@@ -16,11 +16,10 @@ export const useQueryParams = () => {
       } else {
         searchParams.delete(key);
       }
-    });
+    }); 
     navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
   };
 
   return { getParams, setParams };
 };
 
-export default useQueryParams;

@@ -5,50 +5,58 @@ import {
   DialogHeader,
   DialogBody,
   DialogFooter,
-  Input,
-  Typography,
 } from "@material-tailwind/react";
+import { SpinnerCustom } from "../layout";
 
 export function PopUp({
-  buttonDescription,
   title,
-  setAreaName,
   submitFunc,
   children,
+  open,
+  setOpen,
+  handleOpen,
 }) {
-  const [open, setOpen] = useState(false);
-  
-  const handleOpen = () => setOpen(!open);
+
+  const [submitStatus, setSubmit] = useState("idle");
 
   const handleConfirm = async () => {
-    const result = await submitFunc();
 
-    if (result) setOpen(!open);
+    setSubmit("submitting");
+    await submitFunc();
+    setSubmit("completed");
+    
+    setOpen(!open);
+  };
+
+  const handleClose = async () => {
+    
+    setOpen(!open);
   };
 
   return (
     <>
-      <Button onClick={handleOpen} variant="gradient">
-        {buttonDescription}
-      </Button>
       <Dialog className="w-full  " open={open} handler={handleOpen}>
         <DialogHeader className="flex flex-row justify-center items-center">
           {title}
         </DialogHeader>
         <DialogBody className="flex flex-col justify-center items-center p-0 w-full space-y-4 ">
-          {children}
+          {
+
+            submitStatus === "submitting" ? (<SpinnerCustom/>) : (children)
+
+          }
         </DialogBody>
         <DialogFooter>
           <Button
             variant="text"
             color="gray"
-            onClick={handleOpen}
+            onClick={handleClose}
             className="mr-1"
           >
             <span>Cancel</span>
           </Button>
           <Button variant="gradient" color="cyan" onClick={handleConfirm}>
-            <span>Confirm</span>
+            Confirm 
           </Button>
         </DialogFooter>
       </Dialog>

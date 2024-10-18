@@ -1,48 +1,40 @@
-import { useUser, useCreateArea } from "@/hooks";
+import { useUser, useCreateArea, useAdminAvailables } from "@/hooks";
 import { useEffect, useState } from "react";
 import { PopUp } from "@/widgets/popUp";
-import { Typography, Input } from "@material-tailwind/react";
+import { Typography, Input, Button } from "@material-tailwind/react";
 import { TableWithCheckBox } from "@/widgets/areaWidgets/tableWithCheckbox";
 import apiClient from "@/services/apiClient";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { SpinnerCustom } from "../layout";
 
-export function CreateAreaPopUp() { 
-
-
+export function CreateAreaPopUp({ open, setOpen, handleOpen }) {
   const { data: user, isLoading: isUserLoading } = useUser();
 
   const [areaName, setAreaName] = useState("");
 
   const [selectId, setSelectedId] = useState(null);
 
-
   const [infoFetch, setInfoFetch] = useState("");
 
-  const createAreaMutation = useCreateArea();
+ 
 
-  console.log("AREA NAME: ", areaName);
-  console.log("SELECT ID: ", selectId);
+  const { data: adminsAvailable, isLoading: isLoadingAdminAvailable } =
+    useAdminAvailables();
+
+  /*--------------------------------------------*/
+
+  //Create area process
+
+  const createAreaMutation = useCreateArea();
 
   const handleAreaNameChange = (event) => {
     setAreaName(event.target.value);
   };
 
-  const { data: adminsAvailable, isLoading: isLoadingAdminAvailable } =
-    useQuery(["AdminsAvailable", user?.company], async () => {
-      const { data } = await apiClient.get("admin-areas/", {
-        params: { area: "none" },
-      });
-      return data;
-    },
-
-    {
-        enabled: !!user?.company,
-    }
-
-);
-
   const handleAreaCreation = async () => {
+    console.log("Area creation AREA NAME: ", areaName);
+    console.log("Area creation SELECT ID: ", selectId);
+
     if (areaName != null && areaName.length > 0 && selectId != null) {
       const areadata = {
         name: areaName,
@@ -64,7 +56,9 @@ export function CreateAreaPopUp() {
         console.log("Error creating area catched: ", error);
       }
     } else {
-      alert(`Please selecet an area and a user. Nombre del area: ${areaName}. Id: "${selectId}`);
+      alert(
+        `Please selecet an area and a user. Nombre del area: ${areaName}. Id: "${selectId}`
+      );
     }
   };
 
@@ -73,6 +67,9 @@ export function CreateAreaPopUp() {
       buttonDescription={"New area"}
       title={"Create New Area"}
       submitFunc={handleAreaCreation}
+      open={open}
+      setOpen={setOpen}
+      handleOpen={handleOpen}
     >
       <div className="px-2 space-y-2">
         <Typography>
@@ -86,7 +83,7 @@ export function CreateAreaPopUp() {
         <Typography>Select the user in charge of managing the area:</Typography>
       </div>
 
-      <div className=" overflow-auto h-80 ">
+      <div className=" overflow-auto h-80 w-full ">
         {isLoadingAdminAvailable ? (
           <SpinnerCustom />
         ) : (

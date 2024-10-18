@@ -8,7 +8,6 @@ const createArea = async (area) => {
 };
 
 export const useCreateArea = () => {
-
   return useMutation(createArea, {
     onSuccess: (data) => {
       console.log("Area created:", data);
