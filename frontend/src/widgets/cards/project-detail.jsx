@@ -1,4 +1,4 @@
-import { useProject } from '@/hooks/useProject'; // Asegúrate de que la ruta sea correcta
+import { useProject } from '@/hooks/projects/useProject'; // Asegúrate de que la ruta sea correcta
 import {
   Card,
   CardHeader,
@@ -48,12 +48,12 @@ export function ProjectView({ projectId }) {
         </Typography>
 
         <CardFooter>
-        <Typography color="gray" className="mb-8 font-normal">
+          <Typography color="gray" className="mb-8 font-normal">
             <p>Este proyecto está valorado en aproximadamente:{project.budget}</p>
           </Typography>
         </CardFooter>
       </CardBody>
-      
+
     </Card>
   );
 }

@@ -1,0 +1,1 @@
+export const project_pic = "https://i.pinimg.com/originals/d6/62/39/d66239c5145af6335cb3e9196a4c06b6.gif"
