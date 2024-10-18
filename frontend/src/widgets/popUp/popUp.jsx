@@ -5,9 +5,8 @@ import {
   DialogHeader,
   DialogBody,
   DialogFooter,
-  Input,
-  Typography,
 } from "@material-tailwind/react";
+import { SpinnerCustom } from "../layout";
 
 export function PopUp({
   title,
@@ -17,15 +16,22 @@ export function PopUp({
   setOpen,
   handleOpen,
 }) {
+
+  const [submitStatus, setSubmit] = useState("idle");
+
   const handleConfirm = async () => {
+
+    setSubmit("submitting");
+    await submitFunc();
+    setSubmit("completed");
+    
     setOpen(!open);
   };
 
   const handleClose = async () => {
+    
     setOpen(!open);
   };
-
-  console.log("OPEN: ", open);
 
   return (
     <>
@@ -34,7 +40,11 @@ export function PopUp({
           {title}
         </DialogHeader>
         <DialogBody className="flex flex-col justify-center items-center p-0 w-full space-y-4 ">
-          {children}
+          {
+
+            submitStatus === "submitting" ? (<SpinnerCustom/>) : (children)
+
+          }
         </DialogBody>
         <DialogFooter>
           <Button
@@ -46,7 +56,7 @@ export function PopUp({
             <span>Cancel</span>
           </Button>
           <Button variant="gradient" color="cyan" onClick={handleConfirm}>
-            <span>Confirm</span>
+            Confirm 
           </Button>
         </DialogFooter>
       </Dialog>

@@ -1,6 +1,6 @@
 import { useAdminAvailables } from "@/hooks";
 import { PopUp } from "@/widgets/popUp";
-import { Avatar, Typography } from "@material-tailwind/react";
+import { Avatar, Typography, Checkbox } from "@material-tailwind/react";
 import { SpinnerCustom } from "@/widgets/layout";
 import { useState } from "react";
 export function PopUpChangeAreaAdmin({
@@ -12,7 +12,6 @@ export function PopUpChangeAreaAdmin({
   const { data: adminsAvailable, isLoading: isLoadingAdminAvailable } =
     useAdminAvailables();
 
-console.log("currentAdmin",  currentAdmin );
 
   const [currentAdminInfo, setCurrentAdminInfo] = useState(currentAdmin);
 
@@ -25,7 +24,6 @@ console.log("currentAdmin",  currentAdmin );
       setSelectedId(id);
       setCurrentAdminInfo(adminsAvailable.find((admin) => admin.id === id));
     }
-    console.log("SELECTED ID: ", selectedId);
   };
 
   const handleChangeAreaAdim = async () => {
@@ -89,7 +87,7 @@ console.log("currentAdmin",  currentAdmin );
               ) : adminsAvailable.length > 0 ? (
                 adminsAvailable.map(
                   ({ id, email, first_name, last_name }, index) => {
-                    const isLast = index === content.length - 1;
+                    const isLast = index === adminsAvailable.length - 1;
                     const classes = isLast
                       ? "p-4"
                       : "p-4 border-b border-blue-gray-50";
