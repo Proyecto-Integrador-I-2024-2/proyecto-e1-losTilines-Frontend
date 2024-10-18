@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import apiClient from '../services/apiClient'; // Asegúrate de que esta ruta sea correcta
+import apiClient from '../../services/apiClient'; // Asegúrate de que esta ruta sea correcta
 
 // Función para obtener un proyecto por ID
 const fetchProject = async (id) => {
