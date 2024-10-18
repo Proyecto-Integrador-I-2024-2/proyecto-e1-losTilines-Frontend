@@ -1,94 +1,159 @@
 import { CollapseCustom, PopoverCustom, SelectCustom } from "@/widgets/buttons";
-import { ChartCustom } from "@/widgets/statistics";
-import { TableThreeColumns } from "@/widgets/tables";
-import { areasData } from "@/data";
-import { Card, Input } from "@material-tailwind/react";
-
-import { TrashIcon, BookmarkSquareIcon} from "@heroicons/react/24/solid";
-import ListAreasCollapse from "@/widgets/list/listCollapseAreas";
+import { Button, Card, Input, Typography } from "@material-tailwind/react";
+import { CreateAreaPopUp } from "@/widgets/areaWidgets";
+import { ListAreasCollapse } from "@/widgets/areaWidgets";
+import { useCustomFethc, useUser } from "@/hooks";
+import { SearchBar, SpinnerCustom } from "@/widgets/layout";
+import { useEffect, useState, useMemo } from "react";
+import apiClient from "@/services/apiClient";
 
 function Areas() {
-  //Info for collapse buttons.
+  const [openCreateaArea, setOpenCreateArea] = useState(false); //This state is for open  the create area popUp
 
-  const addContent =
-    "Give this code to your workers to add them to your team #42123";
+  const [projectsByArea, setProjectsByArea] = useState([]);
 
-  //Info for select buttons.
-  const sortContent = ["name"];
+  //Search states
+  // This state is used for the search input.
+  const [searchTerm, setSearchTerm] = useState("");
+  //This state is used to prevent unnecesary filters while  you areatyping
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
 
-  const areaInfo = ["Area1", "Area2", "Area3", "Area4"];
+  /*--------------------------------------------*/
 
-  //Info for table creation.
+  const [sortOrder, setSortOrder] = useState("asc"); // State to handle the sort order
 
-  const TABLE_HEAD = ["Worker", "Project Name", "Status"];
+  const toggleSortOrder = () => {
+    setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
+  };
+
+  /*--------------------------------------------*/
+
+  const { data: user, isLoading: isLoadingUser } = useUser();
+
+  const { data: areas, isLoading: isLoadingAreas } = useCustomFethc(
+    "Areas",
+    "areas/",
+    { company: user?.company },
+    { enabled: !!user }
+  );
+
+  useEffect(() => {
+    //Fetch projects by area
+
+    if (!isLoadingAreas && areas.length > 0) {
+      const fetchProjects = async () => {
+        const fetchPromises = areas.map((area) => {
+          const fetchProject = async () => {
+            const { data } = await apiClient.get("projects/", {
+              params: { area: area.id },
+            });
+            return data;
+          };
+          return fetchProject();
+        });
+
+        const projectData = await Promise.all(fetchPromises);
+
+        const projectMap = {};
+
+        areas.forEach((area, index) => {
+          projectMap[area.id] = projectData[index];
+        });
+
+        setProjectsByArea(projectMap);
+      };
+
+      fetchProjects();
+    }
+  }, [isLoadingAreas]);
+
+  // Logic to search effectevly the areas by searchBar
+  /*--------------------------------------------*/
+
+  // Debounce the search term so that it only gives us the final value after the user has stopped typing
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300); // 300 ms de retraso
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm]);
+
+  /*--------------------------------------------*/
+  // Filter areas by search term and sort them by name
+
+  const filteredAreas = useMemo(() => {
+    if (isLoadingAreas || isLoadingUser) return [];
+    let result = areas;
+
+    const trimmed = debouncedSearchTerm.trim().toLowerCase();
+    if (trimmed) {
+      result = result.filter((area) =>
+        area.name.toLowerCase().includes(trimmed)
+      );
+    }
+
+    // Order areas by name.
+    result = result.sort((a, b) => {
+      const nameA = a.name.toLowerCase();
+      const nameB = b.name.toLowerCase();
+
+      if (nameA < nameB) return sortOrder === "asc" ? -1 : 1;
+      if (nameA > nameB) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    return result;
+  }, [debouncedSearchTerm, areas, sortOrder]);
+
+  /*--------------------------------------------*/
 
   return (
-    <Card
-      className="flex  flex-col items-center 
-                h-full w-full p-2   
-                md:w-8/12 md:mx-auto md:my-4"
-    >
-      <header className="flex flex-col w-full h-auto   md:flex-row md:justify-start md:items-center  ">
-        <section className="w-full md:w-3/4 md:mr-4">
-          <Input label="search" />
-        </section>
+    <>
+      <Card
+        className="flex  flex-col items-center 
+      h-full w-full p-2   
+      md:w-8/12 md:mx-auto md:my-4"
+      >
+        <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
+          <Button variant="text" className="p-1" onClick={toggleSortOrder}>
+            Sort by area name
+          </Button>
 
-        <section className="flex flex-row justify-between h-10 w-full md:w-auto md:h-full">
-          <CollapseCustom title={"Sort"}>
-            <SelectCustom
-              description={"sort by"}
-              options={sortContent}
-              label={"Select type"}
-            />
-          </CollapseCustom>
-          <CollapseCustom title={"Filter"}>
-            <SelectCustom
-              label={"area"}
-              description={"filter by"}
-              options={areaInfo}
-            />
-          </CollapseCustom>
-          <PopoverCustom title={"Add"} content={addContent} />
-        </section>
-      </header>
-
-      <main className="flex flex-col h-full w-full mt-2   overflow-y-auto">
-        {areasData.map((area) => (
-          <ListAreasCollapse
-            AreasCollapse
-            key={area.id}
-            title={area.area}
-            rowName={area.admin}
-            chipValue1={area.quantity}
-            chipValue2={area.budget}
+          <Button
+            variant="text"
+            onClick={() => setOpenCreateArea(!openCreateaArea)}
           >
-            <div className="flex flex-col w-full  space-y-2">
-              <div className="flex flex-row w-full md:space-x-4  my-2 md:  md:items-center md:justify-center md:mx-auto md:w-1/2 ">
-                <SelectCustom
-                  description={"Assign area"}
-                  options={areaInfo}
-                  label={"area"}
-                />
+            Create Area
+          </Button>
+        </SearchBar>
 
-                <div className="flex flex-row justify-center items-center   ">
-                <BookmarkSquareIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
+        <main className="flex flex-col h-full w-full mt-2   overflow-y-auto">
+          {isLoadingUser || isLoadingAreas ? (
+            <SpinnerCustom />
+          ) : (
+            filteredAreas.map((area) => (
+              <ListAreasCollapse
+                key={area.id}
+                areaId={area.id}
+                title={area.name}
+                projects={projectsByArea[area.id]}
+                chipValue2={1000000}
+                currentAreaAdmin={area.user}
+              ></ListAreasCollapse>
+            ))
+          )}
+        </main>
+      </Card>
 
-                <TrashIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
-            
-                </div>
-               
-              </div>
-              <div className="flex flex-col w-full space-y-6  md:flex-row md:space-y-0 ">
-                <TableThreeColumns
-                  titles={TABLE_HEAD}
-                  content={area.projects}
-                />
-              </div>
-            </div>
-          </ListAreasCollapse>
-        ))}
-      </main>
-    </Card>
+      <CreateAreaPopUp
+        open={openCreateaArea}
+        setOpen={setOpenCreateArea}
+        handleOpen={() => setOpenCreateArea(!openCreateaArea)}
+      />
+    </>
   );
 }
 

@@ -94,6 +94,8 @@ class Command(BaseCommand):
             else:
                 self.stdout.write(self.style.WARNING(f'Usuario Area Admin "{email}" ya existe'))
             area_admins.append(user)
+        
+ 
 
         # Project Managers
         project_managers = []
@@ -186,6 +188,49 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR(f'Error al crear el área "{name}": {str(e)}'))
                 continue
             areas.append(area)
+            
+        #Areas for company 1
+        
+        area_admins_company1 = []
+        for i in range(1, 4):
+            email = f'area_admin1{i}@example.com'
+            user, created = User.objects.get_or_create(email=email)
+            if created:
+                user.set_password('password123')
+                user.first_name = f'AAcompany1_{i}'
+                user.last_name = f'Apellido{i}'
+                user.save()
+                user.groups.add(area_admin_group)
+                user.save()    
+                userRole = UserRole.objects.create(user=user,role=area_admin_group)
+                userRole.save()
+                self.stdout.write(self.style.SUCCESS(f'Usuario Area Admin "{email}" creado'))
+            else:
+                self.stdout.write(self.style.WARNING(f'Usuario Area Admin "{email}" ya existe'))
+            area_admins_company1.append(user)    
+        
+        areas_company1 = []
+        for i in range(1,3):
+            name = f'Área_company1 {i+1}'
+            user = area_admins_company1[i]
+            try:
+                area, created = Area.objects.get_or_create(
+                    name=name,
+                    company=companies[0],
+                    defaults={
+                        'user': user
+                    }
+                )
+                if created:
+                    self.stdout.write(self.style.SUCCESS(f'Área "{area.name}" creada para la compañía "{company.name}"'))
+                else:
+                    self.stdout.write(self.style.WARNING(f'Área "{area.name}" ya existe'))
+            except ValueError as e:
+                self.stdout.write(self.style.ERROR(f'Error al crear el área "{name}": {str(e)}'))
+                continue
+            areas_company1.append(area)    
+        
+        
 
         # Crear UserCompany
         user_companies = []
@@ -229,12 +274,51 @@ class Command(BaseCommand):
             user_companies.append(user_company2)
             user_companies.append(user_company3)
             
+        #Area admins para la company 1: 
+        
+        for i in  range(0,2):
+            user = area_admins_company1[i]
+            area = areas_company1[i]
             
+            try:
+                user_company, created = UserCompany.objects.get_or_create(
+                    company=companies[0],
+                    user=user,
+                    defaults={
+                        'area': area
+                    }
+                )
+                if created:
+                    self.stdout.write(self.style.SUCCESS(f'UserCompany para usuario "{user.email}" y compañía "{company.name}" creada'))
+                else:
+                    self.stdout.write(self.style.WARNING(f'UserCompany para usuario "{user.email}" ya existe'))
+            except ValueError as e:
+                self.stdout.write(self.style.ERROR(f'Error al crear UserCompany: {str(e)}'))
+                continue  
+            user_companies.append(user_company)
+            
+        #Registe area admin without
+        try:
+            user_company, created = UserCompany.objects.get_or_create(
+                company=companies[0],
+                user=area_admins_company1[2],
+                defaults={
+                    'area': None
+                }
+            )
+            if created:
+                self.stdout.write(self.style.SUCCESS(f'UserCompany para usuario "{user.email}" y compañía "{company.name}" creada'))
+            else:
+                self.stdout.write(self.style.WARNING(f'UserCompany para usuario "{user.email}" ya existe'))
+        except ValueError as e:
+            self.stdout.write(self.style.ERROR(f'Error al crear UserCompany: {str(e)}'))  
+        user_companies.append(user_company)
+        
+        
+        
+   
             
         
-            
-        
-
         # Crear perfiles de freelancers
         freelancers_instances = []
         for user in freelancers:
