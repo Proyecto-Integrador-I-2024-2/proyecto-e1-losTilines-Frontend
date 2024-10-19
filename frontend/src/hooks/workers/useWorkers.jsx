@@ -9,7 +9,7 @@ export const useWorkers = (params = {}, options = {}) => {
   );
 
   return useQuery(
-    ["workers", filteredParams], // Incluir parámetros en la clave de consulta
+    ["Workers"], // Incluir parámetros en la clave de consulta
     async () => {
       const { data } = await apiClient.get("workers/", {
         params: filteredParams, // Pasar los parámetros filtrados

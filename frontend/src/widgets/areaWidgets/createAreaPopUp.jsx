@@ -64,7 +64,6 @@ export function CreateAreaPopUp({ open, setOpen, handleOpen }) {
 
   return (
     <PopUp
-      buttonDescription={"New area"}
       title={"Create New Area"}
       submitFunc={handleAreaCreation}
       open={open}
