@@ -2,7 +2,6 @@ export * from "@/hooks/authentication/useUser";
 export * from "@/hooks/useRegisterFreelancer";
 export * from "@/hooks/authentication/useLogin";
 export * from "@/hooks/useCompany";
-export * from "@/hooks/useAreas";
 export * from "@/hooks/useAdminAreas";
 export * from "@/hooks/useCompanyRoles";
 export * from "@/hooks/useWorkersRoleArea";
