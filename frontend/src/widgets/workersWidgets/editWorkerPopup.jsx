@@ -1,19 +1,14 @@
-// src/components/EditWorkerPopup.jsx
-
 import React, { useState, useEffect } from "react";
 import { PopUp } from "@/widgets/popUp/popUp";
-import { Avatar, Input, Typography, Button } from "@material-tailwind/react";
+import { Avatar, Input, Typography, Button, Select, Option } from "@material-tailwind/react";
 import { TrashIcon } from "@heroicons/react/24/outline";
-import { useQueryClient } from "@tanstack/react-query";
 import { useDeleteWorker, useEditWorker } from "@/hooks/workers";
 
-export function EditWorkerPopup({ open, setOpen, currentWorker }) {
-
-
+export function EditWorkerPopup({ open, setOpen, currentWorker, areas }) {
+  // State to manage the confirm delete popup
   const [openConfirmDelete, setOpenConfirmDelete] = useState(false);
 
-
-  /*-----------------------------------------------------------------------------*/ 
+  /*-----------------------------------------------------------------------------*/
 
   // States to manage and modify the worker's data
   const [emailEdit, setEmailEdit] = useState(
@@ -25,55 +20,80 @@ export function EditWorkerPopup({ open, setOpen, currentWorker }) {
   const [lastNameEdit, setLastNameEdit] = useState(
     currentWorker ? currentWorker.last_name : ""
   );
+  
+  // State for selected area and role
+  const [selectedArea, setSelectedArea] = useState(
+    currentWorker ? currentWorker.area : ""
+  );
+  const [selectedRole, setSelectedRole] = useState(
+    currentWorker ? currentWorker.role : "Project Manager"
+  );
+
+  // State for form errors
   const [errors, setErrors] = useState({
     email: "",
     firstName: "",
     lastName: "",
+    area: "",
+    role: "",
   });
 
   // Reset the input fields when the currentWorker changes
-
   useEffect(() => {
     setEmailEdit(currentWorker ? currentWorker.email : "");
     setFirstNameEdit(currentWorker ? currentWorker.first_name : "");
     setLastNameEdit(currentWorker ? currentWorker.last_name : "");
+    setSelectedArea(currentWorker ? currentWorker.area : "");
+    setSelectedRole(currentWorker ? currentWorker.role : "Project Manager");
+
+    setSuccessMessage("");
+    setErrorMessage("");
   }, [currentWorker]);
 
-  /*-----------------------------------------------------------------------------*/ 
+  /*-----------------------------------------------------------------------------*/
 
-
-  // States to give feedback to the user about its operations: delete and edit a worker.
-
+  // States to give feedback to the user about operations: delete and edit a worker
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  /*-----------------------------------------------------------------------------*/ 
+  /*-----------------------------------------------------------------------------*/
 
   // Function to validate the inputs when editing a worker
-
   const validate = () => {
     let valid = true;
-    let tempErrors = { email: "", firstName: "", lastName: "" };
+    let tempErrors = { email: "", firstName: "", lastName: "", area: "", role: "" };
 
-    // Validar primer nombre
+    // Validate first name
     if (!firstNameEdit.trim()) {
-      tempErrors.firstName = "El nombre no puede estar vacío.";
+      tempErrors.firstName = "First name cannot be empty.";
       valid = false;
     }
 
-    // Validar apellido
+    // Validate last name
     if (!lastNameEdit.trim()) {
-      tempErrors.lastName = "El apellido no puede estar vacío.";
+      tempErrors.lastName = "Last name cannot be empty.";
       valid = false;
     }
 
-    // Validar correo electrónico
+    // Validate email
     const emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
     if (!emailEdit.trim()) {
-      tempErrors.email = "El correo electrónico no puede estar vacío.";
+      tempErrors.email = "Email cannot be empty.";
       valid = false;
     } else if (!emailRegex.test(emailEdit)) {
-      tempErrors.email = "El correo electrónico no es válido.";
+      tempErrors.email = "Email is not valid.";
+      valid = false;
+    }
+
+    // Validate selected area
+    if (!selectedArea) {
+      tempErrors.area = "Please select an area.";
+      valid = false;
+    }
+
+    // Validate selected role
+    if (!selectedRole) {
+      tempErrors.role = "Please select a role.";
       valid = false;
     }
 
@@ -84,21 +104,22 @@ export function EditWorkerPopup({ open, setOpen, currentWorker }) {
   /*-----------------------------------------------------------------------------*/
 
   // Handler to edit a worker
-
   const editWorkerMutation = useEditWorker();
 
   const handleEdit = () => {
-    // Resetear mensajes de feedback
+    // Reset feedback messages
     setSuccessMessage("");
     setErrorMessage("");
 
-    // Validar inputs
+    // Validate inputs
     if (!validate()) return;
 
-    // Verificar si hubo cambios solo si currentWorker está presente
+    // Check for changes compared to the current worker's data
     let hasFirstNameChanged = false;
     let hasLastNameChanged = false;
     let hasEmailChanged = false;
+    let hasAreaChanged = false;
+    let hasRoleChanged = false;
 
     if (currentWorker) {
       hasFirstNameChanged =
@@ -108,15 +129,26 @@ export function EditWorkerPopup({ open, setOpen, currentWorker }) {
       hasEmailChanged =
         emailEdit.trim().toLowerCase() !==
         currentWorker.email.trim().toLowerCase();
+      hasAreaChanged = selectedArea !== currentWorker.area;
+      hasRoleChanged = selectedRole !== currentWorker.role;
     } else {
-      // Si no hay currentWorker, consideramos que todos los campos han cambiado
+      // If no currentWorker, consider all fields as changed
       hasFirstNameChanged = firstNameEdit.trim() !== "";
       hasLastNameChanged = lastNameEdit.trim() !== "";
       hasEmailChanged = emailEdit.trim() !== "";
+      hasAreaChanged = selectedArea !== "";
+      hasRoleChanged = selectedRole !== "Project Manager";
     }
 
-    if (!hasFirstNameChanged && !hasLastNameChanged && !hasEmailChanged) {
-      setErrorMessage("No se realizaron cambios.");
+    // If no changes were made, notify the user
+    if (
+      !hasFirstNameChanged &&
+      !hasLastNameChanged &&
+      !hasEmailChanged &&
+      !hasAreaChanged &&
+      !hasRoleChanged
+    ) {
+      setErrorMessage("No changes were made.");
       return;
     }
 
@@ -125,68 +157,72 @@ export function EditWorkerPopup({ open, setOpen, currentWorker }) {
     if (hasFirstNameChanged) updatedData.first_name = firstNameEdit.trim();
     if (hasLastNameChanged) updatedData.last_name = lastNameEdit.trim();
     if (hasEmailChanged) updatedData.email = emailEdit.trim();
+    if (hasAreaChanged) updatedData.area = selectedArea;
+    if (hasRoleChanged) updatedData.role = selectedRole;
 
-    // Exec the mutation
+    // Execute the mutation
     if (currentWorker) {
       editWorkerMutation.mutate({ id: currentWorker.id, data: updatedData });
     } else {
-
-      // Si no hay currentWorker, podrías manejar una creación o simplemente cerrar el popup
-      
+      // If no currentWorker, handle creation or simply close the popup
       console.log("No worker selected for editing.");
     }
   };
 
-
   /*-----------------------------------------------------------------------------*/
 
-  //Handler to delete a worker
-
-  
+  // Handler to delete a worker
   const deleteWorkerMutation = useDeleteWorker();
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (currentWorker) {
+      console.log("Deleting worker:", currentWorker.id);
       deleteWorkerMutation.mutate(currentWorker.id);
+
+      if (deleteWorkerMutation.isError) {
+        setErrorMessage("Error attempting to delete the worker.");
+      }
+
+      if (deleteWorkerMutation.isSuccess) {
+        setSuccessMessage("Worker successfully deleted.");
+        setOpen(false);
+        setOpenConfirmDelete(false);
+      }
     }
   };
 
   /*-----------------------------------------------------------------------------*/
 
-  //Utils 
-
+  // Utility to get the full name of the worker
   const fullName = currentWorker
     ? `${currentWorker.first_name} ${currentWorker.last_name}`
     : "No Worker Selected";
 
-
   /*-----------------------------------------------------------------------------*/
-  
 
   return (
     <>
-      {/* Pop up to edit a worker */}
-
+      {/* Popup to edit a worker */}
       <PopUp
         title={"Edit Worker Profile Info"}
-        submitFunc={handleEdit} // Función para manejar la edición
+        submitFunc={handleEdit}
         open={open}
         setOpen={setOpen}
-        handleOpen={() => {}} // No es necesario si ya usas setOpen
+        handleOpen={() => {}}
       >
         <main className="flex flex-col w-full px-6 justify-start items-center md:px-32">
-          {/* Imagen actual del trabajador o placeholder */}
+          {/* Display the current worker's avatar or a default image */}
           <Avatar
             src={
               currentWorker
-                ? currentWorker.avatarUrl || "/img/people/persona2.avif"
+                ? currentWorker.profile_picture || "/img/people/persona2.avif"
                 : "/img/people/persona2.avif"
             }
             size="xxl"
           />
 
           <section className="flex flex-col w-full items-center justify-start my-4 space-y-4">
-            {/* Cambio de primer nombre */}
+            {/* Change first name */}
             <Typography color="gray">
               Change the worker's first name:
             </Typography>
@@ -196,9 +232,10 @@ export function EditWorkerPopup({ open, setOpen, currentWorker }) {
               placeholder="Enter new first name"
               error={!!errors.firstName}
               helperText={errors.firstName}
+              label="First Name"
             />
 
-            {/* Cambio de apellido */}
+            {/* Change last name */}
             <Typography color="gray">Change the worker's last name:</Typography>
             <Input
               value={lastNameEdit}
@@ -206,9 +243,10 @@ export function EditWorkerPopup({ open, setOpen, currentWorker }) {
               placeholder="Enter new last name"
               error={!!errors.lastName}
               helperText={errors.lastName}
+              label="Last Name"
             />
 
-            {/* Cambio de correo electrónico */}
+            {/* Change email */}
             <Typography color="gray">Change worker email:</Typography>
             <Input
               value={emailEdit}
@@ -216,9 +254,60 @@ export function EditWorkerPopup({ open, setOpen, currentWorker }) {
               placeholder="Enter new email"
               error={!!errors.email}
               helperText={errors.email}
+              label="Email"
             />
 
-            {/* Icono para eliminar */}
+            {/* Select area */}
+            <Typography color="gray">Select worker's area:</Typography>
+            <Select
+              value={selectedArea}
+              onChange={(val) => setSelectedArea(val)}
+              label="Select Area"
+              variant="outlined"
+             
+            >
+              {areas && areas.length > 0 ? (
+                areas.map((area) => (
+                  <Option  value={area.id}>
+                    {area.value}
+                  </Option>
+                ))
+              ) : (
+                <Option value="" disabled>
+                  No areas available
+                </Option>
+              )}
+            </Select>
+            {errors.area && (
+              <Typography color="red" variant="small">
+                {errors.area}
+              </Typography>
+            )}
+
+            {/* Select role */}
+            <Typography color="gray">Select worker's role:</Typography>
+            <Select
+              value={selectedRole}
+              onChange={(val) => setSelectedRole(val)}
+              label="Select Role"
+              variant="outlined"      
+            >
+              <Option value="Area Admin">Area Admin</Option>
+              <Option value="Project Manager">Project Manager</Option>
+            </Select>
+            {errors.role && (
+              <Typography color="red" variant="small">
+                {errors.role}
+              </Typography>
+            )}
+
+            <div className="w-2/3 h-0.5 bg-blue-gray-200">
+
+
+
+            </div>
+
+            {/* Icon to delete */}
             <button
               onClick={(event) => {
                 event.stopPropagation();
@@ -231,7 +320,7 @@ export function EditWorkerPopup({ open, setOpen, currentWorker }) {
               <TrashIcon className="h-6 w-6 text-black hover:text-red-500 cursor-pointer transition-colors duration-200" />
             </button>
 
-            {/* Mensajes de feedback */}
+            {/* Feedback messages */}
             {successMessage && (
               <Typography color="green" className="mt-2">
                 {successMessage}
@@ -244,40 +333,32 @@ export function EditWorkerPopup({ open, setOpen, currentWorker }) {
             )}
           </section>
         </main>
-
-
       </PopUp>
 
-      {/* Popup para confirmar la eliminación */}
+      {/* Popup to confirm delete */}
       <PopUp
         title={"Confirm Deletion"}
-        submitFunc={handleConfirmDelete} // Función para manejar la eliminación
+        submitFunc={handleConfirmDelete}
         open={openConfirmDelete}
         setOpen={setOpenConfirmDelete}
-        handleOpen={() => {}} // No es necesario si ya usas setOpen
+        handleOpen={setOpenConfirmDelete} // Not necessary if using setOpenConfirmDelete
       >
-        <div className="flex flex-col items-center justify-center space-y-4">
+        <div className="flex flex-col items-center justify-center">
           <Typography color="gray">
-            Are you sure you want to delete the account{" "}
-            <strong>{fullName}</strong>?
+            Are you sure you want to delete <strong>{fullName}</strong>'s
+            account?
           </Typography>
+
+          <Typography color="red">
+            {errorMessage ? errorMessage : ""}
+          </Typography>
+
+          <Typography color="green">
+            {successMessage ? successMessage : ""}
+          </Typography>
+
           <div className="flex flex-row space-x-4">
-            <Button
-              variant="outlined"
-              color="red"
-              onClick={() => setOpenConfirmDelete(false)}
-              disabled={deleteWorkerMutation.isLoading}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="filled"
-              color="red"
-              onClick={handleConfirmDelete}
-              disabled={deleteWorkerMutation.isLoading}
-            >
-              {deleteWorkerMutation.isLoading ? "Deleting..." : "Confirm"}
-            </Button>
+            {/* Add buttons for confirmation if needed */}
           </div>
         </div>
       </PopUp>

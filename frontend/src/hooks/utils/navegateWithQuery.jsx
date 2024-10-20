@@ -2,6 +2,9 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useQueryParams } from "@/hooks/utils/useQueryParams";
 
+
+
+// This hook is used to navigate to a new path with the current query params.
 export const useNavigateWithQuery = () => {
   const navigate = useNavigate();
   const location = useLocation();

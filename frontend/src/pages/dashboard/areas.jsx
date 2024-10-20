@@ -111,7 +111,7 @@ function Areas() {
   /*--------------------------------------------*/
 
   return (
-    <>
+    <div>
       <Card
         className="flex  flex-col items-center 
       h-full w-full p-2   
@@ -153,7 +153,7 @@ function Areas() {
         setOpen={setOpenCreateArea}
         handleOpen={() => setOpenCreateArea(!openCreateaArea)}
       />
-    </>
+    </div>
   );
 }
 
