@@ -7,11 +7,11 @@ import {
   Button,
 } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
+
 export function ProjectCard({ project, isActive }) {
   return (
     <Card
-      className={`transition-transform duration-300 ease-in-out ${isActive ? "scale-110" : "scale-90 blur-sm"
-        } w-96`}
+      className={`transition-transform duration-300 ease-in-out ${isActive ? "scale-110" : "scale-90 blur-sm"} w-96`}
     >
       <CardHeader shadow={false} floated={false} className="h-96">
         <img
@@ -29,17 +29,12 @@ export function ProjectCard({ project, isActive }) {
             {project.budget}
           </Typography>
         </div>
-        <Typography
-          variant="small"
-          color="gray"
-          className="font-normal opacity-75"
-        >
+        <Typography variant="small" color="gray" className="font-normal opacity-75">
           {project.description}
         </Typography>
       </CardBody>
       <CardFooter className="pt-0">
-        <Link to="/project/detail/">
-
+        <Link to={`/project/detail`}>
           <Button
             ripple={false}
             fullWidth={true}

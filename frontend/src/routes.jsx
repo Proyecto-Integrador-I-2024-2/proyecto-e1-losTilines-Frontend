@@ -5,7 +5,7 @@ import Workers from "./pages/dashboard/workers";
 import Areas from "./pages/dashboard/areas";
 import Projects from "./pages/dashboard/projects";
 import Homepage from "./pages/home/homepage";
-import { ProjectDetail, MilestonesDetail } from "@/pages/project"
+import { ProjectDetail, MilestonesDetail, ProjectListing } from "@/pages/project"
 import { SignIn, SignUp } from "./pages/auth";
 
 export const routes = [
@@ -63,6 +63,11 @@ export const routes = [
   {
     layout: "project",
     pages: [
+      {
+        name: "listing",
+        path: "/",
+        element: <ProjectListing />,
+      },
       {
         name: "detail",
         path: "/detail",
