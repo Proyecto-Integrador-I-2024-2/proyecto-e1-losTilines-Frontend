@@ -167,34 +167,55 @@ class WorkerViewSet(viewsets.ModelViewSet):
             except User.DoesNotExist:
                 raise ValidationError("The new Project Manager is not valid.")
             
+    def destroy(self, request, *args, **kwargs):
+        worker = self.get_object()
+        
+        # Verificar si el usuario es un Business Manager
+        if worker.userrole_set.filter(role__name='Business Manager').exists():
+            return Response({"detail": "No se puede eliminar a un Business Manager."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Verificar si el usuario es un Admin Area y tiene áreas asignadas
+        if worker.userrole_set.filter(role__name='Area Admin').exists():
+            user_company = worker.usercompany_set.first()
+            if user_company and user_company.area:
+                return Response({"detail": "No se puede eliminar a un Admin Area que tiene áreas a cargo."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Si pasa las validaciones, proceder a eliminar el usuario
+        self.perform_destroy(worker)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+            
 class AreaViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     queryset = Area.objects.all()
     serializer_class = AreaSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['company', 'user']
-
+    
     def get_object(self):
         return super().get_object()
+    
+    
+    # def create(self, request, *args, **kwargs):
+    #     area_name = request.data.get('name')
+    #     company_id = request.data.get('company')
+    #     area_admin_id = request.data.get('user')
+        
+    #     area = self.validate_area(area_name, company_id, area_admin_id)
+        
+    #     return Response(AreaSerializer(area).data, status=status.HTTP_201_CREATED)
 
-    def create(self, request, *args, **kwargs):
-        area_name = request.data.get('name')
-        company_id = request.data.get('company')
-        area_admin_id = request.data.get('user')
+    # def update(self, request, *args, **kwargs):
+    #     area = self.get_object()
+    #     area_name = request.data.get('name')
+    #     company_id = request.data.get('company')
+    #     area_admin_id = request.data.get('user')
 
-        area = self.validate_area(area_name, company_id, area_admin_id)
+    #     try:
+    #         area = self.validate_area(area_name, company_id, area_admin_id, area=area)
+    #         return Response(AreaSerializer(area).data, status=status.HTTP_200_OK)
+    #     except ValidationError as e:
+    #         return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(AreaSerializer(area).data, status=status.HTTP_201_CREATED)
-
-    def update(self, request, *args, **kwargs):
-        area = self.get_object()
-        area_name = request.data.get('name')
-        company_id = request.data.get('company')
-        area_admin_id = request.data.get('user')
-
-        area = self.validate_area(area_name, company_id, area_admin_id, area=area)
-
-        return Response(AreaSerializer(area).data, status=status.HTTP_200_OK)
 
     def destroy(self, request, *args, **kwargs):
         area = self.get_object()
@@ -213,22 +234,14 @@ class AreaViewSet(viewsets.ModelViewSet):
         # if area_admin.usercompany_set.filter(area__isnull=False).exists() and (area is None or area_admin != area.user):
         #     raise ValidationError("El Area Admin ya tiene un área asignada.")
 
-        # Validar que el nombre del área sea único
-        if area is None:  # Para creación
-            if Area.objects.filter(name=area_name, company__id=company_id).exists():
-                raise ValidationError("El nombre del área ya existe en esta compañía.")
-        else:  # Para actualización
-            if Area.objects.filter(name=area_name, company__id=company_id).exclude(id=area.id).exists():
-                raise ValidationError("El nombre del área ya existe en esta compañía.")
-
         # Crear o actualizar el área
         if area is None:  # Creación
-            area = Area(name=area_name, company_id=company_id, user=area_admin)
+            area = Area(name=area_name, company_id=company_id, user=area_admin_id)
             area.save()
         else:  # Actualización
             area.name = area_name
             area.company_id = company_id
-            area.user = area_admin
+            area.user = area_admin_id
             area.save()
 
         return area
