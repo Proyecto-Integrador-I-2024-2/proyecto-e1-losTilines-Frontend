@@ -37,7 +37,7 @@ export const routes = [
   },
   {
     layout: "auth",
-    pages: [    
+    pages: [
       {
         name: "sign in",
         path: "/sign-in",

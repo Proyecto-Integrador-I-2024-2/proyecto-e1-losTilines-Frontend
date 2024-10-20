@@ -1,54 +1,33 @@
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Typography,
-  Button,
-} from "@material-tailwind/react";
-import { Link } from "react-router-dom";
-export function ProjectCard({ project, isActive }) {
+import { project_pic } from "@/data/placeholder";
+import { Card, CardHeader, CardBody, Typography, Button } from "@material-tailwind/react";
+import { useNavigate } from "react-router-dom";
+
+export function ProjectCard({ project, onCardClick }) {
+  const navigate = useNavigate();
+
   return (
     <Card
-      className={`transition-transform duration-300 ease-in-out ${isActive ? "scale-110" : "scale-90 blur-sm"
-        } w-96`}
+      className="w-48 max-w-xs p-3 shadow-lg rounded-lg transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
+      onClick={() => onCardClick(project.id)}
     >
-      <CardHeader shadow={false} floated={false} className="h-96">
+      <div className="h-32 w-32 mx-auto mb-4 rounded-lg overflow-hidden">
         <img
-          src={project.image || "https://i.pinimg.com/originals/d6/62/39/d66239c5145af6335cb3e9196a4c06b6.gif"}
-          alt="card-image"
+          src={project.image || project_pic}
+          alt={project.name || "Project Name"}
           className="h-full w-full object-cover"
         />
-      </CardHeader>
-      <CardBody>
-        <div className="mb-2 flex items-center justify-between">
-          <Typography color="blue-gray" className="font-medium">
-            {project.name}
-          </Typography>
-          <Typography color="blue-gray" className="font-medium">
-            {project.budget}
-          </Typography>
-        </div>
-        <Typography
-          variant="small"
-          color="gray"
-          className="font-normal opacity-75"
-        >
-          {project.description}
+      </div>
+      <CardBody className="p-0 text-center">
+        <Typography variant="h6" className="text-blue-gray-900 mb-2 overflow-hidden">
+          {project.name || "Project Name"}
+        </Typography>
+        <Typography color="blue-gray" className="text-sm mb-2 overflow-hidden">
+          {project.description.slice(0, 60) || "No description available"}...
+        </Typography>
+        <Typography variant="small" color="blue-gray" className="font-medium">
+          Budget: ${project.budget || "0"}
         </Typography>
       </CardBody>
-      <CardFooter className="pt-0">
-        <Link to="/project/detail/">
-
-          <Button
-            ripple={false}
-            fullWidth={true}
-            className="bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100"
-          >
-            Details
-          </Button>
-        </Link>
-      </CardFooter>
     </Card>
   );
 }

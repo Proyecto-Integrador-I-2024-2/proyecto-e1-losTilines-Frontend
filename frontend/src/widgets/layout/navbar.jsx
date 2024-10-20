@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Navbar,
   Collapse,
@@ -156,7 +156,7 @@ function NavList() {
         </ListItem>
       </Typography>
       <NavListMenu />
-      
+
     </List>
   );
 }
@@ -164,6 +164,17 @@ function NavList() {
 export function NavigationTopBar() {
   const [openNav, setOpenNav] = React.useState(false);
   const navigate = useNavigate(); // Obtén la función navigate
+  const token = sessionStorage.getItem("token");
+
+  function handleLogOut() {
+    sessionStorage.removeItem('role');
+    sessionStorage.removeItem('id');
+    sessionStorage.removeItem("token");
+    navigate("/");
+  }
+  function handleLogIn() {
+    navigate("/auth/sign-in");
+  }
 
   React.useEffect(() => {
     window.addEventListener(
@@ -177,7 +188,7 @@ export function NavigationTopBar() {
       <div className="flex items-center justify-between text-blue-gray-900">
         <Link to="/">
           <Typography
-              variant="h6"
+            variant="h6"
             className="mr-4 cursor-pointer py-1.5 lg:ml-2"
           >
             Freelance Now
@@ -187,7 +198,7 @@ export function NavigationTopBar() {
           <NavList />
         </div>
         <div className="hidden gap-2 lg:flex">
-          <Button variant="outlined" size="sm" onClick={() => navigate('/auth/sign-in/')}>Log out</Button> {/* Redirige a /login */}
+          <Button variant="outlined" size="sm" onClick={token ? handleLogOut : handleLogIn}>Log {token ? "out" : "in"}</Button> {/* Redirige a /login */}
         </div>
         <IconButton
           variant="text"

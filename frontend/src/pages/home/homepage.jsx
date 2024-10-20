@@ -7,116 +7,87 @@ import {
   Spinner,
   Typography,
 } from "@material-tailwind/react";
-import { FreelancerCard, ProjectCard } from "@/widgets/cards";
+import { FaRegLightbulb, FaUsers, FaProjectDiagram } from 'react-icons/fa';
+import { freelancersData as dummyFree, projectsData as dummyProj } from "@/data";
+import { ProjectCard, SmallFreelancerCard } from "@/widgets/cards";
 import { CustomList, CustomListItem } from "@/widgets/horList";
 import { IconButton } from "@material-tailwind/react";
-import { useFreelancers, useProjects } from "@/hooks";
+import { useFreelancers, useProjects, useQueryParams } from "@/hooks";
 import { useNavigate } from "react-router-dom";
 import { project_pic } from "@/data/placeholder";
+import { LandingPage } from "@/widgets/home";
+import { useNavigateWithQuery } from "@/hooks/utils";
+import { func } from "prop-types";
 
 
 const Homepage = () => {
   const { data: projectsData, isLoading: isProjectsLoading } = useProjects();
   const { data: freelancersData, isLoading: isFreelancersLoading } = useFreelancers();
-
+  const { getParams, setParams } = useQueryParams();
   const navigate = useNavigate();
+  const navigateWithQuery = useNavigateWithQuery();
   const role = sessionStorage.getItem("role");
 
-
-  if ((role === "Freelancer")) {
-    return (
-      <div className="justify-center items-center">
-        <div className="w-full flex flex-row mt-4 px-4 items-center justify-center">
-          <Typography variant="h3">Freelancers you might be interested in</Typography>
-        </div>
-        <Card className="overscroll-y-none mx-3 mt-4 mb-2 lg:mx-4 border border-blue-gray-100">
-          <CardBody className="overscroll-y-none h-full flex flex-row">
-            <CustomList
-              sectionTitle={""}
-              sectionSubtitle={""}
-            >
-              {freelancersData.map((freelancer, index) => (
-                <FreelancerCard key={freelancer.id} freelancer={freelancer} isActive={true} />
-              ))}
-            </CustomList>
-          </CardBody>
-        </Card>
-      </div >
-    );
-  } else {
-    return (
-      <>
-        {/* {isProjectsLoading ? <Spinner color="blue" size="large" /> : */}
-        <>
-          <div className="h-1/2 justify-center items-center">
-            <Card className="max-h-full overscroll-y-none mx-3 mt-4 mb-2 lg:mx-4 border border-blue-gray-100">
-              <CardBody className="overscroll-y-none h-full flex flex-row">
-                <CustomList
-                  sectionTitle={""}
-                  sectionSubtitle={""}
-                >
-                  {projects.map((project, index) => (
-                    <CustomListItem key={project.id} title={project.title} tag={project.price} description={project.description} img={project.image || project_pic} route={"/project/detail/"} />
-                  ))}
-                  {/* {projectsData.map((project, index) => (
-                      <CustomListItem key={project.id} title={project.name} tag={project.budget} description={project.description} img={project.image || project_pic} route={"/project/details/"} />
-                    ))} */}
-                </CustomList>
-              </CardBody>
-            </Card>
-          </div >
-          {/* <div className="h-1/3 justify-center items-center">
-            <Card className="overscroll-y-none mx-3 mt-4 mb-2 lg:mx-4 border border-blue-gray-100">
-              <CardBody className="overscroll-y-none h-full flex flex-row">
-                <CustomList
-                  sectionTitle={""}
-                  sectionSubtitle={""}
-                >
-                  {projects.map((project, index) => (
-                    <CustomListItem key={project.id} title={project.title} tag={project.price} description={project.description} img={project.image || project_pic} route={"/project/details/"} />
-                  ))}
-                </CustomList>
-              </CardBody>
-            </Card>
-          </div > */}
-        </>
-        {/* } */}
-      </>
-    );
+  function handleFreelancerCardClick(id) {
+    // setParams({ freelancer: id });
+    // console.log(getParams().get("freelancer"));
+    // navigateWithQuery("/profile");
+    navigate(`/profile?freelancer=${id}`);
   }
+  function handleProjectCardClick(id) {
+    navigate(`/project/detail/${id}`);
+  };
 
 
 
+  return (
+    <LandingPage>
+      {
+        freelancersData && freelancersData.length > 0 && projectsData && projectsData.length > 0 && (
+          <>
+            <div className="flex flex-col max-h-1/3 my-8">
+              <Typography variant='h2' className="text-4xl font-semibold text-center text-secondary mb-12">
+                Amazing Freelancers to work with!
+              </Typography>
+
+              {
+                freelancersData && (
+                  <CustomList
+                    sectionTitle={""}
+                    sectionSubtitle={""}
+                    isDistributedEvenly={true}
+                  >
+                    {freelancersData.map((freelancer) => (
+                      <SmallFreelancerCard key={freelancer.id} freelancer={freelancer} onCardClick={handleFreelancerCardClick} />
+                    ))}
+                  </CustomList>
+                )
+              }
+            </div>
+            <div className="flex flex-col max-h-1/3 my-8">
+              <Typography variant='h2' className="text-4xl font-semibold text-center text-secondary mb-12">
+                Incredible projects for you to hop on!
+              </Typography>
+
+              {
+                projectsData && (
+                  <CustomList
+                    sectionTitle={""}
+                    sectionSubtitle={""}
+                    isDistributedEvenly={true}
+                  >
+                    {projectsData.map((project) => (
+                      <ProjectCard key={project.id} project={project} onCardClick={handleProjectCardClick} />
+                    ))}
+                  </CustomList>
+                )
+              }
+            </div>
+          </>
+        )
+      }
+    </LandingPage>
+  );
 };
 
 export default Homepage;
-
-
-
-
-
-
-const projects = [
-  {
-    id: 1,
-    title: "Project 1",
-    description: "Description 1",
-    price: "$95.00",
-    image: "https://images.unsplash.com/photo-1629367494173-c78a56567877?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=927&q=80",
-  },
-  {
-    id: 2,
-    title: "Project 2",
-    description: "Description 2",
-    price: "$120.00",
-    image: "https://images.unsplash.com/photo-1629367494173-c78a56567877?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=927&q=80",
-  },
-  {
-    id: 3,
-    title: "Project 3",
-    description: "Description 3",
-    price: "$150.00",
-    image: "https://images.unsplash.com/photo-1629367494173-c78a56567877?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=927&q=80",
-  },
-  // Agrega más proyectos según sea necesario
-];

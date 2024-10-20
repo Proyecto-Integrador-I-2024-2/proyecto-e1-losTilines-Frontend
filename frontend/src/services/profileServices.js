@@ -2,6 +2,13 @@ import apiClient from "@/services/apiClient";
 
 // ----------------------- Freelancer Skills CRUD -----------------------}
 
+export const getFreelancer = async ({ id }) => {
+    var route = "freelancer";
+    const url = `${route}/${id}/`;
+    const { data } = await apiClient.get(url);
+    return data;
+}
+
 export const editFreelancerExperience = async ({ id, body }) => {
     var route = "experience";
     const url = `${route}/${id}/`;
@@ -15,8 +22,6 @@ export const deleteFreelancerExperience = async ({ id }) => {
     const { data } = await apiClient.delete(url);
     return data;
 }
-
-// ----------------------- Freelancer Skills CRUD -----------------------
 
 export const addFreelancerSkill = async ({ body }) => {
     const id = sessionStorage.getItem("id");
@@ -48,5 +53,14 @@ export const editWorkerProfile = async ({ body }) => {
     var userType = "workers";
     const url = `${userType}/${id}/`;
     const { data } = await apiClient.patch(url, body);
+    return data;
+}
+
+// ----------------------- Company Profile CRUD -----------------------
+
+export const getCompany = async ({ id }) => {
+    var userType = "company";
+    const url = `${userType}/${id}/`;
+    const { data } = await apiClient.get(url);
     return data;
 }
