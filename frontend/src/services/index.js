@@ -1,2 +1,2 @@
 export * from "@/services/apiClient"
-export * from "@/services/services"
+export * from "@/services/profileServices"

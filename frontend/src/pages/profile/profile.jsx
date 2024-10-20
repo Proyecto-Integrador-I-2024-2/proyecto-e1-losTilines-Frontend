@@ -22,50 +22,107 @@ import { ProfileInfoCard, MessageCard } from "@/widgets/cards";
 import { CustomList, CustomListItem } from "@/widgets/horList";
 import { SkillsSection, GitButton, ExperienceSection } from "@/widgets/custom";
 import { EditExperiencePopup, EditProfilePopUp, EditSkillsPopup } from "@/widgets/popUp";
-import { useCompany, useUser } from "@/hooks";
+import { useCompany, useQueryParams, useUser } from "@/hooks";
 import { userExample, freelancerExample, profile_pic } from "@/data/placeholder";
-import { addFreelancerSkill, deleteFreelancerExperience, deleteFreelancerSkill, editFreelancerExperience, editFreelancerSkill, editWorkerProfile } from "@/services";
+import { addFreelancerSkill, deleteFreelancerExperience, deleteFreelancerSkill, editFreelancerExperience, editFreelancerSkill, editWorkerProfile, getCompany, getFreelancer } from "@/services";
 import { useQueryClient } from "@tanstack/react-query";
-
 
 export function Profile() {
     const queryClient = useQueryClient();
     const { data: userData, isLoading: isUserLoading, refetch: userRefetch } = useUser();
     const { data: companyData, isLoading: isCompanyLoading, refetch: companyRefetch } = useCompany();
-
     const [isFreelancer, setIsFreelancer] = useState(true);
     const [projectsToUse, setProjectsToUse] = useState([]);
-    const [isEditable, setIsEditable] = useState(true);
+    const [isEditable, setIsEditable] = useState(false);
     const [showProfilePopUp, setShowProfilePopUp] = useState(false);
     const [showExperiencePopUp, setShowExperiencePopUp] = useState(false);
     const [showSkillsPopUp, setShowSkillsPopUp] = useState(false);
 
     const role = sessionStorage.getItem("role");
 
-    const userToUse = (userData?.user || userData || userExample);
-    const { first_name, last_name, email, phone_number } = userToUse;
-    const { description, country, city, portfolio, skills, experience_set, projects } = userData || freelancerExample;
+    // ----------------------- User information -----------------------
+
+    const externalFreelancerId = useQueryParams().getParams().get("freelancer");
+    const externalCompanyId = useQueryParams().getParams().get("company");
+
+    // Estados locales para almacenar los datos de freelancer y compañía externos
+    const [externalFreelancerData, setExternalFreelancerData] = useState(null);
+    const [externalCompanyData, setExternalCompanyData] = useState(null);
+    const [isLoadingExternalFreelancer, setIsLoadingExternalFreelancer] = useState(true);
+    const [isLoadingExternalCompany, setIsLoadingExternalCompany] = useState(true);
+
+    useEffect(() => {
+        async function fetchExternalFreelancer() {
+            if (externalFreelancerId) {
+                setIsLoadingExternalFreelancer(true);
+                try {
+                    const data = await getFreelancer({ id: externalFreelancerId });
+                    setExternalFreelancerData(data);
+                } catch (error) {
+                    console.error("Error fetching freelancer data:", error);
+                } finally {
+                    setIsLoadingExternalFreelancer(false);
+                }
+            }
+        }
+
+        async function fetchExternalCompany() {
+            if (externalCompanyId) {
+                setIsLoadingExternalCompany(true);
+                try {
+                    const data = await getCompany({ id: externalCompanyId });
+                    setExternalCompanyData(data);
+                } catch (error) {
+                    console.error("Error fetching company data:", error);
+                } finally {
+                    setIsLoadingExternalCompany(false);
+                }
+            }
+        }
+
+        // Llamadas a las APIs
+        fetchExternalFreelancer();
+        fetchExternalCompany();
+    }, [externalFreelancerId, externalCompanyId]);
+
+
+    const userToUse = (externalFreelancerData?.user || userData?.user || userData || userExample);
+    const { first_name, last_name, email, phone_number, profile_picture } = userToUse;
+    const { description, country, city, portfolio, skills, experience_set, projects } = externalFreelancerData || userData || freelancerExample;
 
     console.log("User", userData)
     console.log("Company", companyData)
     console.log("portfolio", portfolio)
-
-
-    // ----------------------- User information -----------------------
+    console.log("externalFreelancerData", externalFreelancerData)
+    console.log("externalCompanyData", externalCompanyData)
 
     useEffect(() => {
-        if (userData) {
+        if (userData && !externalFreelancerId) {
             setIsFreelancer(sessionStorage.getItem("role") === "Freelancer");
         }
-    }, [userData]);
+
+        if (externalFreelancerData) {
+            setIsFreelancer(true);
+        } else if (externalCompanyData) {
+            setIsFreelancer(false);
+        }
+
+    }, [userData, externalFreelancerId, externalFreelancerData, externalCompanyData]);
 
     useEffect(() => {
         if (isFreelancer) {
             setProjectsToUse(projects);
+
         } else {
-            setProjectsToUse(companyData.at(0).projects);
+            setProjectsToUse(externalCompanyData?.projects || companyData.at(0).projects || []);
         }
     }, [isFreelancer, projects, companyData]);
+
+    useEffect(() => {
+        if (userData && !externalFreelancerId && !externalCompanyId) {
+            setIsEditable((userData?.user?.id == sessionStorage.getItem("id")) || (userData?.id == sessionStorage.getItem("id")));
+        }
+    }, [userData, externalFreelancerId, externalCompanyId])
 
 
     // ----------------------- API consumption -----------------------
@@ -134,10 +191,10 @@ export function Profile() {
                 <Card className="h-full">
                     <CardBody className="h-full p-4">
                         {/* Seccion de identifiacion y tabs de herramientas */}
-                        <div className="mb-10 flex items-center justify-between flex-wrap gap-6 h-auto">
+                        {!externalCompanyData ? <div className="mb-10 flex items-center justify-between flex-wrap gap-6 h-auto">
                             <div className="flex items-center gap-6">
                                 <Avatar
-                                    src={(isFreelancer && !isUserLoading) ? (userData?.user?.profile_picture || profile_pic) : (userData?.profile_picture || profile_pic)}
+                                    src={((isFreelancer && !isUserLoading) || externalFreelancerData) ? (profile_picture || profile_pic) : (profile_picture || profile_pic)}
                                     alt="bruce-mars"
                                     size="xl"
                                     variant="circular"
@@ -177,11 +234,57 @@ export function Profile() {
                                 </Tabs>
                             </div>
                             {/* tabs de config */}
-                        </div >
+                        </div > :
+                            <div className="mb-10 flex items-center justify-between flex-wrap gap-6 h-auto">
+                                {/* Avatar e información básica de la empresa */}
+                                <div className="flex items-center gap-6">
+                                    <Avatar
+                                        src={externalCompanyData?.image || profile_pic} // Puedes agregar la imagen o logo de la empresa aquí
+                                        alt={externalCompanyData?.name || "Company Logo"}
+                                        size="xl"
+                                        variant="circular"
+                                        className="rounded-lg shadow-lg shadow-blue-gray-500/40"
+                                    />
+                                    <div>
+                                        {/* Nombre de la empresa */}
+                                        <Typography variant="h5" color="blue-gray" className="mb-1">
+                                            {externalCompanyData?.name || "Company Name"}
+                                        </Typography>
+                                        <Typography
+                                            variant="small"
+                                            className="font-normal text-blue-gray-600"
+                                        >
+                                            {externalCompanyData.industry} Company
+                                        </Typography>
+                                        <Rating value={5} />
+                                    </div>
+                                </div>
+
+                                {/* Tabs de navegación o acciones */}
+                                <div className="w-96">
+                                    <Tabs value="overview">
+                                        <TabsHeader>
+                                            <Tab value="overview">
+                                                <HomeIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
+                                                Overview
+                                            </Tab>
+                                            <Tab value="contact">
+                                                <ChatBubbleLeftEllipsisIcon className="-mt-0.5 mr-2 inline-block h-5 w-5" />
+                                                Contact
+                                            </Tab>
+                                            <Tab value="settings">
+                                                <Cog6ToothIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
+                                                Settings
+                                            </Tab>
+                                        </TabsHeader>
+                                    </Tabs>
+                                </div>
+                            </div>
+                        }
                         {/* Aquí va la fila de cards tipo columna --->*/}
                         <div className="grid-cols-1 mb-12 grid gap-12 px-4 lg:grid-cols-2 xl:grid-cols-3 h-2/3">
                             <div>
-                                {!isUserLoading && <ProfileInfoCard
+                                {(!isUserLoading && !externalCompanyData) ? <ProfileInfoCard
                                     title="Profile Information"
                                     description={isFreelancer ? description : companyData.at(0).description}
                                     details={isFreelancer ? {
@@ -206,7 +309,20 @@ export function Profile() {
                                         }}
                                     editable={isEditable}
                                     onEdit={handleProfilePopup}
-                                />}
+                                /> :
+                                    <ProfileInfoCard
+                                        title="Company Information"
+                                        description={externalCompanyData?.description || "No description provided"}
+                                        details={
+                                            {
+                                                name: externalCompanyData?.name || "No name provided",
+                                                industry: externalCompanyData?.industry || "No industry provided",
+                                                email: externalCompanyData?.email || "No email provided",
+                                            }
+                                        }
+                                        editable={false}
+                                        onEdit={{}}
+                                    />}
                                 {
                                     isFreelancer && (isUserLoading ? <Spinner /> : (portfolio !== "Not provided" && <GitButton url={portfolio} />))
                                 }
@@ -227,7 +343,7 @@ export function Profile() {
                                             <Typography variant="h6" color="blue-gray" className="mb-4">
                                                 Freelancers that have worked here
                                             </Typography>
-                                            <div className="space-y-6 h-full overflow-y-auto no-scrollbar">
+                                            {!externalCompanyData ? <div className="space-y-6 h-full overflow-y-auto no-scrollbar">
                                                 {companyData.at(0).freelancers.map((freelancer) => (
                                                     <MessageCard
                                                         key={freelancer.user.name}
@@ -240,6 +356,20 @@ export function Profile() {
                                                     />
                                                 ))}
                                             </div>
+                                                :
+                                                <div className="space-y-6 h-full overflow-y-auto no-scrollbar">
+                                                    {externalCompanyData.freelancers.map((freelancer) => (
+                                                        <MessageCard
+                                                            key={freelancer.user.name}
+                                                            img={freelancer.user.img || profile_pic}
+                                                            name={freelancer.user.name}
+                                                            message={freelancer.description}
+                                                            action={
+                                                                <VscAccount />
+                                                            }
+                                                        />
+                                                    ))}
+                                                </div>}
                                         </div>)
                                 }
                             </div>
@@ -250,7 +380,10 @@ export function Profile() {
                                         <SkillsSection sectionName={"Skills"} skills={skills} editable={isEditable} onEdit={handleSkillsPopUp} />)
                                     :
                                     (isCompanyLoading ? <Spinner /> :
-                                        <SkillsSection sectionName={"Tech Stack"} skills={companyData.at(0).skills} editable={false} />)
+                                        (companyData && <SkillsSection sectionName={"Tech Stack"} skills={companyData?.at(0).skills || []} editable={false} />))
+                                }
+                                {
+                                    externalCompanyData && <SkillsSection sectionName={"Tech Stack"} skills={externalCompanyData?.skills || []} editable={false} />
                                 }
                             </div>
                         </div>
@@ -277,13 +410,16 @@ export function Profile() {
                 </CardBody>
             </Card>
             {isUserLoading ? <Spinner /> :
+
+                (isEditable) &&
                 <>
                     <EditProfilePopUp open={showProfilePopUp} onOpen={setShowProfilePopUp} profile={userToUse} onChange={handleEditWorkerProfile} />
-                    <EditExperiencePopup open={showExperiencePopUp} onOpen={setShowExperiencePopUp} experiences={experience_set} editExperience={handleEditExperience} addExperience={{}} deleteExperience={handleDeleteExperience} />
-                    <EditSkillsPopup open={showSkillsPopUp} onOpen={setShowSkillsPopUp} skills={skills} editSkill={handleEditSkill} addSkill={handleAddSkill} deleteSkill={handleDeleteSkill} />
+                    <EditExperiencePopup open={showExperiencePopUp} onOpen={setShowExperiencePopUp} experiences={experience_set || []} editExperience={handleEditExperience} addExperience={{}} deleteExperience={handleDeleteExperience} />
+                    <EditSkillsPopup open={showSkillsPopUp} onOpen={setShowSkillsPopUp} skills={skills || []} editSkill={handleEditSkill} addSkill={handleAddSkill} deleteSkill={handleDeleteSkill} />
                 </>
+
             }
-        </div>
+        </div >
     );
 }
 
