@@ -1,5 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 
+// This hook is used to manage query params in the URL, set and get them.
+
 export const useQueryParams = () => {
   const location = useLocation();
   const navigate = useNavigate();
