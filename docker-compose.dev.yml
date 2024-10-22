@@ -17,7 +17,7 @@ services:
       python manage.py create_superuser_if_not_exists &&
       echo 'Django admin created' &&
       echo 'Turn on server process:' &&
-      python manage.py init_data &&
+      python manage.py shell -c 'from app.management.commands.data_init import cargar_datos; cargar_datos()' &&
       python manage.py runserver 0.0.0.0:8000"
     depends_on:
       - db

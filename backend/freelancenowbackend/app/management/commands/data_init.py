@@ -2,20 +2,35 @@ import factory
 from factory.django import DjangoModelFactory
 from django.utils import timezone
 from faker import Faker
+from random import choice
+from django.db import transaction
 from django.contrib.auth.models import Group
 from app.models import (
     User, UserRole, Notification, UserNotification, Company, Area, UserCompany,
     Freelancer, SkillType, Skill, FreelancerSkill, Status, Project, ProjectFreelancer, ProjectSkill
 )
 
-fake = Faker('es_CO')  # Datos realistas para Colombia
+fake = Faker('es_CO')
 
-# Fábricas
-class GroupFactory(DjangoModelFactory):
-    class Meta:
-        model = Group
+SKILL_CHOICES = ['Python', 'Django', 'JavaScript', 'React', 'HTML', 'CSS', 'SQL']
+PROJECT_CHOICES = ['Desarrollo Plataforma Web', 'Aplicación Móvil', 'API Backend', 'Sistema de Gestión']
 
-    name = factory.Faker('word')
+profile_images = [
+    'https://i.pinimg.com/736x/a3/53/66/a3536654d44f08f16044ae301a8be184.jpg',
+    'https://i.pinimg.com/564x/9e/47/79/9e47798a74eb85a391204f7f32c509d1.jpg',
+    'https://i.pinimg.com/564x/c5/cc/82/c5cc82bec47291eb587de8d9a6c92bb7.jpg',
+    'https://i.pinimg.com/control/564x/00/62/87/006287d3aa9c240f2ca4fdfe90d67a39.jpg',
+    'https://i.pinimg.com/control/564x/b8/2c/5a/b82c5a7a7c122bcdd87dbe495edf7294.jpg',
+    'https://i.pinimg.com/564x/7e/ac/b0/7eacb0cd582fb0d069281511adacdddd.jpg'
+]
+
+def create_group_if_not_exists(group_name):
+    group, created = Group.objects.get_or_create(name=group_name)
+    if created:
+        print(f'Grupo {group_name} creado.')
+    else:
+        print(f'Grupo {group_name} ya existe.')
+    return group
 
 class UserFactory(DjangoModelFactory):
     class Meta:
@@ -24,8 +39,8 @@ class UserFactory(DjangoModelFactory):
     first_name = factory.Faker('first_name')
     last_name = factory.Faker('last_name')
     email = factory.LazyAttribute(lambda obj: f'{obj.first_name.lower()}.{obj.last_name.lower()}@example.com')
-    phone_number = factory.Faker('phone_number')
-    profile_picture = factory.Faker('image_url')
+    phone_number = factory.LazyAttribute(lambda _: fake.phone_number()[:15])
+    profile_picture = factory.LazyAttribute(lambda _: choice(profile_images))  # Imagen aleatoria
     is_active = True
 
     @factory.post_generation
@@ -37,10 +52,15 @@ class UserFactory(DjangoModelFactory):
 
     @factory.post_generation
     def assign_group(self, create, extracted, **kwargs):
-        if not create or not extracted:
+        if not create:
             return
-        group = Group.objects.get(name=extracted)
-        self.groups.add(group)
+        if extracted:
+            # Verificar si el grupo existe antes de asignar
+            try:
+                group = Group.objects.get(name=extracted)
+                self.groups.add(group)
+            except Group.DoesNotExist:
+                print(f"Error: El grupo '{extracted}' no existe. No se pudo asignar al usuario.")
 
 class CompanyFactory(DjangoModelFactory):
     class Meta:
@@ -51,7 +71,7 @@ class CompanyFactory(DjangoModelFactory):
     country = factory.Faker('country')
     city = factory.Faker('city')
     address = factory.Faker('address')
-    telephone = factory.Faker('phone_number')
+    telephone = factory.LazyAttribute(lambda _: fake.phone_number()[:15])
     email = factory.LazyAttribute(lambda obj: f'info@{obj.name.lower().replace(" ", "")}.com')
     user = factory.SubFactory(UserFactory, assign_group='business_manager')
 
@@ -82,7 +102,7 @@ class SkillFactory(DjangoModelFactory):
     class Meta:
         model = Skill
 
-    name = factory.Faker('word')
+    name = factory.LazyAttribute(lambda _: choice(SKILL_CHOICES))  
     is_predefined = True
     type = factory.SubFactory(SkillTypeFactory)
 
@@ -94,11 +114,25 @@ class FreelancerSkillFactory(DjangoModelFactory):
     skill = factory.SubFactory(SkillFactory)
     level = factory.LazyAttribute(lambda _: fake.random_int(min=50, max=100))
 
+class NotificationFactory(DjangoModelFactory):
+    class Meta:
+        model = Notification
+
+    message = factory.Faker('sentence')
+    created_at = factory.LazyFunction(timezone.now)
+
+class UserNotificationFactory(DjangoModelFactory):
+    class Meta:
+        model = UserNotification
+
+    notification = factory.SubFactory(NotificationFactory)
+    user = factory.SubFactory(UserFactory)
+
 class ProjectFactory(DjangoModelFactory):
     class Meta:
         model = Project
 
-    name = factory.Faker('sentence')
+    name = factory.LazyAttribute(lambda _: choice(PROJECT_CHOICES))
     description = factory.Faker('paragraph')
     start_date = factory.LazyFunction(timezone.now)
     user = factory.SubFactory(UserFactory, assign_group='project_manager')
@@ -119,29 +153,52 @@ class ProjectSkillFactory(DjangoModelFactory):
     skill = factory.SubFactory(SkillFactory)
     level = factory.LazyAttribute(lambda _: fake.random_int(min=50, max=100))
 
-# Función para cargar datos
+
 def cargar_datos():
-    GroupFactory.create_batch(4, name=['Freelancer', 'Business Manager', 'Area Admin', 'Project Manager'])
-    freelancers = UserFactory.create_batch(3, assign_group='freelancer')
-    business_managers = UserFactory.create_batch(3, assign_group='business_manager')
-    area_admins = UserFactory.create_batch(3, assign_group='area_admin')
-    project_managers = UserFactory.create_batch(3, assign_group='project_manager')
+    try:
+        with transaction.atomic():
+            # Cargar grupos
+            freelancer_group = create_group_if_not_exists('Freelancer')
+            business_manager_group = create_group_if_not_exists('Business Manager')
+            area_admin_group = create_group_if_not_exists('Area Admin')
+            project_manager_group = create_group_if_not_exists('Project Manager')  
 
-    companies = CompanyFactory.create_batch(3)
-    for company in companies:
-        AreaFactory.create_batch(2, company=company)
+            # Verificar que los grupos han sido creados correctamente
+            for group_name in ['Freelancer', 'Business Manager', 'Area Admin', 'Project Manager']:
+                group = Group.objects.filter(name=group_name).first()
+                if group:
+                    print(f'Grupo {group_name} está en la base de datos.')
+                else:
+                    raise Exception(f'Error: El grupo {group_name} no se pudo crear o no existe.')
 
-    freelancers_profiles = FreelancerFactory.create_batch(3)
-    skills = SkillFactory.create_batch(3)
-    for freelancer in freelancers_profiles:
-        FreelancerSkillFactory.create(freelancer=freelancer, skill=skills[fake.random_int(0, 2)])
+        # Crear usuarios, empresas y otros modelos
+        freelancers = UserFactory.create_batch(3, assign_group='freelancer')
+        business_managers = UserFactory.create_batch(3, assign_group='business_manager')
+        area_admins = UserFactory.create_batch(3, assign_group='area_admin')
+        project_managers = UserFactory.create_batch(3, assign_group='project_manager')
 
-    projects = ProjectFactory.create_batch(3)
-    for project in projects:
-        ProjectFreelancerFactory.create(project=project, freelancer=freelancers_profiles[fake.random_int(0, 2)])
-        ProjectSkillFactory.create_batch(2, project=project)
+        companies = CompanyFactory.create_batch(3)
+        for company in companies:
+            AreaFactory.create_batch(2, company=company)
 
-    print("Datos cargados exitosamente.")
+        freelancers_profiles = FreelancerFactory.create_batch(3)
+        skills = SkillFactory.create_batch(3)  
+        for freelancer in freelancers_profiles:
+            FreelancerSkillFactory.create(freelancer=freelancer, skill=skills[fake.random_int(0, 2)])
+
+        projects = ProjectFactory.create_batch(3)
+        for project in projects:
+            ProjectFreelancerFactory.create(project=project, freelancer=freelancers_profiles[fake.random_int(0, 2)])
+            ProjectSkillFactory.create_batch(2, project=project)
+
+        notifications = NotificationFactory.create_batch(3)
+        for notification in notifications:
+            for user in freelancers + business_managers + area_admins + project_managers:
+                UserNotificationFactory.create(notification=notification, user=user)
+
+        print("Datos cargados exitosamente.")
+    except Exception as e:
+        print(f"Ocurrió un error durante la carga de datos: {str(e)}")
 
 # Ejecutar la carga de datos
 cargar_datos()
