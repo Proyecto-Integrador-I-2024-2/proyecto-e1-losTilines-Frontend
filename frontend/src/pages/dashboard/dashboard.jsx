@@ -28,6 +28,8 @@ function Dashboard() {
 
   const { data: user, isLoading: userLoading } = useUser();
 
+  const createAreaHook = useCreateArea();
+``
   const role = sessionStorage.getItem("role");
 
   /*-----------------------------------------------*/
