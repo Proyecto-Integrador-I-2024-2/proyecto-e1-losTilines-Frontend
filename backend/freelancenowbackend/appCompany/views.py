@@ -26,6 +26,9 @@ class WorkerViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = WorkerFilter
 
+    def create(self, request, *args, **kwargs):
+        return Response({"detail": "POST method is not allowed for this view."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         worker = self.get_object()

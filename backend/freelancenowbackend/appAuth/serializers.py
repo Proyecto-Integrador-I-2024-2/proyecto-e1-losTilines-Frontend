@@ -51,6 +51,7 @@ class CompanySerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 class UserCompanySerializer(serializers.ModelSerializer):
+    user = UserSerializer()
     class Meta:
         model = UserCompany
         fields = ['company', 'user', 'area']
