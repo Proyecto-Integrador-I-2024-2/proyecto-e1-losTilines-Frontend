@@ -347,7 +347,7 @@ export function Profile() {
                                                 {companyData.at(0).freelancers.map((freelancer) => (
                                                     <MessageCard
                                                         key={freelancer.user.name}
-                                                        img={freelancer.user.img}
+                                                        img={freelancer.user.img || profile_pic}
                                                         name={freelancer.user.name}
                                                         message={freelancer.description}
                                                         action={
