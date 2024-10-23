@@ -1,3 +1,4 @@
+import { getProjectMilestones } from "@/services";
 import { MilestoneCard, DeliverableCard } from "@/widgets/cards";
 import { ProjectTopBar } from "@/widgets/layout";
 import {
@@ -7,17 +8,30 @@ import {
   Typography,
   Avatar,
 } from "@material-tailwind/react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
 
 
 export function MilestonesDetail() {
 
   const { id } = useParams();
 
-  function fetchMilestones(id) {
+  console.log("ID del proyecto en milestones:", id);
 
-  }
+  const [milestones, setMilestones] = useState([]);
+
+  useEffect(() => {
+    const fetchMilestones = async () => {
+      try {
+        const milestones = await getProjectMilestones({ id });
+        setMilestones(milestones);
+      } catch (error) {
+        console.error('Error fetching milestones:', error);
+      }
+    }
+
+    fetchMilestones();
+  }, [id])
 
   return (
     <>
@@ -29,8 +43,7 @@ export function MilestonesDetail() {
 
           {/* Sección 2: Información del Proyecto (70%) */}
           <div className="basis-[30%] pr-2 w-full h-full overflow-auto">
-            <MilestoneCard ></MilestoneCard>
-            <MilestoneCard ></MilestoneCard>
+            {milestones.map((milestone) => (<MilestoneCard milestone={milestone} />))}
           </div>
 
           {/* Sección 3: Habilidades Requeridas*/}
@@ -52,18 +65,12 @@ export function MilestonesDetail() {
               </CardHeader>
               <CardBody className="py-0 px-6 h-full">
                 <div className="space-y-2 m-4">
-                  <DeliverableCard></DeliverableCard>
-                  <DeliverableCard></DeliverableCard>
-                  <DeliverableCard></DeliverableCard>
-                  <DeliverableCard></DeliverableCard>
+                  <DeliverableCard />
                 </div>
               </CardBody>
             </Card>
-
           </div>
-
         </div>
-
       </div>
     </>
   );
