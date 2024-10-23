@@ -25,12 +25,12 @@ function StarIcon() {
   );
 }
 
-export function MilestoneCard({ milestone }) {
+export function MilestoneCard({ milestone, onClick }) {
 
   const milestone_pic = "https://i.pinimg.com/564x/3c/9e/4b/3c9e4b32b67d641965915ee08db63844.jpg"
 
   return (
-    <Card color="transparent" shadow={true} className="w-full transform transition-transform duration-300 hover:scale-95">
+    <Card color="transparent" shadow={true} className="w-full transform transition-transform duration-300 hover:scale-95" onClick={() => onClick(milestone.id)}>
       <CardHeader
         color="transparent"
         floated={false}
