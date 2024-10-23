@@ -380,7 +380,7 @@ export function Profile() {
                                         <SkillsSection sectionName={"Skills"} skills={skills} editable={isEditable} onEdit={handleSkillsPopUp} />)
                                     :
                                     (isCompanyLoading ? <Spinner /> :
-                                        (companyData && <SkillsSection sectionName={"Tech Stack"} skills={companyData?.at(0).skills || []} editable={false} />))
+                                        !externalCompanyData && (companyData && <SkillsSection sectionName={"Tech Stack"} skills={companyData?.at(0).skills || []} editable={false} />))
                                 }
                                 {
                                     externalCompanyData && <SkillsSection sectionName={"Tech Stack"} skills={externalCompanyData?.skills || []} editable={false} />
@@ -424,4 +424,3 @@ export function Profile() {
 }
 
 export default Profile;
-
