@@ -12,17 +12,17 @@ const defaultSkills = [
     { skill_name: "TypeScript", icon: <FaJs />, level: 75 },
     { skill_name: "Django", icon: <DiDjango />, level: 70 },
     { skill_name: "UI/UX Design", icon: <FaPaintBrush />, level: 80 },
-    // { skill_name: "Python", icon: <FaPython />, level: 80 },
-    // { skill_name: "Java", icon: <FaJava />, level: 75 },
-    // { skill_name: "SQL", icon: <FaDatabase />, level: 70 },
-    // { skill_name: "HTML", icon: <FaHtml5 />, level: 90 },
-    // { skill_name: "CSS", icon: <FaCss3Alt />, level: 85 },
-    // { skill_name: "Git", icon: <FaGitAlt />, level: 80 },
-    // { skill_name: "Docker", icon: <FaDocker />, level: 70 },
-    // { skill_name: "Ruby", icon: <DiRuby />, level: 65 },
-    // { skill_name: "PHP", icon: <DiPhp />, level: 60 },
-    // { skill_name: "Angular", icon: <DiAngularSimple />, level: 70 },
-    // { skill_name: "MongoDB", icon: <DiMongodb />, level: 75 }
+    { skill_name: "Python", icon: <FaPython />, level: 80 },
+    { skill_name: "Java", icon: <FaJava />, level: 75 },
+    { skill_name: "SQL", icon: <FaDatabase />, level: 70 },
+    { skill_name: "HTML", icon: <FaHtml5 />, level: 90 },
+    { skill_name: "CSS", icon: <FaCss3Alt />, level: 85 },
+    { skill_name: "Git", icon: <FaGitAlt />, level: 80 },
+    { skill_name: "Docker", icon: <FaDocker />, level: 70 },
+    { skill_name: "Ruby", icon: <DiRuby />, level: 65 },
+    { skill_name: "PHP", icon: <DiPhp />, level: 60 },
+    { skill_name: "Angular", icon: <DiAngularSimple />, level: 70 },
+    { skill_name: "MongoDB", icon: <DiMongodb />, level: 75 }
 ];
 
 
@@ -32,20 +32,20 @@ const skillsIconMap = {
     "React": <FaReact />,
     "Node.js": <FaNodeJs />,
     "Linux": <DiLinux />,
-    // "TypeScript": <FaJs />,
-    // "Django": <DiDjango />,
-    // "UI/UX Design": <FaPaintBrush />,
-    // "Python": <FaPython />,
-    // "Java": <FaJava />,
-    // "SQL": <FaDatabase />,
-    // "HTML": <FaHtml5 />,
-    // "CSS": <FaCss3Alt />,
-    // "Git": <FaGitAlt />,
-    // "Docker": <FaDocker />,
-    // "Ruby": <DiRuby />,
-    // "PHP": <DiPhp />,s
-    // "Angular": <DiAngularSimple />,
-    // "MongoDB": <DiMongodb />
+    "TypeScript": <FaJs />,
+    "Django": <DiDjango />,
+    "UI/UX Design": <FaPaintBrush />,
+    "Python": <FaPython />,
+    "Java": <FaJava />,
+    "SQL": <FaDatabase />,
+    "HTML": <FaHtml5 />,
+    "CSS": <FaCss3Alt />,
+    "Git": <FaGitAlt />,
+    "Docker": <FaDocker />,
+    "Ruby": <DiRuby />,
+    "PHP": <DiPhp />,
+    "Angular": <DiAngularSimple />,
+    "MongoDB": <DiMongodb />
 };
 
 const getSkillIcon = (skillName) => {
@@ -69,7 +69,7 @@ export function SkillsSection({ sectionName, skills, editable, onEdit }) {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 h-full overflow-y-auto p-2 no-scrollbar">
                 {isThereSkills ? (skillsToUse.map((skill, index) => (
-                    <Card key={index} shadow={true} className="p-6 flex items-center">
+                    <Card key={index} shadow={true} className="p-6 flex items-center max-h-min">
                         <div className="text-blue-500 text-3xl mr-4 pb-4">{skill.icon ? skill.icon : getSkillIcon(skill.skill_name)}</div>
                         <div className="w-full">
                             <div className="flex justify-between mb-2">

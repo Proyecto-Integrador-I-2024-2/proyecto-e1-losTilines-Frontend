@@ -7,7 +7,7 @@ export function MessageCard({ img, name, message, action }) {
       <div className="flex items-center gap-4">
         <Avatar
           src={img}
-          alt={name}
+          alt={""}
           variant="rounded"
           className="shadow-lg shadow-blue-gray-500/25"
         />

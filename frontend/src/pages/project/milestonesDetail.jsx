@@ -7,10 +7,12 @@ import {
     Avatar,
   } from "@material-tailwind/react";
 
+
+
 export function MilestonesDetail( ) {
     return (
         <div className="flex flex-col w-full h-full min-h-0"> 
-    
+        
         {/* Sección 2 y 3: Información del Proyecto y Habilidades Requeridas en dos columnas */}
         <div className="flex w-full h-full flex-1 p-5 pb-5"> 
           

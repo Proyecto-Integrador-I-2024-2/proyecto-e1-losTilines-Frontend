@@ -5,9 +5,9 @@ import Workers from "./pages/dashboard/workers";
 import Areas from "./pages/dashboard/areas";
 import Projects from "./pages/dashboard/projects";
 import Homepage from "./pages/home/homepage";
-import { ProjectDetail, MilestonesDetail } from "@/pages/project"
+import { ProjectDetail, ProjectListing} from "./pages/project";
 import { SignIn, SignUp } from "./pages/auth";
-
+import { MilestonesDetail } from "./pages/project";
 export const routes = [
   {
     layout: "dashboard",
@@ -37,7 +37,7 @@ export const routes = [
   },
   {
     layout: "auth",
-    pages: [    
+    pages: [
       {
         name: "sign in",
         path: "/sign-in",
@@ -54,12 +54,13 @@ export const routes = [
     layout: "profile",
     pages: [
       {
-        name: "profile",
+        name: "detail",
         path: "/",
         element: <Profile />,
       },
     ],
   },
+
   {
     layout: "project",
     pages: [
@@ -68,13 +69,23 @@ export const routes = [
         path: "/detail",
         element: <ProjectDetail />,
       },
+
+      {
+        name: "listing",
+        path: "/",
+        element: <ProjectListing />,
+      },
+
       {
         name: "milestones",
         path: "/milestones",
         element: <MilestonesDetail />,
       },
+
     ],
   },
+
+
   {
     layout: "homepage",
     pages: [

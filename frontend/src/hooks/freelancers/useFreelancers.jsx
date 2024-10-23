@@ -3,7 +3,7 @@ import apiClient from "@/services/apiClient";
 
 const fetchFreelancers = async () => {
 
-    var userType = "freelancers";
+    var userType = "freelancer";
 
     const url = `${userType}/`
 

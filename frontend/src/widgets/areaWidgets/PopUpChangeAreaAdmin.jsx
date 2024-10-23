@@ -12,7 +12,6 @@ export function PopUpChangeAreaAdmin({
   const { data: adminsAvailable, isLoading: isLoadingAdminAvailable } =
     useAdminAvailables();
 
-
   const [currentAdminInfo, setCurrentAdminInfo] = useState(currentAdmin);
 
   const [selectedId, setSelectedId] = useState(null); //State to handle the selected available admin
@@ -27,19 +26,10 @@ export function PopUpChangeAreaAdmin({
   };
 
   const handleChangeAreaAdim = async () => {
-
-
-    if(selectedId != null ) {
-
+    if (selectedId != null) {
       //Here must go the logic to change the area admin
-
-
-
-
     }
-  }
-
-
+  };
 
   const TABLE_HEAD_AVAILABLE_ADMINS = ["Worker", "Area in charge", "Select"];
 
@@ -124,31 +114,23 @@ export function PopUpChangeAreaAdmin({
                         </td>
 
                         <td className={classes}>
-                        <div className="w-max">
-                          <Checkbox
-                            checked={selectedId === id}
-                            onChange={() => handleSelect(id)}
-                          />
-                        </div>
-                      </td>
+                          <div className="w-max">
+                            <Checkbox
+                              checked={selectedId === id}
+                              onChange={() => handleSelect(id)}
+                            />
+                          </div>
+                        </td>
                       </tr>
                     );
                   }
                 )
               ) : (
-                
-                <tr >
-
-
+                <tr>
                   <td colSpan={3} className="text-center my-4">
-
-                  <Typography>No admins available</Typography>
-
+                    <Typography>No admins available</Typography>
                   </td>
-
                 </tr>
-                
-                
               )}
             </tbody>
           </table>

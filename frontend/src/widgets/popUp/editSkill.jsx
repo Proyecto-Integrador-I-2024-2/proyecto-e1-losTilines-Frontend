@@ -16,8 +16,6 @@ import { useSkills } from "@/hooks";
 export function EditSkillsPopup({ open, onOpen, skills, editSkill, addSkill, deleteSkill }) {
     const { data: skillsData, isLoading: isSkillsLoading, refetch: skillsRefetch } = useSkills();
 
-
-
     const [skillToAdd, setSkillToAdd] = useState(null);
     const [selectedSkill, setSelectedSkill] = useState(null);
     const [newSkill, setNewSkill] = useState({
