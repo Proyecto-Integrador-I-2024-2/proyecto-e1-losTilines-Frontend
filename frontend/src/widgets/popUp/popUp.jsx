@@ -35,7 +35,7 @@ export function PopUp({
 
   return (
     <>
-      <Dialog className="w-full h-5/6 overflow-y-auto md:h-auto " open={open} handler={handleOpen}>
+      <Dialog className="w-full h-5/6 overflow-y-auto  " open={open} handler={handleOpen}>
         <DialogHeader className="flex flex-row justify-center items-center">
           {title}
         </DialogHeader>
