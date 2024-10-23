@@ -97,7 +97,8 @@ class Area(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['name', 'company'], name='unique_area_name_per_company')
+            models.UniqueConstraint(fields=['name', 'company'], name='unique_area_name_per_company'),
+            models.UniqueConstraint(fields=['user'], name='unique_area_per_user'),  #Restringe que un admin area solo pueda tener un area asociada
         ]
     def save(self, *args, **kwargs):
         #if not self.user.groups.filter(name="Area Admin").exists() or not self.user.groups.filter(name="Business Manager").exists():

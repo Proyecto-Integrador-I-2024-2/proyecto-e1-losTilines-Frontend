@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'email', 'first_name', 'last_name', 'phone_number', 'created_at', 'profile_picture', 'is_active', 'is_staff']
 
 class UserRoleSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = UserSerializer(read_only = True)
     role_name = serializers.CharField(source='role.name')
 
     class Meta:
@@ -22,6 +22,8 @@ class NotificationSerializer(serializers.ModelSerializer):
         fields = ['id', 'message', 'created_at']
 
 class UserNotificationSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only = True)
+    notification = NotificationSerializer()
     class Meta:
         model = UserNotification
         fields = ['id', 'notification', 'user']
@@ -33,6 +35,8 @@ class CompanySerializer(serializers.ModelSerializer):
         fields = ['id', 'tax_id', 'name', 'country', 'city', 'address', 'telephone', 'email', 'user', 'description', 'industry']
 
 class AreaSerializer(serializers.ModelSerializer):
+    company = CompanySerializer()
+    user = UserSerializer(read_only = True)
     class Meta:
         model = Area
         fields = ['id', 'name', 'company', 'user']
@@ -40,6 +44,7 @@ class AreaSerializer(serializers.ModelSerializer):
 class UserCompanySerializer(serializers.ModelSerializer):
     company = CompanySerializer()
     area = AreaSerializer()
+    user = UserSerializer(read_only = True)
 
     class Meta:
         model = UserCompany
@@ -60,11 +65,12 @@ class StatusSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 class ProjectSerializer(serializers.ModelSerializer):
-    status = StatusSerializer()  
+    status = StatusSerializer() 
+    user = UserSerializer(read_only = True)
 
     class Meta:
         model = Project
-        fields = ['id', 'name', 'description', 'start_date', 'budget', 'status']
+        fields = ['id', 'name', 'description', 'start_date', 'budget', 'status', 'user']
 
 # ---------------Freelancer skills-----------------------#
 class SkillSerializer(serializers.ModelSerializer):

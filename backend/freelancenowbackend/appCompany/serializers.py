@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from app.models import Company, Project, Area, ProjectSkill, Freelancer
 from app.serializers import UserSerializer, ProjectSerializer
+from appProject.serializers import StatusSerializer
 from django.db.models import Count, Avg
 
 class FreelancerSerializer(serializers.ModelSerializer):
@@ -58,6 +59,7 @@ class CompanyDetailSerializer(serializers.ModelSerializer):
         
 class RelatedProjectSerializer(serializers.ModelSerializer):
     project_manager = serializers.SerializerMethodField()
+    status = StatusSerializer()
 
     class Meta:
         model = Project
