@@ -1,4 +1,4 @@
-import { ProjectCard } from "@/widgets/cards";
+import { BigProjectCard, ProjectCard } from "@/widgets/cards";
 import React, { useState, useEffect } from "react";
 import {
   Card,
@@ -13,7 +13,7 @@ import { AddProject } from "@/widgets/popUp";
 import { useNavigate } from "react-router-dom";
 
 export function ProjectListing() {
-  const [userType, setUserType] = useState(); 
+  const [userType, setUserType] = useState();
   const [dialogOpen, setDialogOpen] = useState(false);
   const navigateTo = useNavigate();
 
@@ -40,6 +40,11 @@ export function ProjectListing() {
     navigateTo('/'); // Cambiar a la ruta deseada
   };
 
+  const handleProjectNavigate = (id) => {
+    navigateTo(`/project/detail/${id}`); // Agregar el ID del proyecto en la URL
+  };
+
+
   return (
     <div className="flex flex-col w-full h-screen gap-2 overflow-hidden min-h-0 bg-gradient-to-r from-indigo-50 via-purple-50 to-blue-50">
       {/* Título de la página */}
@@ -57,11 +62,11 @@ export function ProjectListing() {
       ) : (
         <div className="flex w-full h-full flex-1 p-5 pb-5">
           {/* Sección 1: Tarjetas de Proyecto */}
-          <div className="basis-[80%] p-8 gap-14 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 justify-between overflow-auto">
+          <div className="basis-[80%] p-8 gap-14 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 justify-between overflow-auto no-scrollbar">
             {projectsData && projectsData.length > 0 ? (
               projectsData.map((project, index) => (
-                <div key={index} className="pb-2">
-                  <ProjectCard project={project} isActive={true} />
+                <div key={index} className="pb-2 ">
+                  <BigProjectCard project={project} handleNavigate={handleProjectNavigate} isActive={true} />
                 </div>
               ))
             ) : (

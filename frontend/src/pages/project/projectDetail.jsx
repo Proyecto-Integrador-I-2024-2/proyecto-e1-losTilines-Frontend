@@ -6,11 +6,12 @@ import {
   CardBody,
   Typography,
 } from "@material-tailwind/react";
-import { SkillsSection } from "@/widgets/custom"; 
+import { SkillsSection } from "@/widgets/custom";
 import { ProjectView } from "@/widgets/cards";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQueryParams } from "@/hooks";
 import { useProject } from "@/hooks";
+import { ProjectTopBar } from "@/widgets/layout";
 
 export function ProjectDetail() {
   const navigate = useNavigate();
@@ -45,21 +46,24 @@ export function ProjectDetail() {
   }
 
   return (
-    <div className="flex flex-col w-full h-screen gap-2 overflow-hidden bg-origin-padding">
-      <div className="flex w-full flex-1 p-5 pb-5">
-        <div className="basis-[70%] pr-2 justify-center"> 
-          <ProjectView project={project} />
-        </div>
-        <div className="basis-[30%] pl-2 overflow-y-auto">
-          <Card className="border shrink-0 rounded-r-none shadow-sm max-h-full">
-            <CardBody className="my-6 h-104 pt-0 pb-10">
-              <Typography variant="h5" color="black"> Skills needed </Typography>
-              <SkillsSection sectionName={project.skills || []} />
-            </CardBody>
-          </Card>
+    <>
+      <ProjectTopBar projectId={id} />
+      <div className="flex flex-col w-full h-screen gap-2 overflow-hidden bg-origin-padding">
+        <div className="flex w-full flex-1 p-5 pb-5">
+          <div className="basis-[70%] pr-2 justify-center">
+            <ProjectView projectId={id} />
+          </div>
+          <div className="basis-[30%] pl-2 overflow-y-auto">
+            <Card className="border shrink-0 rounded-r-none shadow-sm max-h-full">
+              <CardBody className="my-6 h-104 pt-0 pb-10">
+                <Typography variant="h5" color="black"> Skills required </Typography>
+                <SkillsSection sectionName={" "} skills={project.skills || []} />
+              </CardBody>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
