@@ -124,3 +124,9 @@ class ExperienceSerializer(serializers.ModelSerializer):
         
         return attrs
 
+class ProjectSkillSerializer(serializers.ModelSerializer):
+    skill = SkillSerializer()
+
+    class Meta:
+        model = ProjectSkill
+        fields = ['id', 'project', 'skill', 'level']
