@@ -1,27 +1,12 @@
 import {
     Card,
     CardBody,
-    CardHeader,
-    CardFooter,
-    List,
-    ListItem,
-    ListItemSuffix,
-    IconButton,
     Avatar,
     Rating,
     Typography,
     Tabs,
     TabsHeader,
     Tab,
-    Dialog,
-    DialogHeader,
-    DialogBody,
-    DialogFooter,
-    Input,
-    Textarea,
-    Switch,
-    Tooltip,
-    Button,
     Spinner,
 } from "@material-tailwind/react";
 
@@ -29,171 +14,165 @@ import {
     HomeIcon,
     ChatBubbleLeftEllipsisIcon,
     Cog6ToothIcon,
-    PencilIcon,
 } from "@heroicons/react/24/solid";
 
 import { VscAccount } from "react-icons/vsc";
 import { useState, useEffect } from "react";
 import { ProfileInfoCard, MessageCard } from "@/widgets/cards";
-import { projectsData, freelancersData } from "@/data";
-import { CustomList } from "@/widgets/horList";
-import { CustomListItem } from "@/widgets/horList";
-import { ExperienceSection } from "@/widgets/custom";
-import { SkillsSection } from "@/widgets/custom";
-import { GitButton } from "@/widgets/custom";
-import { useAddFreelancerSkill, useCompany, useDeleteFreelancerExperience, useDeleteFreelancerSkill, useEditFreelancerExperience, useEditFreelancerSkill, useEditWorkerProfile, useFreelancer, useUser } from "@/hooks";
-import { EditButton } from "@/widgets/buttons";
+import { CustomList, CustomListItem } from "@/widgets/horList";
+import { SkillsSection, GitButton, ExperienceSection } from "@/widgets/custom";
 import { EditExperiencePopup, EditProfilePopUp, EditSkillsPopup } from "@/widgets/popUp";
-import { defaultExperiences, defaultSkills } from "@/data";
-
+import { useCompany, useQueryParams, useUser } from "@/hooks";
+import { userExample, freelancerExample, profile_pic } from "@/data/placeholder";
+import { addFreelancerSkill, deleteFreelancerExperience, deleteFreelancerSkill, editFreelancerExperience, editFreelancerSkill, editWorkerProfile, getCompany, getFreelancer } from "@/services";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function Profile() {
-    const imgFreeSrc = "/img/bruce-mars.jpeg"
-    const imgSrc = "/img/company/icesi.png";
+    const queryClient = useQueryClient();
     const { data: userData, isLoading: isUserLoading, refetch: userRefetch } = useUser();
-    const { data: freelancerData, isLoading: isFreelancerLoading, refetch: freelancerRefetch } = useFreelancer();
     const { data: companyData, isLoading: isCompanyLoading, refetch: companyRefetch } = useCompany();
-
-    console.log("User", userData)
-    console.log("Freelancer", freelancerData)
-    console.log("Company", companyData)
-
-    // User Information
-
-    const userExample = {
-        id: null,
-        email: "email not provided",
-        first_name: "first name not provided",
-        last_name: "last name not provided",
-        phone_number: "phone not provided",
-    }
-
-    const { id, email, first_name, last_name, phone_number } = userData || userExample;
-    const role = sessionStorage.getItem("role");
-    // Freelancer Information
-
-    const freelancerExample = {
-        description: "Not provided",
-        country: "Not provided",
-        city: "Not provided",
-        portfolio: [],
-        skills: [],
-        experience_set: [],
-        projects: []
-    }
-
-    const {
-        description,
-        country,
-        city,
-        portfolio,
-        skills,
-        experience_set,
-        projects
-    } = freelancerData || freelancerExample;
-
-    // ----------------------- Company Information -----------------------
-
-    const companyExample = {
-        id: null,
-        name: "Company not provided",
-        tax_id: "Tax ID not provided",
-        email: "Email not provided",
-        description: "Description not provided",
-        industry: "Industry not provided",
-        freelancers: [],
-        projects: [],
-        skills: []
-    }
-
-
-
-    // ----------------------- State information -----------------------
-
     const [isFreelancer, setIsFreelancer] = useState(true);
     const [projectsToUse, setProjectsToUse] = useState([]);
-    const [isEditable, setIsEditable] = useState(true);
+    const [isEditable, setIsEditable] = useState(false);
     const [showProfilePopUp, setShowProfilePopUp] = useState(false);
     const [showExperiencePopUp, setShowExperiencePopUp] = useState(false);
     const [showSkillsPopUp, setShowSkillsPopUp] = useState(false);
 
+    const role = sessionStorage.getItem("role");
+
+    // ----------------------- User information -----------------------
+
+    const externalFreelancerId = useQueryParams().getParams().get("freelancer");
+    const externalCompanyId = useQueryParams().getParams().get("company");
+
+    // Estados locales para almacenar los datos de freelancer y compañía externos
+    const [externalFreelancerData, setExternalFreelancerData] = useState(null);
+    const [externalCompanyData, setExternalCompanyData] = useState(null);
+    const [isLoadingExternalFreelancer, setIsLoadingExternalFreelancer] = useState(true);
+    const [isLoadingExternalCompany, setIsLoadingExternalCompany] = useState(true);
+
     useEffect(() => {
-        if (userData) {
+        async function fetchExternalFreelancer() {
+            if (externalFreelancerId) {
+                setIsLoadingExternalFreelancer(true);
+                try {
+                    const data = await getFreelancer({ id: externalFreelancerId });
+                    setExternalFreelancerData(data);
+                } catch (error) {
+                    console.error("Error fetching freelancer data:", error);
+                } finally {
+                    setIsLoadingExternalFreelancer(false);
+                }
+            }
+        }
+
+        async function fetchExternalCompany() {
+            if (externalCompanyId) {
+                setIsLoadingExternalCompany(true);
+                try {
+                    const data = await getCompany({ id: externalCompanyId });
+                    setExternalCompanyData(data);
+                } catch (error) {
+                    console.error("Error fetching company data:", error);
+                } finally {
+                    setIsLoadingExternalCompany(false);
+                }
+            }
+        }
+
+        // Llamadas a las APIs
+        fetchExternalFreelancer();
+        fetchExternalCompany();
+    }, [externalFreelancerId, externalCompanyId]);
+
+
+    const userToUse = (externalFreelancerData?.user || userData?.user || userData || userExample);
+    const { first_name, last_name, email, phone_number, profile_picture } = userToUse;
+    const { description, country, city, portfolio, skills, experience_set, projects } = externalFreelancerData || userData || freelancerExample;
+
+    console.log("User", userData)
+    console.log("Company", companyData)
+    console.log("portfolio", portfolio)
+    console.log("externalFreelancerData", externalFreelancerData)
+    console.log("externalCompanyData", externalCompanyData)
+
+    useEffect(() => {
+        if (userData && !externalFreelancerId) {
             setIsFreelancer(sessionStorage.getItem("role") === "Freelancer");
         }
-    }, [userData]);
+
+        if (externalFreelancerData) {
+            setIsFreelancer(true);
+        } else if (externalCompanyData) {
+            setIsFreelancer(false);
+        }
+
+    }, [userData, externalFreelancerId, externalFreelancerData, externalCompanyData]);
 
     useEffect(() => {
         if (isFreelancer) {
             setProjectsToUse(projects);
+
         } else {
-            setProjectsToUse(companyData.at(0).projects);
+            setProjectsToUse(externalCompanyData?.projects || companyData.at(0).projects || []);
         }
     }, [isFreelancer, projects, companyData]);
 
-    // ----------------------- Mutations -----------------------
+    useEffect(() => {
+        if (userData && !externalFreelancerId && !externalCompanyId) {
+            setIsEditable((userData?.user?.id == sessionStorage.getItem("id")) || (userData?.id == sessionStorage.getItem("id")));
+        }
+    }, [userData, externalFreelancerId, externalCompanyId])
+
+
+    // ----------------------- API consumption -----------------------
 
     // Worker/Freelancer User Data
-    const updateWorker = useEditWorkerProfile();
     function handleEditWorkerProfile(body) {
-        updateWorker.mutate(body, {
-            onSuccess: () => {
-                userRefetch();
-            },
-        });
+        editWorkerProfile({ body })
+        queryClient.invalidateQueries(['User']);
+        userRefetch()
     }
 
     // Freelancer Experience Data
-    const updateExperience = useEditFreelancerExperience();
     function handleEditExperience(id, body) {
         console.log("ID", id);
         console.log("Body", body);
-        updateExperience.mutate({ id, body }, {
-            onSuccess: () => {
-                freelancerRefetch();
-            },
-        });
+        editFreelancerExperience({ id, body })
+        queryClient.invalidateQueries(['User']);
+        userRefetch()
     }
-    const deleteExperience = useDeleteFreelancerExperience();
+
     function handleDeleteExperience(id) {
         console.log("ID", id);
-        deleteExperience.mutate({ id }, {
-            onSuccess: () => {
-                freelancerRefetch();
-            },
-        });
+        deleteFreelancerExperience({ id })
+        queryClient.invalidateQueries(['User']);
+        userRefetch()
     }
+
     // Freelancer Skill Data
-    const addSkill = useAddFreelancerSkill();
     function handleAddSkill(body) {
-        console.log("BODY DE LA BENDITA SKILL A AÑADIR", body);
-        addSkill.mutate({ body }, {
-            onSuccess: () => {
-                freelancerRefetch();
-            },
-        });
+        console.log("Body", body);
+        addFreelancerSkill({ body })
+        queryClient.invalidateQueries(['User']);
+        userRefetch()
     }
-    const updateSkill = useEditFreelancerSkill();
+
     function handleEditSkill(id, body) {
         console.log("ID", id);
-        console.log("BODY DE LA BENDITA SKILL", body);
-        updateSkill.mutate({ id, body }, {
-            onSuccess: () => {
-                freelancerRefetch();
-            },
-        });
+        editFreelancerSkill({ id, body })
+        queryClient.invalidateQueries(['User']);
+        userRefetch()
     }
-    const deleteSkill = useDeleteFreelancerSkill();
+
     function handleDeleteSkill(id) {
         console.log("ID", id);
-        deleteSkill.mutate({ id }, {
-            onSuccess: () => {
-                freelancerRefetch();
-            },
-        });
+        deleteFreelancerSkill({ id })
+        queryClient.invalidateQueries(['User']);
+        userRefetch()
     }
 
-
+    // ----------------------- PopUp Handlers -----------------------
 
     function handleProfilePopup() {
         setShowProfilePopUp(pop => !pop);
@@ -212,13 +191,13 @@ export function Profile() {
                 <Card className="h-full">
                     <CardBody className="h-full p-4">
                         {/* Seccion de identifiacion y tabs de herramientas */}
-                        <div className="mb-10 flex items-center justify-between flex-wrap gap-6 h-auto">
+                        {!externalCompanyData ? <div className="mb-10 flex items-center justify-between flex-wrap gap-6 h-auto">
                             <div className="flex items-center gap-6">
                                 <Avatar
-                                    src={isFreelancer ? imgFreeSrc : imgSrc}
+                                    src={((isFreelancer && !isUserLoading) || externalFreelancerData) ? (profile_picture || profile_pic) : (profile_picture || profile_pic)}
                                     alt="bruce-mars"
                                     size="xl"
-                                    variant={isFreelancer ? "rounded" : "circular"}
+                                    variant="circular"
                                     className="rounded-lg shadow-lg shadow-blue-gray-500/40"
                                 />
                                 <div>
@@ -255,17 +234,63 @@ export function Profile() {
                                 </Tabs>
                             </div>
                             {/* tabs de config */}
-                        </div >
+                        </div > :
+                            <div className="mb-10 flex items-center justify-between flex-wrap gap-6 h-auto">
+                                {/* Avatar e información básica de la empresa */}
+                                <div className="flex items-center gap-6">
+                                    <Avatar
+                                        src={externalCompanyData?.image || profile_pic} // Puedes agregar la imagen o logo de la empresa aquí
+                                        alt={externalCompanyData?.name || "Company Logo"}
+                                        size="xl"
+                                        variant="circular"
+                                        className="rounded-lg shadow-lg shadow-blue-gray-500/40"
+                                    />
+                                    <div>
+                                        {/* Nombre de la empresa */}
+                                        <Typography variant="h5" color="blue-gray" className="mb-1">
+                                            {externalCompanyData?.name || "Company Name"}
+                                        </Typography>
+                                        <Typography
+                                            variant="small"
+                                            className="font-normal text-blue-gray-600"
+                                        >
+                                            {externalCompanyData.industry} Company
+                                        </Typography>
+                                        <Rating value={5} />
+                                    </div>
+                                </div>
+
+                                {/* Tabs de navegación o acciones */}
+                                <div className="w-96">
+                                    <Tabs value="overview">
+                                        <TabsHeader>
+                                            <Tab value="overview">
+                                                <HomeIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
+                                                Overview
+                                            </Tab>
+                                            <Tab value="contact">
+                                                <ChatBubbleLeftEllipsisIcon className="-mt-0.5 mr-2 inline-block h-5 w-5" />
+                                                Contact
+                                            </Tab>
+                                            <Tab value="settings">
+                                                <Cog6ToothIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
+                                                Settings
+                                            </Tab>
+                                        </TabsHeader>
+                                    </Tabs>
+                                </div>
+                            </div>
+                        }
                         {/* Aquí va la fila de cards tipo columna --->*/}
                         <div className="grid-cols-1 mb-12 grid gap-12 px-4 lg:grid-cols-2 xl:grid-cols-3 h-2/3">
                             <div>
-                                {!isUserLoading && <ProfileInfoCard
+                                {(!isUserLoading && !externalCompanyData) ? <ProfileInfoCard
                                     title="Profile Information"
                                     description={isFreelancer ? description : companyData.at(0).description}
                                     details={isFreelancer ? {
                                         "first name": first_name,
                                         "last name": last_name,
-                                        mobile: phone_number || "Not provided",
+                                        mobile: phone_number,
                                         email: email,
                                         location: `${city}, ${country}`,
                                         social: (
@@ -279,21 +304,34 @@ export function Profile() {
                                         {
                                             "first name": first_name,
                                             "last name": last_name,
-                                            mobile: phone_number || "Not provided",
+                                            mobile: phone_number,
                                             email: email,
                                         }}
                                     editable={isEditable}
                                     onEdit={handleProfilePopup}
-                                />}
+                                /> :
+                                    <ProfileInfoCard
+                                        title="Company Information"
+                                        description={externalCompanyData?.description || "No description provided"}
+                                        details={
+                                            {
+                                                name: externalCompanyData?.name || "No name provided",
+                                                industry: externalCompanyData?.industry || "No industry provided",
+                                                email: externalCompanyData?.email || "No email provided",
+                                            }
+                                        }
+                                        editable={false}
+                                        onEdit={{}}
+                                    />}
                                 {
-                                    isFreelancer && (isFreelancerLoading ? <Spinner /> : portfolio && <GitButton url={portfolio} />)
+                                    isFreelancer && (isUserLoading ? <Spinner /> : (portfolio !== "Not provided" && <GitButton url={portfolio} />))
                                 }
 
                             </div>
 
                             <div className="h-96">
                                 {isFreelancer ?
-                                    (isFreelancerLoading ?
+                                    (isUserLoading ?
                                         <Spinner />
                                         :
                                         <ExperienceSection experiences={experience_set} editable={isEditable} onEdit={handleExperiencePopUp} />)
@@ -305,7 +343,7 @@ export function Profile() {
                                             <Typography variant="h6" color="blue-gray" className="mb-4">
                                                 Freelancers that have worked here
                                             </Typography>
-                                            <div className="space-y-6 h-full overflow-y-auto no-scrollbar">
+                                            {!externalCompanyData ? <div className="space-y-6 h-full overflow-y-auto no-scrollbar">
                                                 {companyData.at(0).freelancers.map((freelancer) => (
                                                     <MessageCard
                                                         key={freelancer.user.name}
@@ -318,19 +356,34 @@ export function Profile() {
                                                     />
                                                 ))}
                                             </div>
+                                                :
+                                                <div className="space-y-6 h-full overflow-y-auto no-scrollbar">
+                                                    {externalCompanyData.freelancers.map((freelancer) => (
+                                                        <MessageCard
+                                                            key={freelancer.user.name}
+                                                            img={freelancer.user.img || profile_pic}
+                                                            name={freelancer.user.name}
+                                                            message={freelancer.description}
+                                                            action={
+                                                                <VscAccount />
+                                                            }
+                                                        />
+                                                    ))}
+                                                </div>}
                                         </div>)
                                 }
                             </div>
 
                             <div className="h-96">
                                 {isFreelancer ?
-                                    (isFreelancerLoading ? <Spinner /> :
+                                    (isUserLoading ? <Spinner /> :
                                         <SkillsSection sectionName={"Skills"} skills={skills} editable={isEditable} onEdit={handleSkillsPopUp} />)
-                                    // <SkillsSection sectionName={"Skills"} skills={skillsData} editable={isEditable} onEdit={handleSkillsPopUp} />)
-                                    // <SkillsSection sectionName={"skills"} />)
                                     :
                                     (isCompanyLoading ? <Spinner /> :
-                                        <SkillsSection sectionName={"Tech Stack"} skills={companyData.at(0).skills} editable={false} />)
+                                        !externalCompanyData && (companyData && <SkillsSection sectionName={"Tech Stack"} skills={companyData?.at(0).skills || []} editable={false} />))
+                                }
+                                {
+                                    externalCompanyData && <SkillsSection sectionName={"Tech Stack"} skills={externalCompanyData?.skills || []} editable={false} />
                                 }
                             </div>
                         </div>
@@ -356,16 +409,18 @@ export function Profile() {
                     }
                 </CardBody>
             </Card>
-            {isFreelancerLoading ? <Spinner /> :
+            {isUserLoading ? <Spinner /> :
+
+                (isEditable) &&
                 <>
-                    <EditProfilePopUp open={showProfilePopUp} onOpen={setShowProfilePopUp} profile={userData || userExample} onChange={handleEditWorkerProfile} />
-                    <EditExperiencePopup open={showExperiencePopUp} onOpen={setShowExperiencePopUp} experiences={experience_set} editExperience={handleEditExperience} addExperience={{}} deleteExperience={handleDeleteExperience} />
-                    <EditSkillsPopup open={showSkillsPopUp} onOpen={setShowSkillsPopUp} skills={skills} editSkill={handleEditSkill} addSkill={handleAddSkill} deleteSkill={handleDeleteSkill} />
+                    <EditProfilePopUp open={showProfilePopUp} onOpen={setShowProfilePopUp} profile={userToUse} onChange={handleEditWorkerProfile} />
+                    <EditExperiencePopup open={showExperiencePopUp} onOpen={setShowExperiencePopUp} experiences={experience_set || []} editExperience={handleEditExperience} addExperience={{}} deleteExperience={handleDeleteExperience} />
+                    <EditSkillsPopup open={showSkillsPopUp} onOpen={setShowSkillsPopUp} skills={skills || []} editSkill={handleEditSkill} addSkill={handleAddSkill} deleteSkill={handleDeleteSkill} />
                 </>
+
             }
-        </div>
+        </div >
     );
 }
 
 export default Profile;
-

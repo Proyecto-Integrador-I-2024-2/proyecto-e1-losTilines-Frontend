@@ -14,11 +14,7 @@ class FreelancerDetailSerializer(serializers.ModelSerializer):
 
     def get_projects(self, obj):
         # Obtener proyectos únicos asociados al freelancer (tanto de milestones como de ProjectFreelancer)
-        milestone_projects = obj.milestone_set.values_list('project', flat=True)
-        # project_freelancers = ProjectFreelancer.objects.filter(freelancer=obj).values_list('project', flat=True)
+        project_freelancers = ProjectFreelancer.objects.filter(freelancer=obj).values_list('project', flat=True)
         
-        # Eliminar duplicados
-        # project_ids = set(milestone_projects).union(set(project_freelancers))
-        
-        projects = Project.objects.filter(id__in=milestone_projects)
+        projects = Project.objects.filter(id__in=project_freelancers)
         return ProjectSerializer(projects, many=True).data
