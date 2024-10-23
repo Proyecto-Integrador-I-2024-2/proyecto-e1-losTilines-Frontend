@@ -1,5 +1,5 @@
 import { useEffect } from 'react'; // Importa useEffect
-import { useMilestones } from '@/hooks/useMilestones'; 
+import { useMilestones } from '@/hooks/useMilestones';
 import {
   Card,
   CardHeader,
@@ -25,27 +25,9 @@ function StarIcon() {
   );
 }
 
-export function MilestoneCard() {
-  const { data: milestones, isLoading, error } = useMilestones(); // Asegúrate de pasar projectId al hook
+export function MilestoneCard({ milestone }) {
 
-  // useEffect para verificar el estado de carga y los datos
-  useEffect(() => {
-    if (!isLoading && milestones) {
-      console.log('Milestones:', milestones);
-    } else if (isLoading) {
-      console.log('Loading milestones...');
-    } else if (error) {
-      console.error('Error loading milestones:', error.message);
-    }
-  }, [isLoading, milestones, error]); // Dependencias del useEffect
-
-  if (isLoading) {
-    return <div>Loading milestones...</div>;
-  }
-
-  if (error) {
-    return <div>Error loading milestones: {error.message}</div>;
-  }
+  const milestone_pic = "https://i.pinimg.com/564x/3c/9e/4b/3c9e4b32b67d641965915ee08db63844.jpg"
 
   return (
     <Card color="transparent" shadow={true} className="w-full transform transition-transform duration-300 hover:scale-95">
@@ -58,17 +40,17 @@ export function MilestoneCard() {
         <div className="flex w-full flex-col gap-0.5 m-2">
           <div className="flex items-center justify-between">
             <Typography variant="h5" color="blue-gray">
-              {milestones.name} {/* Muestra el título del milestone */}
+              {milestone.name} {/* Muestra el título del milestone */}
             </Typography>
 
             <Avatar
               size="lg"
               variant="circular"
-              src={milestones.profile_picture} // Asegúrate de que este campo exista
-              alt={milestones.name} // Asegúrate de que este campo exista
+              src={milestone_pic} // Asegúrate de que este campo exista
+              alt={milestone.name} // Asegúrate de que este campo exista
             />
           </div>
-          <Typography color="blue-gray">{milestones.description}</Typography> {/* Muestra la descripción */}
+          <Typography color="blue-gray">{milestone.description}</Typography> {/* Muestra la descripción */}
         </div>
       </CardHeader>
     </Card>
