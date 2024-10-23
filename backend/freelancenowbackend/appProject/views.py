@@ -84,3 +84,10 @@ class MilestoneViewSet(viewsets.ModelViewSet):
 
         # Creamos el milestone asociándolo automáticamente al freelancer y al proyecto
         serializer.save(freelancer=freelancer, project=project_freelancer.project)
+
+class DeliverableViewSet(viewsets.ModelViewSet):
+    queryset = Deliverable.objects.all()
+    serializer_class = DeliverableSerializer
+    permission_classes = [AllowAny]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['milestone', 'milestone__project']
