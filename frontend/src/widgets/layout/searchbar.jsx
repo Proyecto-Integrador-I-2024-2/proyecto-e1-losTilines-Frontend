@@ -5,7 +5,7 @@ export function SearchBar({setSearchTerm, searchTerm, children}) {
     <header className="flex flex-col w-full h-auto md:flex-row md:justify-between md:items-center  ">
       <section className="w-full md:w-3/4 md:mr-4">
         <Input
-          label="Search"
+          label="Buscar"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />

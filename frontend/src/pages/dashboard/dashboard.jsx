@@ -20,21 +20,30 @@ function Dashboard() {
 
   //Utils
 
-  const navigateTo = useNavigate();
 
-  const { getParams, setParams } = useQueryParams();
 
   const [selectItem, setSelectecItem] = useState(null);
 
+  /*-----------------------------------------------*/
+
+  // Define the user and its role (this one, is stored in the sessionStorage)
+  
   const { data: user, isLoading: userLoading } = useUser();
 
   const role = sessionStorage.getItem("role");
 
   /*-----------------------------------------------*/
 
-  //Hook use for navigate and set query params
+  //Navigation and url staff
+
+  const navigateTo = useNavigate();
 
   const navigateWithQuery = useNavigateWithQuery();
+
+  const { getParams, setParams } = useQueryParams();
+
+
+  /*-----------------------------------------------*/
 
   //TanksQuery
 
@@ -69,6 +78,8 @@ function Dashboard() {
     queryParamsMidColumn
   );
 
+  /*-----------------------------------------------*/
+
   /**
    * dataLeftColumns manages information abaout:
    * 1. Areas from a business manager.
@@ -91,6 +102,11 @@ function Dashboard() {
     error: errorLeftColumn,
     isLoading: isLoadingLeftColumn,
   } = useCustomFethc(fetchIdenfierLeftColum, urlFetch, queryParams);
+
+
+  /*-----------------------------------------------*/
+
+  //Set the fetch route and the title for the leftColumn and midColumn
 
   useEffect(() => {
     if (!userLoading) {
@@ -149,15 +165,13 @@ function Dashboard() {
     }
   }, [user]);
 
-  const loadingSpinner = (
-    <div className="flex flex-col justify-center items-center ">
-      <Spinner className=" h-10 w-10" />
-    </div>
-  );
+
+  /*-----------------------------------------------*/
 
   return (
     <>
       <div className="h-full md:flex md:flex-row w-full my-2 px-2 min-h-0">
+
         {/* Left Column */}
 
         <section className="w-full h-96 flex flex-col md:mb-0 md:w-1/3 md:h-full md:max-h-none md:mr-6">
@@ -182,7 +196,7 @@ function Dashboard() {
             }
           >
             {isLoadingLeftColumn ? (
-              loadingSpinner
+              <SpinnerCustom />
             ) : (
               <LeftColumnRows
                 setSelectedId={setSelectecItem}
