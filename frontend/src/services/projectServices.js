@@ -6,3 +6,10 @@ export const getProjectMilestones = async ({ id }) => {
     const { data } = await apiClient.get(url);
     return data;
 }
+
+export const getMilestoneDeliverables = async ({ id }) => {
+    var userType = "deliverables";
+    const url = `${userType}?milestone=${id}`;
+    const { data } = await apiClient.get(url);
+    return data;
+}
