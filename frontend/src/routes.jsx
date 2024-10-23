@@ -7,7 +7,6 @@ import Projects from "./pages/dashboard/projects";
 import Homepage from "./pages/home/homepage";
 import { ProjectDetail, MilestonesDetail, ProjectListing } from "@/pages/project"
 import { SignIn, SignUp } from "./pages/auth";
-import { MilestonesDetail } from "./pages/project";
 export const routes = [
   {
     layout: "dashboard",
