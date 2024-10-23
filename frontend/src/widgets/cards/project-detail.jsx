@@ -1,3 +1,4 @@
+import { project_pic } from '@/data/placeholder';
 import { useProject } from '@/hooks/projects/useProject'; // Asegúrate de que la ruta sea correcta
 import {
   Card,
@@ -24,36 +25,34 @@ export function ProjectView({ projectId }) {
 
   // Renderizamos el componente solo si tenemos los datos del proyecto
   return (
-    <Card className={`w-full h-full flex-row ${project.isActive ? 'active' : ''}`}>
+    <Card
+      className={`w-full h-full flex flex-row bg-white shadow-lg rounded-lg overflow-hidden transform transition-all hover:shadow-xl ${project.isActive ? 'border-l-4 border-blue-500' : ''}`}
+    >
       <CardHeader
         shadow={false}
         floated={false}
-        className="m-0 w-2/5 shrink-0 rounded-r-none"
+        className="m-0 w-2/5 shrink-0 rounded-r-none overflow-hidden"
       >
         <img
-          src={project.image || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1471&q=80"}
+          src={project.image || project_pic}
           alt="project-image"
           className="h-full w-full object-cover"
         />
       </CardHeader>
-      <CardBody>
-        <Typography variant="h6" color="gray" className="mb-4 uppercase">
-          {project.category || 'Category'} {/* Cambia 'Category' por un campo real si lo tienes */}
+      <CardBody className="p-6">
+        <Typography variant="h6" color="gray" className="mb-2 uppercase text-sm tracking-wide">
+          {project.category || 'Category'}
         </Typography>
-        <Typography variant="h4" color="blue-gray" className="mb-2">
+        <Typography variant="h4" color="blue-gray" className="mb-4 font-semibold">
           {project.name}
         </Typography>
-        <Typography color="gray" className="mb-8 font-normal">
+        <Typography variant='h5' color="gray" className="mb-6 text-base leading-relaxed">
           {project.description}
         </Typography>
-
-        <CardFooter>
-          <Typography color="gray" className="mb-8 font-normal">
-            <p>Este proyecto está valorado en aproximadamente:{project.budget}</p>
-          </Typography>
-        </CardFooter>
+        <Typography color="blue-gray" className="font-medium text-lg">
+          Este proyecto está valorado en aproximadamente: <span className="text-blue-600">${project.budget}</span>
+        </Typography>
       </CardBody>
-
     </Card>
   );
 }
