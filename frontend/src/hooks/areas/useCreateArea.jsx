@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/services/apiClient";
+import { Identifiers } from "../tanstackIdentifiers";
 
 
 
@@ -15,7 +16,8 @@ export const useCreateArea = () => {
   return useMutation(createArea, {
     onSuccess: (data) => {
       console.log("Area created:", data);
-      queryClient.invalidateQueries("Areas");
+      queryClient.invalidateQueries(Identifiers.areas);
+      queryClient.invalidateQueries(Identifiers.adminAvailables);
 
     },
 

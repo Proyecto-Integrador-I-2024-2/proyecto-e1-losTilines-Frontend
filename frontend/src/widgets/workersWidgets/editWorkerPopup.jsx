@@ -175,6 +175,7 @@ export function EditWorkerPopup({ open, setOpen, currentWorker, areas }) {
   const deleteWorkerMutation = useDeleteWorker();
 
   const handleConfirmDelete = async () => {
+
     if (currentWorker) {
       console.log("Deleting worker:", currentWorker.id);
       deleteWorkerMutation.mutate(currentWorker.id);
@@ -342,6 +343,7 @@ export function EditWorkerPopup({ open, setOpen, currentWorker, areas }) {
         open={openConfirmDelete}
         setOpen={setOpenConfirmDelete}
         handleOpen={setOpenConfirmDelete} // Not necessary if using setOpenConfirmDelete
+        isFit={true}
       >
         <div className="flex flex-col items-center justify-center">
           <Typography color="gray">

@@ -78,6 +78,14 @@ function Dashboard() {
     queryParamsMidColumn
   );
 
+  // When the role is Business Manager or area admin, we dont want to post the business manager in the midColumn 
+  let midColumnFiltered = [];
+  if((role === "Business Manager" || role === "Area Admin") && dataMidColumn != undefined){
+
+    midColumnFiltered = dataMidColumn.filter((item) => item.role != "Business Manager" );
+
+  }
+
   /*-----------------------------------------------*/
 
   /**
@@ -158,8 +166,8 @@ function Dashboard() {
         setLeftColumnTitle("Projects");
         setParams({ rows: "projects" });
         setUrlFetch("projects/");
-        setQueryParams({ freelancer: user.id });
-
+        setQueryParams({ freelancer: user.id});
+        
         setMidColumnTitle("My milestones");
       }
     }
@@ -210,7 +218,9 @@ function Dashboard() {
 
         <div className="flex flex-col  md:w-2/3  ">
           <section className="flex flex-col h-auto min-h-0 w-full mb-2 my-4 md:my-0 md:flex-row md:h-1/2  ">
+            
             {/*MidColumn section */}
+            
             <section className="flex flex-col h-auto w-full md:space-x-6  md:flex-row  md:h-full">
               <div className="h-96 my-4 md:my-0 md:h-full md:w-full">
                 <ListCard
@@ -219,7 +229,7 @@ function Dashboard() {
                   hasSeeAll={() => navigateWithQuery("workers/")}
                 >
                   {!isLoadingMidColumn ? (
-                    <MidColumnRows contentInfo={dataMidColumn} />
+                    <MidColumnRows contentInfo={midColumnFiltered} />
                   ) : (
                     <SpinnerCustom />
                   )}

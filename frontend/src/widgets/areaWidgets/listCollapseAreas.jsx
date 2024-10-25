@@ -125,7 +125,7 @@ export function ListAreasCollapse({
                   variant="circular"
                   alt="user 1"
                   className="border-2 border-white hover:z-10 focus:z-10"
-                  src="/img/people/persona1.jpg" // Here must go the user picture
+                  src = {currentAreaAdmin.profile_picture || "/img/people/noProfile1.jpg"}
                 />
 
                 <div className="flex flex-col justify-center">

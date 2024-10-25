@@ -1,66 +1,113 @@
 import { useUser, useCreateArea, useAdminAvailables } from "@/hooks";
 import { useEffect, useState } from "react";
 import { PopUp } from "@/widgets/popUp";
-import { Typography, Input, Button } from "@material-tailwind/react";
+import { Typography, Input } from "@material-tailwind/react";
 import { TableWithCheckBox } from "@/widgets/areaWidgets/tableWithCheckbox";
-import apiClient from "@/services/apiClient";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { SpinnerCustom } from "../layout";
 
 export function CreateAreaPopUp({ open, setOpen, handleOpen }) {
-  const { data: user, isLoading: isUserLoading } = useUser();
+  
+  //Fetchers
+  
+  const { data: user, isLoading: isUserLoading } = useUser(); // Get the current user
+
+  const createAreaMutation = useCreateArea(); // Mutation hook for creating an area
+
+  const { data: adminsAvailable, isLoading: isLoadingAdminAvailable } =useAdminAvailables(); // Query hook for available admins
+
+  /*----------------------------------------------------------------------------------*/
+  
+  // Selected values for creation
 
   const [areaName, setAreaName] = useState("");
-
   const [selectId, setSelectedId] = useState(null);
 
-  const [infoFetch, setInfoFetch] = useState("");
+  /*----------------------------------------------------------------------------------*/
 
- 
+  //Form validation
 
-  const { data: adminsAvailable, isLoading: isLoadingAdminAvailable } =
-    useAdminAvailables();
+  const [errors, setErrors] = useState({
+    areaName: "",
+    selectId: "",
+  }); // Storages errors messages for form validation
 
-  /*--------------------------------------------*/
+  const [isFormValid, setIsFormValid] = useState(false); // Form validation state
 
-  //Create area process
+  const [infoFetch, setInfoFetch] = useState(""); // Feedback message for area creation
 
-  const createAreaMutation = useCreateArea();
 
-  const handleAreaNameChange = (event) => {
-    setAreaName(event.target.value);
-  };
+    // Handle changes to the area name input
+    const handleAreaNameChange = (event) => {
+      setAreaName(event.target.value);
+    };
+  
+    // Function to validate form inputs
+    const validate = () => {
+      let valid = true;
+      let tempErrors = {
+        areaName: "",
+        selectId: "",
+      };
+  
+      // Validate area name
+      if (!areaName.trim()) {
+        tempErrors.areaName = "Area name cannot be empty.";
+        valid = false;
+      }
+  
+      // Validate selected user
+      if (!selectId) {
+        tempErrors.selectId = "Please select a user.";
+        valid = false;
+      }
+  
+      setErrors(tempErrors);
+      return valid;
+    };
+
+
+
+  // Re-validate form whenever inputs change
+  
+  useEffect(() => {
+    const tempIsValid = validate();
+    setIsFormValid(tempIsValid);
+  }, [areaName, selectId]);
+
+  /*----------------------------------------------------------------------------------*/
+
+  // Handler to create a new area
 
   const handleAreaCreation = async () => {
     console.log("Area creation AREA NAME: ", areaName);
     console.log("Area creation SELECT ID: ", selectId);
 
-    if (areaName != null && areaName.length > 0 && selectId != null) {
-      const areadata = {
-        name: areaName,
-        company: user.company,
-        user: user.id,
-      };
+    // Reset feedback message
+    setInfoFetch("");
 
-      try {
-        createAreaMutation.mutate(areadata);
+    // Validate form inputs
+    if (!validate()) return;
 
-        if (createAreaMutation.isSuccess) {
-          setInfoFetch("Successful area creation process");
-        }
+    // Prepare data for the mutation
+    const areadata = {
+      name: areaName.trim(),
+      company: user.company,
+      user: selectId, // Use the selected user ID
+    };
 
-        if (createAreaMutation.isError) {
-          setInfoFetch(`Error creating the area: ${createAreaMutation.error}`);
-        }
-      } catch (error) {
-        console.log("Error creating area catched: ", error);
-      }
-    } else {
-      alert(
-        `Please selecet an area and a user. Nombre del area: ${areaName}. Id: "${selectId}`
-      );
-    }
+    // Execute the mutation with success and error handlers
+    createAreaMutation.mutate(areadata, {
+      onSuccess: () => {
+        setInfoFetch("Successful area creation process");
+      },
+      onError: (error) => {
+        setInfoFetch(`Error creating the area: ${error.message}`);
+      },
+    });
   };
+
+  /*----------------------------------------------------------------------------------*/
+
 
   return (
     <PopUp
@@ -69,38 +116,55 @@ export function CreateAreaPopUp({ open, setOpen, handleOpen }) {
       open={open}
       setOpen={setOpen}
       handleOpen={handleOpen}
+      disableSubmit={!isFormValid} // Disable submit button if form is invalid
     >
       <div className="px-2 space-y-2">
         <Typography>
-          Please enter the name of the new company being created
+          Please enter the name of the new area being created:
         </Typography>
 
         <div className="flex flex-row justify-center items-center w-full md:w-full ">
-          <Input onChange={handleAreaNameChange} label="Area name"></Input>
+          <Input
+            onChange={handleAreaNameChange}
+            label="Area name"
+            value={areaName}
+            error={!!errors.areaName}
+            helperText={errors.areaName}
+          />
         </div>
 
         <Typography>Select the user in charge of managing the area:</Typography>
       </div>
 
-      <div className=" overflow-auto h-80 w-full ">
+      <div className="overflow-auto h-80 w-full">
         {isLoadingAdminAvailable ? (
           <SpinnerCustom />
         ) : (
-          <TableWithCheckBox
-            content={adminsAvailable}
-            selectedId={selectId}
-            setSelectedId={setSelectedId}
-          />
+          <>
+            <TableWithCheckBox
+              content={adminsAvailable}
+              selectedId={selectId}
+              setSelectedId={setSelectedId}
+            />
+            {/* Display validation error for user selection */}
+            {errors.selectId && (
+              <Typography color="red" variant="small">
+                {errors.selectId}
+              </Typography>
+            )}
+          </>
         )}
       </div>
 
+      {/* Display feedback messages */}
       <div>
-        {createAreaMutation.isSuccess ? (
-          <Typography color="blue">{infoFetch}</Typography>
-        ) : createAreaMutation.isError ? (
-          <Typography color="red">{infoFetch}</Typography>
-        ) : (
-          <Typography> Waiting for your actions :) </Typography>
+        {createAreaMutation.isLoading && (
+          <Typography>Creating area...</Typography>
+        )}
+        {infoFetch && (
+          <Typography color={createAreaMutation.isSuccess ? "blue" : "red"}>
+            {infoFetch}
+          </Typography>
         )}
       </div>
     </PopUp>
