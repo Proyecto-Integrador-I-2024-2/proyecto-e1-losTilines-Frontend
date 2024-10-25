@@ -51,8 +51,11 @@ function Workers() {
 
   /*------------------------------------------------*/
 
-  // Fetch data
+  //Get query params from URL in  object format
+
   const filters = Object.fromEntries(getParams()); // Get query params from URL
+
+  /*------------------------------------------------*/
 
   // Fetch workers
   const {
@@ -69,10 +72,24 @@ function Workers() {
     },
   });
 
+  /*------------------------------------------------*/
+
+  // Filter workers to exclude Business Managers  
+
+  let workersFilteredBM = [];
+  if(workers != undefined){
+
+    workersFilteredBM = workers.filter((worker) => worker.role != "Business Manager");
+
+  }
+
+  /*------------------------------------------------*/
+
   // Fetch areas to allow selecting an area for a worker
 
-  const { data: areas, isLoading: isLoadingAreas } = useAreas();
+  const { data: areas, isLoading: isLoadingAreas } = useAreas(filters);
 
+  
   useEffect(() => {
     if (!isLoadingAreas && areas) {
       // Map areas to include id and name
@@ -132,7 +149,7 @@ function Workers() {
     const trimmed = debouncedSearchTerm.trim().toLowerCase();
 
     // Start with the original list of workers
-    let filteredWorkers = workers;
+    let filteredWorkers = workersFilteredBM;
 
     // Apply filtering if there's a search term
     if (trimmed) {
@@ -144,11 +161,16 @@ function Workers() {
         const role = worker.role?.trim().toLowerCase() || "";
 
         // Check if any of the fields include the search term
+
+        console.log("Worker is BM", worker.role != "Business Manager");
+
         return (
+
+          worker.role != "Business Manager" && (
           firstName.includes(trimmed) ||
           lastName.includes(trimmed) ||
           email.includes(trimmed) ||
-          role.includes(trimmed)
+          role.includes(trimmed) )
         );
       });
     }
@@ -217,6 +239,7 @@ function Workers() {
                 setOpenPopup={setOpenPopupEditProfile}
                 setCurrentRow={setSelectedWorker}
                 rowId={worker.id}
+                imageRow={worker.profile_picture}
               >
                 <section className="flex flex-col w-full space-y-2 justify-start items-center mb-6">
                   {/* 

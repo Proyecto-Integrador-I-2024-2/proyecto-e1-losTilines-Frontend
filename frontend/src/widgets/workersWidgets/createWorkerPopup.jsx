@@ -4,17 +4,17 @@ import {
   Avatar,
   Input,
   Typography,
-  Button,
   Select,
   Option,
 } from "@material-tailwind/react";
 import { useCreateWorker } from "@/hooks/workers";
 
 export function CreateWorkerPopup({ open, setOpen, areas }) {
-  // State to manage form inputs
+  // States to manage form inputs
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [password, setPassword] = useState("");
   const [selectedArea, setSelectedArea] = useState("");
   const [selectedRole, setSelectedRole] = useState("");
 
@@ -23,13 +23,13 @@ export function CreateWorkerPopup({ open, setOpen, areas }) {
     email: "",
     firstName: "",
     lastName: "",
+    password: "",
     area: "",
     role: "",
   });
 
-  // State to provide feedback to the user
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  // State to track if the form is valid
+  const [isFormValid, setIsFormValid] = useState(false);
 
   // Reset form fields and messages when the popup is opened or closed
   useEffect(() => {
@@ -37,17 +37,18 @@ export function CreateWorkerPopup({ open, setOpen, areas }) {
       setEmail("");
       setFirstName("");
       setLastName("");
+      setPassword("");
       setSelectedArea("");
       setSelectedRole("");
       setErrors({
         email: "",
         firstName: "",
         lastName: "",
+        password: "",
         area: "",
         role: "",
       });
-      setSuccessMessage("");
-      setErrorMessage("");
+      setIsFormValid(false);
     }
   }, [open]);
 
@@ -60,6 +61,7 @@ export function CreateWorkerPopup({ open, setOpen, areas }) {
       email: "",
       firstName: "",
       lastName: "",
+      password: "",
       area: "",
       role: "",
     };
@@ -86,9 +88,12 @@ export function CreateWorkerPopup({ open, setOpen, areas }) {
       valid = false;
     }
 
-    // Validate selected area
-    if (!selectedArea) {
-      tempErrors.area = "Please select an area.";
+    // Validate password
+    if (!password.trim()) {
+      tempErrors.password = "Password cannot be empty.";
+      valid = false;
+    } else if (password.length < 8) {
+      tempErrors.password = "Password must be at least 8 characters.";
       valid = false;
     }
 
@@ -104,15 +109,18 @@ export function CreateWorkerPopup({ open, setOpen, areas }) {
 
   /*-----------------------------------------------------------------------------*/
 
+  // Re-validate form whenever inputs change
+  useEffect(() => {
+    // Call validate but don't update errors state
+    const tempIsValid = validate();
+    setIsFormValid(tempIsValid);
+  }, [email, firstName, lastName, password, selectedArea, selectedRole]);
+
   // Mutation hook for creating a worker
   const createWorkerMutation = useCreateWorker();
 
   // Handler to create a new worker
   const handleCreate = () => {
-    // Reset feedback messages
-    setSuccessMessage("");
-    setErrorMessage("");
-
     // Validate form inputs
     if (!validate()) return;
 
@@ -121,24 +129,21 @@ export function CreateWorkerPopup({ open, setOpen, areas }) {
       first_name: firstName.trim(),
       last_name: lastName.trim(),
       email: email.trim(),
+      password: password.trim(),
       area: selectedArea,
       role: selectedRole,
     };
 
     // Execute the mutation
-    createWorkerMutation.mutate(newWorker);
+    createWorkerMutation.mutate(newWorker)
   };
 
   /*-----------------------------------------------------------------------------*/
 
-  console.log("Areas given to create worker popup:", areas);
+  //Logs (optional)
 
-  useEffect(() => {
-
-        console.log("Area selected", selectedArea);
-
-
-  }, [selectedArea])
+  console.log("Selected role", selectedRole)
+  console.log("Boolean", selectedRole === "Area Admin")
 
   return (
     <>
@@ -148,18 +153,20 @@ export function CreateWorkerPopup({ open, setOpen, areas }) {
         submitFunc={handleCreate}
         open={open}
         setOpen={setOpen}
-        handleOpen={() => {}} // Can be used to toggle the popup if needed
+        disableSubmit={!isFormValid} // Disable submit button if form is invalid
       >
-        <main className="flex flex-col w-full px-6 justify-start items-center md:px-32">
-          {/* Optional: Display an avatar or icon for new workers 
+        <main className="flex flex-col w-full px-6 justify-center items-center md:px-32">
+          {/* Avatar or placeholder image */}
           <Avatar
-            src={"/img/people/default-avatar.png"} // Placeholder image
+            src="/img/people/noProfile1.jpg" // Placeholder image
             size="xxl"
           />
-            */}
-          <section className="flex flex-col w-full items-center justify-start my-4 space-y-4">
+
+          <section className="flex flex-col w-full h-full items-center justify-start my-4 space-y-4">
             {/* First Name Input */}
-            <Typography color="gray">Enter the worker's first name:</Typography>
+            <Typography color="gray">
+              Enter the worker's first name:
+            </Typography>
             <Input
               value={firstName}
               onChange={(event) => setFirstName(event.target.value)}
@@ -169,7 +176,9 @@ export function CreateWorkerPopup({ open, setOpen, areas }) {
             />
 
             {/* Last Name Input */}
-            <Typography color="gray">Enter the worker's last name:</Typography>
+            <Typography color="gray">
+              Enter the worker's last name:
+            </Typography>
             <Input
               value={lastName}
               onChange={(event) => setLastName(event.target.value)}
@@ -188,6 +197,19 @@ export function CreateWorkerPopup({ open, setOpen, areas }) {
               label="Email"
             />
 
+            {/* Password Input */}
+            <Typography color="gray">
+              Create a password for the worker:
+            </Typography>
+            <Input
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              error={!!errors.password}
+              helperText={errors.password}
+              label="Password"
+            />
+
             {/* Select Area */}
             <Typography color="gray">Select worker's area:</Typography>
             <Select
@@ -199,7 +221,7 @@ export function CreateWorkerPopup({ open, setOpen, areas }) {
             >
               {areas && areas.length > 0 ? (
                 areas.map((area) => (
-                  <Option value={area.id}>
+                  <Option key={area.id} value={area.id}>
                     {area.value}
                   </Option>
                 ))
@@ -225,26 +247,11 @@ export function CreateWorkerPopup({ open, setOpen, areas }) {
               error={!!errors.role}
             >
               <Option value="Area Admin">Area Admin</Option>
-              <Option value="Business Manager">Business Manager</Option>
               <Option value="Project Manager">Project Manager</Option>
             </Select>
             {errors.role && (
               <Typography color="red" variant="small">
                 {errors.role}
-              </Typography>
-            )}
-
-            {/* Divider (optional) */}
-
-            {/* Feedback Messages */}
-            {successMessage && (
-              <Typography color="green" className="mt-2">
-                {successMessage}
-              </Typography>
-            )}
-            {errorMessage && (
-              <Typography color="red" className="mt-2">
-                {errorMessage}
               </Typography>
             )}
           </section>

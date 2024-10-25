@@ -24,6 +24,7 @@ export function ListCollapseGeneral({
   setCurrentRow,
   rowId,
   colorChip2,
+  imageRow,
 }) {
   const [openCollapse, setOpenCollapse] = useState(false); //Used to open the collapse
   const [selectedValue, setSelectedValueInner] = useState(null); //Used to store the selected value
@@ -57,7 +58,7 @@ export function ListCollapseGeneral({
             variant="circular"
             alt="user 1"
             className="border-2 border-white hover:z-10 focus:z-10"
-            src="/img/people/persona1.jpg"
+            src={imageRow || "/img/people/noProfile1.jpg"}
           />
 
           <div className="flex flex-col justify-center items-start">

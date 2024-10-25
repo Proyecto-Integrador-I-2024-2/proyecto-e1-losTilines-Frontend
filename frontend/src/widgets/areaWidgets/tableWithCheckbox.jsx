@@ -7,6 +7,7 @@ import {
   Avatar,
   Checkbox,
 } from "@material-tailwind/react";
+import { useEffect } from "react";
 
 // Definición de los encabezados de la tabla
 const TABLE_HEAD = ["Photo", "Name", "Email", "Is Check?"];
@@ -15,13 +16,22 @@ const TABLE_HEAD = ["Photo", "Name", "Email", "Is Check?"];
 export function TableWithCheckBox({ content, selectedId, setSelectedId }) {
   // Función para manejar la selección del checkbox
   const handleSelect = (id) => {
-    if (selectedId === id) {
+
+
+    console.log("ID: ", id);
+    console.log("SELECTED ID: ", selectedId);
+    if (selectedId === id ) {
       setSelectedId(null);
     } else {
       setSelectedId(id);
     }
-    console.log("SELECTED ID: ", selectedId);
   };
+
+  useEffect(() =>{
+
+    console.log("SELECTED ID post: ", selectedId);
+
+  }, [selectedId])
 
   return (
     <Card className="h-full w-full">
@@ -60,7 +70,7 @@ export function TableWithCheckBox({ content, selectedId, setSelectedId }) {
                   return (
                     <tr key={id}>
                       <td className={classes}>
-                        <Avatar src={profile_picture} alt={name} size="sm" />
+                        <Avatar src={profile_picture || "/img/people/noProfile1.jpg/"} size="sm" />
                       </td>
 
                       <td>

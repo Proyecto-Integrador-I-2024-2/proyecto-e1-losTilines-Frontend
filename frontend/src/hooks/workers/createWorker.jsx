@@ -4,7 +4,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Identifiers } from "../tanstackIdentifiers";
 
 const postWorker = async (worker) => {
-  const response = await apiClient.post("workers/", worker);
+
+
+  
+  const url = worker.role === "Area Admin" ? "admin-areas/" : "project-managers/";
+
+  const response = await apiClient.post(url, worker);
   return response.data;
 };
 

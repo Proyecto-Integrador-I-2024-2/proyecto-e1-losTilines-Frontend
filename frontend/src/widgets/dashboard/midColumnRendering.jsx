@@ -16,7 +16,7 @@ export function MidColumnRows({ contentInfo }) {
           // Lógica condicional basada en el rol
           if (role === "Business Manager" || role === "Area Admin") {
             rowName = `${item.first_name} ${item.last_name}`;
-            avatar = item.profile_picture;
+            avatar = item.profile_picture || "/img/people/noProfile1.jpg" ;
             description = item.email;
             chipValue1 = item.role;
           }

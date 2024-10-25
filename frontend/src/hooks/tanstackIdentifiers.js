@@ -3,5 +3,6 @@ export const Identifiers = {
 
     workers : "Workers",
     areas: "Areas",
-    project: "Projects"
+    project: "Projects",
+    adminAvailables : "AAdminAvailables"
 }

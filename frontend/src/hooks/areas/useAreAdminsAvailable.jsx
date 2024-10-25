@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/services/apiClient";
+import { Identifiers } from "../tanstackIdentifiers";
 
 const fetchAdminsAvailable = async () => {
   const { data } = await apiClient.get("admin-areas/", {
@@ -11,7 +12,16 @@ const fetchAdminsAvailable = async () => {
 };
 
 export const useAdminAvailables = () => {
-  return useQuery(["AdminAvailables"], fetchAdminsAvailable, {
+
+  const queryClient = useQueryClient();
+  return useQuery([Identifiers.adminAvailables], fetchAdminsAvailable, {
+    
+    onSuccess: () => {
+
+      console.log("Admins availables fetched successfully")
+      
+    },
+
     onError: (error) => {
       console.error("Error fetching admins availables:", error);
     }

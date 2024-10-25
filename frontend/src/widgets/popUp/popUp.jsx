@@ -15,6 +15,8 @@ export function PopUp({
   open,
   setOpen,
   handleOpen,
+  isFit,
+  disableSubmit
 }) {
 
   const [submitStatus, setSubmit] = useState("idle");
@@ -35,29 +37,34 @@ export function PopUp({
 
   return (
     <>
-      <Dialog className="w-full h-5/6 overflow-y-auto  " open={open} handler={handleOpen}>
+      <Dialog className={`w-full ${ isFit? "h-fit" : "h-5/6"} md:h-fit overflow-y-auto`} open={open} handler={handleOpen}>
         <DialogHeader className="flex flex-row justify-center items-center">
           {title}
         </DialogHeader>
-        <DialogBody className="flex flex-col justify-center items-center p-0 w-full space-y-4 ">
+        <DialogBody className="flex flex-col md:h-5/6  justify-center items-center p-0 w-full space-y-4 ">
           {
 
             submitStatus === "submitting" ? (<SpinnerCustom/>) : (children)
 
           }
         </DialogBody>
-        <DialogFooter>
+        <DialogFooter className="flex-col justify-end items-end">
+          <div className="flex flex-row space-x-2  ">
+
           <Button
             variant="text"
             color="gray"
             onClick={handleClose}
             className="mr-1"
           >
-            <span>Close</span>
+            Close
           </Button>
-          <Button variant="gradient" color="cyan" onClick={handleConfirm}>
+          <Button variant="gradient" color="cyan" onClick={handleConfirm} disabled={disableSubmit}>
             Confirm 
           </Button>
+
+          </div>
+     
         </DialogFooter>
       </Dialog>
     </>
