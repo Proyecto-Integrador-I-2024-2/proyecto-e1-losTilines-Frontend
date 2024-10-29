@@ -6,17 +6,17 @@ import { TableWithCheckBox } from "@/widgets/areaWidgets/tableWithCheckbox";
 import { SpinnerCustom } from "../layout";
 
 export function CreateAreaPopUp({ open, setOpen, handleOpen }) {
-  
   //Fetchers
-  
-  const { data: user, isLoading: isUserLoading } = useUser(); // Get the current user
 
+  const { data: user, isLoading: isUserLoading } = useUser(); // Get the current user
+  
   const createAreaMutation = useCreateArea(); // Mutation hook for creating an area
 
-  const { data: adminsAvailable, isLoading: isLoadingAdminAvailable } =useAdminAvailables(); // Query hook for available admins
+  const { data: adminsAvailable, isLoading: isLoadingAdminAvailable } =
+    useAdminAvailables(); // Query hook for available admins
 
   /*----------------------------------------------------------------------------------*/
-  
+
   // Selected values for creation
 
   const [areaName, setAreaName] = useState("");
@@ -35,40 +35,37 @@ export function CreateAreaPopUp({ open, setOpen, handleOpen }) {
 
   const [infoFetch, setInfoFetch] = useState(""); // Feedback message for area creation
 
+  // Handle changes to the area name input
+  const handleAreaNameChange = (event) => {
+    setAreaName(event.target.value);
+  };
 
-    // Handle changes to the area name input
-    const handleAreaNameChange = (event) => {
-      setAreaName(event.target.value);
-    };
-  
-    // Function to validate form inputs
-    const validate = () => {
-      let valid = true;
-      let tempErrors = {
-        areaName: "",
-        selectId: "",
-      };
-  
-      // Validate area name
-      if (!areaName.trim()) {
-        tempErrors.areaName = "Area name cannot be empty.";
-        valid = false;
-      }
-  
-      // Validate selected user
-      if (!selectId) {
-        tempErrors.selectId = "Please select a user.";
-        valid = false;
-      }
-  
-      setErrors(tempErrors);
-      return valid;
+  // Function to validate form inputs
+  const validate = () => {
+    let valid = true;
+    let tempErrors = {
+      areaName: "",
+      selectId: "",
     };
 
+    // Validate area name
+    if (!areaName.trim()) {
+      tempErrors.areaName = "Area name cannot be empty.";
+      valid = false;
+    }
 
+    // Validate selected user
+    if (!selectId) {
+      tempErrors.selectId = "Please select a user.";
+      valid = false;
+    }
+
+    setErrors(tempErrors);
+    return valid;
+  };
 
   // Re-validate form whenever inputs change
-  
+
   useEffect(() => {
     const tempIsValid = validate();
     setIsFormValid(tempIsValid);
@@ -108,7 +105,6 @@ export function CreateAreaPopUp({ open, setOpen, handleOpen }) {
 
   /*----------------------------------------------------------------------------------*/
 
-
   return (
     <PopUp
       title={"Create New Area"}
@@ -136,14 +132,14 @@ export function CreateAreaPopUp({ open, setOpen, handleOpen }) {
         <Typography>Select the user in charge of managing the area:</Typography>
       </div>
 
-      <div className="overflow-auto h-80 w-full">
+      <div className="overflow-auto h-5/6 w-full px-8">
         {isLoadingAdminAvailable ? (
           <SpinnerCustom />
         ) : (
-          <>
+          <div className="flex flex-col w-full justify-center items-center">
             <TableWithCheckBox
               content={adminsAvailable}
-              selectedId={selectId}
+              selectedId={selectId} 
               setSelectedId={setSelectedId}
             />
             {/* Display validation error for user selection */}
@@ -152,17 +148,17 @@ export function CreateAreaPopUp({ open, setOpen, handleOpen }) {
                 {errors.selectId}
               </Typography>
             )}
-          </>
+          </div>
         )}
       </div>
 
       {/* Display feedback messages */}
-      <div>
+      <div className="flex  flex-col justify-center items-center w-full">
         {createAreaMutation.isLoading && (
-          <Typography>Creating area...</Typography>
+          <SpinnerCustom />
         )}
         {infoFetch && (
-          <Typography color={createAreaMutation.isSuccess ? "blue" : "red"}>
+          <Typography color={createAreaMutation.isSuccess ? "blue" : "red"  }>
             {infoFetch}
           </Typography>
         )}

@@ -2,10 +2,11 @@
 
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "@/services/apiClient";
+import { Identifiers } from "../tanstackIdentifiers";
 
 export const useAreas = (queryParams = {}, options = {}) => {
   return useQuery(
-    ["Areas"],
+    [Identifiers.areas],
     async () => {
       const { data } = await apiClient.get("areas/", { params: queryParams });
       return data;

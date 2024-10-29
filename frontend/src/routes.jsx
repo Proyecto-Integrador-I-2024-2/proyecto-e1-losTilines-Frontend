@@ -1,5 +1,3 @@
-import { element } from "prop-types";
-import Dashboard from "./pages/dashboard/dashboard";
 import Profile from "./pages/profile/profile";
 import Workers from "./pages/dashboard/workers";
 import Areas from "./pages/dashboard/areas";
@@ -8,6 +6,7 @@ import Homepage from "./pages/home/homepage";
 import { ProjectDetail, ProjectListing } from "./pages/project";
 import { SignIn, SignUp } from "./pages/auth";
 import { MilestonesDetail } from "./pages/project";
+import { DashboardRenderByrole } from "./pages/dashboard";
 export const routes = [
   {
     layout: "dashboard",
@@ -15,7 +14,7 @@ export const routes = [
       {
         name: "dashboard main",
         path: "/",
-        element: <Dashboard />,
+        element: <DashboardRenderByrole />,
       },
 
       {
@@ -32,7 +31,7 @@ export const routes = [
         name: "projects",
         path: "/projects",
         element: <Projects />,
-      }
+      },
     ],
   },
   {
@@ -81,10 +80,8 @@ export const routes = [
         path: "/milestones/:id",
         element: <MilestonesDetail />,
       },
-
     ],
   },
-
 
   {
     layout: "homepage",
@@ -95,7 +92,7 @@ export const routes = [
         element: <Homepage />,
       },
     ],
-  }
+  },
 ];
 
 export default routes;

@@ -19,7 +19,7 @@ export const useQueryParams = () => {
         searchParams.delete(key);
       }
     }); 
-    navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
+    navigate(`${location.pathname}?${searchParams.toString()}`, { replace: false }); // Replace the current entry in the history stack
   };
 
   return { getParams, setParams };
