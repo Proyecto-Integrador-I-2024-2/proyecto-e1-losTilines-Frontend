@@ -12,7 +12,7 @@ import { ListRowStructure } from "@/widgets/list";
 import { ListRowWithImage } from "@/widgets/list";
 import {Typography} from "@material-tailwind/react";
 
-export function DashboardAreaAdmin() {
+export function DashboardFreelancer() {
   //Popup
 
 
@@ -29,9 +29,6 @@ export function DashboardAreaAdmin() {
 
   const { data: user, isLoading: userLoading } = useUser();
 
-  const { data: workers, isLoading: isLoadingWorkers, isError:isWorkersError } = useWorkers({
-    company: user.company, area: user.area
-  }); // Fetch workers
 
   /*--------------------------------------------*/
 
@@ -45,19 +42,11 @@ export function DashboardAreaAdmin() {
 
   /*-----------------------------------------------*/
 
-  const { data: projects, isLoading: isLoadingProjects, error: projectsError } = useProjects( {company: user.company, area:user.area}); // Fetch projects by area
+  const { data: projects, isLoading: isLoadingProjects, error: projectsError } = useProjects( {freelancer: user?.user.id}); // Fetch projects by freelancer
 
   let workersFilteredBusinessManager = [];
 
-  if (!isLoadingWorkers && !isWorkersError) {
-    workersFilteredBusinessManager = workers.filter(
-      (item) => item.role != "Business Manager"
-    ); // Filter workers to show workers with role different to Business Manager
-  }
 
-  /*-----------------------------------------------*/
-
- 
   /*-----------------------------------------------*/
 
   return (
@@ -105,51 +94,11 @@ export function DashboardAreaAdmin() {
             <section className="flex flex-col h-auto w-full md:space-x-6  md:flex-row  md:h-full">
               <div className="h-96 my-4 md:my-0 md:h-full md:w-full">
                 <ListCard
-                  title={"Workers"}
+                  title={"Milestones"}
                   addContent={false}
-                  hasSeeAll={() => navigateWithQuery("workers/")}
+                  hasSeeAll={() => {}}
                 >
-                  {!isLoadingWorkers ? (
-                    workersFilteredBusinessManager &&
-                    workersFilteredBusinessManager.length > 0 ? (
-                      <>
-                        {workersFilteredBusinessManager.map((item) => {
-                          return (
-                            <ListRowWithImage
-                              key={item.id}
-                              avatar={
-                                item.profile_picture ||
-                                "/img/people/noProfile1.jpg"
-                              }
-                              rowName={`${item.first_name} ${item.last_name}`}
-                              description={item.email}
-                              chipValue={item.role}
-                            />
-                          );
-                        })}
-                      </>
-                    ) : (
-                      <div className="flex flex-row justify-center items-center">
 
-                        {
-                          isWorkersError? (
-
-                            <Typography>There was an error loading the workers</Typography>
-                          ) : (
-
-                            <Typography>There aren't elements to show.</Typography>
-
-                          )
-
-
-                        }
-
-                        <Typography> </Typography>
-                      </div>
-                    )
-                  ) : (
-                    <SpinnerCustom />
-                  )}
                 </ListCard>
               </div>
               <ListCard title={"Finance"} hasAdd={false} hasSeeAll={() => {}}>

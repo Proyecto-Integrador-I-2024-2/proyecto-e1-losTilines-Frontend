@@ -3,7 +3,7 @@ import { useUser } from "@/hooks";
 import { DashboardBusinessManager } from "@/layouts";
 
 import { SpinnerCustom } from "@/widgets/layout";
-import { DashboardAreaAdmin, DashboardProjectManager } from ".";
+import { DashboardAreaAdmin, DashboardFreelancer, DashboardProjectManager } from ".";
 
 export function DashboardRenderByrole() {
   /*-----------------------------------------------------------------------------------*/
@@ -32,6 +32,9 @@ export function DashboardRenderByrole() {
         return <DashboardAreaAdmin />;
       case "Project Manager":
         return <DashboardProjectManager />;
+      case "Freelancer":
+        console.log("Freelancer");
+        return <DashboardFreelancer/>;
     }
   }
 }
