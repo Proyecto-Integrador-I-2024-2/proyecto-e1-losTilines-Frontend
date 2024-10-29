@@ -8,7 +8,7 @@ import {
 } from "@material-tailwind/react";
 import { SpinnerCustom } from "../layout";
 
-export function PopUp({
+export function   PopUp({
   title,
   submitFunc,
   children,
@@ -37,11 +37,11 @@ export function PopUp({
 
   return (
     <>
-      <Dialog className={`w-full ${ isFit? "h-fit" : "h-5/6"} md:h-fit overflow-y-auto`} open={open} handler={handleOpen}>
+      <Dialog className={`w-full ${ isFit?"h-fit" : "h-5/6"}  overflow-y-auto`} open={open} handler={handleOpen}>
         <DialogHeader className="flex flex-row justify-center items-center">
           {title}
         </DialogHeader>
-        <DialogBody className="flex flex-col md:h-5/6  justify-center items-center p-0 w-full space-y-4 ">
+        <DialogBody className="flex flex-col   justify-center items-center p-0 w-full space-y-4 ">
           {
 
             submitStatus === "submitting" ? (<SpinnerCustom/>) : (children)

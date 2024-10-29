@@ -1,21 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "@/services/apiClient";
+import { Identifiers } from "../tanstackIdentifiers";
 
-const fetchProjects = async () => {
 
-    var userType = "projects";
 
-    const url = `${userType}/`
+export const useProjects = (queryParams = {}) => {
 
-    console.log("URL: " + url)
-    const { data } = await apiClient.get(url);
-    console.log("Despues del await ")
-    return data;
-}
 
-export const useProjects = () => {
+    const fetchProjects = async () => {
 
-    return useQuery(['Projects'], fetchProjects, {
+        console.log("Params en el hoook: ",queryParams)
+        const { data } = await apiClient.get("projects/", { params: queryParams });    
+        return data;
+    }
+
+    return useQuery([Identifiers.project], fetchProjects, {
         staleTime: 1000 * 60 * 3,
         cachetime: 1000 * 60 * 30,
         retry: 2,

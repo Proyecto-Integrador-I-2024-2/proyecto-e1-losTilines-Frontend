@@ -20,6 +20,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom"; // Importa useNavigate
 import { Link } from "react-router-dom"; // Importa Link
+import { useQueryClient } from "@tanstack/react-query";
 const nestedMenuItems = [
   {
     title: "Hero",
@@ -175,11 +176,14 @@ export function NavigationTopBar() {
   const [openNav, setOpenNav] = React.useState(false);
   const navigate = useNavigate(); // Obtén la función navigate
   const token = sessionStorage.getItem("token");
+  const queryClient = useQueryClient();
 
   function handleLogOut() {
+    queryClient.clear();
     sessionStorage.removeItem('role');
     sessionStorage.removeItem('id');
     sessionStorage.removeItem("token");
+    sessionStorage.clear();
     navigate("/");
   }
   function handleLogIn() {

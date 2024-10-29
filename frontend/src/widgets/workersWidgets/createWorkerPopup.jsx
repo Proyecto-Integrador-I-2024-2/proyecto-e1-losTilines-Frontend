@@ -154,6 +154,7 @@ export function CreateWorkerPopup({ open, setOpen, areas }) {
         open={open}
         setOpen={setOpen}
         disableSubmit={!isFormValid} // Disable submit button if form is invalid
+        isFit={false} // Set the popup height to fit the content
       >
         <main className="flex flex-col w-full px-6 justify-center items-center md:px-32">
           {/* Avatar or placeholder image */}
