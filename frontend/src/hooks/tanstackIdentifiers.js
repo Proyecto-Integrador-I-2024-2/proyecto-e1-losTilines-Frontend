@@ -4,5 +4,6 @@ export const Identifiers = {
     workers : "Workers",
     areas: "Areas",
     project: "Projects",
-    adminAvailables : "AAdminAvailables"
+    adminAvailables : "AAdminAvailables",
+    projectsHome: "ProjectsHome",
 }
