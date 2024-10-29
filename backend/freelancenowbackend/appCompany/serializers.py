@@ -75,7 +75,7 @@ class WorkerSerializer(UserSerializer):
     related_projects = serializers.SerializerMethodField()
 
     class Meta(UserSerializer.Meta):
-        fields = UserSerializer.Meta.fields + ['role', 'company', 'area', 'related_projects']
+        fields = UserSerializer.Meta.fields + ['role', 'company', 'area','related_projects']
 
     def get_role(self, obj):
         user_role = getattr(obj.userrole_set.first(), 'role', None)
@@ -92,7 +92,7 @@ class WorkerSerializer(UserSerializer):
     def get_area(self, obj):
         user_company = obj.usercompany_set.first()
         if user_company and user_company.area:
-            return user_company.area.id
+            return AreaSerializer(user_company.area).data
         return None
 
     def get_related_projects(self, obj):
