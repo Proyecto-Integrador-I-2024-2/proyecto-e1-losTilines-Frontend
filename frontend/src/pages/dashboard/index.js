@@ -4,3 +4,4 @@ export * from "@/pages/dashboard/projects";
 export * from "@/pages/dashboard/dashboardRenderByRole";
 export * from "@/pages/dashboard/dashboardAreaAdmin"
 export * from "@/pages/dashboard/dashboardProjectManager"
+export * from "@/pages/dashboard/dashboardFreelancer"

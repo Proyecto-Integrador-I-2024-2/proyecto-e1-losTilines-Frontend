@@ -79,7 +79,7 @@ function Workers() {
   let workersFilteredBM = [];
   if(workers != undefined){
 
-    workersFilteredBM = workers.filter((worker) => worker.role != "Business Manager");
+    workersFilteredBM = workers.filter((worker) => worker.role != "Business Manager" && worker.role != null); 
 
   }
 
