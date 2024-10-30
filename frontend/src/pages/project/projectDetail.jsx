@@ -47,7 +47,7 @@ export function ProjectDetail() {
 
   return (
     <>
-      <ProjectTopBar projectId={id} />
+      {/* <ProjectTopBar projectId={id} /> */}
       <div className="flex flex-col w-full h-screen gap-2 overflow-hidden bg-origin-padding">
         <div className="flex w-full flex-1 p-5 pb-5">
           <div className="basis-[70%] pr-2 justify-center">

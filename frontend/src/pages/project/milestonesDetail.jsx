@@ -52,7 +52,7 @@ export function MilestonesDetail() {
 
   return (
     <>
-      <ProjectTopBar projectId={id} />
+      {/* <ProjectTopBar projectId={id} /> */}
       <div className="flex flex-col w-full h-full min-h-0">
 
         {/* Sección 2 y 3: Información del Proyecto y Habilidades Requeridas en dos columnas */}
