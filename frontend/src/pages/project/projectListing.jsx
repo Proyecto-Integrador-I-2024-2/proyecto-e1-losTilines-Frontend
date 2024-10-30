@@ -5,12 +5,17 @@ import {
   CardHeader,
   CardBody,
   Typography,
-  Button
+  Button,
+  SpeedDial,
+  SpeedDialHandler,
+  IconButton
 } from "@material-tailwind/react";
 import { useWorkerProjects } from "@/hooks/projects/useWorkerProjects";
 import { useFreelancerProjects } from "@/hooks/projects/useFreelancerProjects";
 import { AddProject } from "@/widgets/popUp";
 import { useNavigate } from "react-router-dom";
+// import { projectsData } from "@/data";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 export function ProjectListing() {
   const [userType, setUserType] = useState();
@@ -33,7 +38,7 @@ export function ProjectListing() {
   const isProjectsLoading = userType === "Freelancer" ? freelancerProjects.isLoading : workerProjects.isLoading;
 
   const handleOpen = () => {
-    setDialogOpen(true);
+    setDialogOpen(prev => !prev);
   };
 
   const handleNavigate = () => {
@@ -46,73 +51,54 @@ export function ProjectListing() {
 
 
   return (
-    <div className="flex flex-col w-full h-screen gap-2 overflow-hidden min-h-0 bg-gradient-to-r from-indigo-50 via-purple-50 to-blue-50">
+    <div className="flex flex-col w-full h-full justify-center">
       {/* Título de la página */}
-      <div className="text-left mt-5 ml-5">
-        <Typography variant="h3" color="blue-gray" className="font-bold tracking-wide">
-          Tus proyectos
+      <div className="w-full my-4 text-center">
+        <Typography variant="h2" color="blue-gray" className="font-bold tracking-wide w-full">
+          Your projects
         </Typography>
       </div>
 
-      {/* Comprobamos si los datos están cargando */}
       {isProjectsLoading ? (
-        <div className="flex justify-center items-center w-full h-full">
+        <div className="flex justify-center items-center w-full max-h-min">
           <Typography variant="h6" color="gray">Cargando proyectos...</Typography>
         </div>
       ) : (
-        <div className="flex w-full h-full flex-1 p-5 pb-5">
+        <div className="w-full  flex flex-col pb-5">
           {/* Sección 1: Tarjetas de Proyecto */}
-          <div className="basis-[80%] p-8 gap-14 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 justify-between overflow-auto no-scrollbar">
-            {projectsData && projectsData.length > 0 ? (
-              projectsData.map((project, index) => (
+          {projectsData && projectsData.length > 0 ? (
+            <div className="p-8 gap-14 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 justify-between overflow-y-auto ">
+              {projectsData.map((project, index) => (
                 <div key={index} className="pb-2 ">
                   <BigProjectCard project={project} handleNavigate={handleProjectNavigate} isActive={true} />
                 </div>
-              ))
-            ) : (
-              <div className="flex justify-center items-center w-full h-full">
-                <Typography variant="h6" color="gray">No hay proyectos disponibles</Typography>
-              </div>
-            )}
-          </div>
-
-          <div className="basis-[20%] pr-6">
-            <Card color="white" shadow={true} className="w-full rounded-xl shadow-2xl">
-              <CardHeader
-                color="transparent"
-                floated={true}
-                shadow={true}
-                className="mx-0 flex items-center pt-0 pb-8 justify-center m-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-t-xl"
-              >
-                <Typography variant="h5" color="white" className="text-center font-semibold pt-5">
-                  {userType === "Freelancer" ? "Buscar más proyectos" : "Añade un nuevo proyecto"}
-                </Typography>
-              </CardHeader>
-              <CardBody className="px-4 py-8 flex flex-col items-center">
-                <Typography color="gray" className="mb-4 text-center">
-                  {userType === "Freelancer"
-                    ? "Explora proyectos disponibles para unirte."
-                    : "Si tienes una idea innovadora, no dudes en agregarla a nuestra lista de proyectos."}
-                </Typography>
-                {userType === "Freelancer" ? (
-                  <Button variant="gradient" onClick={handleNavigate}>
-                    Buscar Proyectos
-                  </Button>
-                ) : (
-                  <Button onClick={handleOpen} variant="gradient">
-                    Crear Proyecto
-                  </Button>
-                )}
-                {userType !== "Freelancer" && (
-                  <AddProject open={dialogOpen} setOpen={setDialogOpen} color="purple" size="lg" ripple={true} className="rounded-full shadow-lg">
-                    + Añadir Proyecto
-                  </AddProject>
-                )}
-              </CardBody>
-            </Card>
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-row justify-center items-center w-full max-h-min">
+              <Typography variant="h6" color="light-blue">You don't have associated projects. Please, explore our marketplace! </Typography>
+            </div>
+          )}
         </div>
       )}
+
+
+
+      <div className="fixed bottom-8 right-8">
+        <SpeedDial>
+          <SpeedDialHandler>
+            <IconButton size="lg" className="rounded-full" onClick={handleOpen}>
+              <PlusIcon className="h-5 w-5 transition-transform group-hover:rotate-45" />
+            </IconButton>
+          </SpeedDialHandler>
+        </SpeedDial>
+      </div>
+      {userType !== "Freelancer" && (
+        <AddProject open={dialogOpen} setOpen={setDialogOpen} color="purple" size="lg" ripple={true} className="rounded-full shadow-lg">
+          + Añadir Proyecto
+        </AddProject>
+      )}
+
     </div>
   );
 }

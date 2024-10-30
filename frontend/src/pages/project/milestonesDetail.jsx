@@ -34,7 +34,7 @@ export function MilestonesDetail() {
 
     const fetchDeliverables = async () => {
       try {
-        const deliverables = await getMilestoneDeliverables({ id });
+        const deliverables = await getMilestoneDeliverables({ id: milestoneID });
         setDeliverables(deliverables);
       } catch (error) {
         console.error('Error fetching deliverables:', error);
@@ -60,7 +60,7 @@ export function MilestonesDetail() {
 
           {/* Sección 2: Información del Proyecto (70%) */}
           <div className="basis-[30%] pr-2 w-full h-full overflow-auto">
-            {milestones.length > 0 ? milestones.map((milestone) => (<MilestoneCard milestone={milestone} onClick={handleMilestoneClick} />))
+            {milestones.length > 0 ? milestones.map((milestone) => (<MilestoneCard key={milestone.id} milestone={milestone} onClick={handleMilestoneClick} />))
               : <Typography variant="h6" color="gray">There is no milestones available.</Typography>}
           </div>
 
@@ -89,7 +89,7 @@ export function MilestonesDetail() {
                     <div className="space-y-2 m-4">
                       {
                         deliverables?.length > 0 ? deliverables.map((deliverable) => (
-                          <DeliverableCard deliverable={deliverable} />
+                          <DeliverableCard key={deliverable.id} deliverable={deliverable} />
                         )
                         ) : <Typography variant="h6" color="gray">There is no deliverables available.</Typography>
                       }
