@@ -23,12 +23,13 @@ import { useNavigateWithQuery } from "@/hooks/utils";
 import { func } from "prop-types";
 import { useQuery } from "@tanstack/react-query";
 import { Identifiers } from "@/hooks/tanstackIdentifiers";
+import apiClient from "@/services/apiClient";
 
 const Homepage = () => {
-  
-  
+
+
   const fetchProjects = async () => {
-  
+
     const { data } = await apiClient.get("projects/");
     return data;
   };
@@ -37,22 +38,21 @@ const Homepage = () => {
   // We use a custom useQuery due to the dashboard projects fetch had the same identifier so,
   // when the user opened the dashboard, the projects were the home projects.
   // However, now they have different identifiers. 
-  
+
   const { data: projectsData, isLoading: isProjectsLoading } = useQuery(
 
-    [ Identifiers.projectsHome], fetchProjects, {
+    [Identifiers.projectsHome], fetchProjects, {
 
 
-      staleTime: 1000 * 60 * 3,
-      cachetime: 1000 * 60 * 30,
-      retry: 2,
+    staleTime: 1000 * 60 * 3,
+    cachetime: 1000 * 60 * 30,
+    retry: 2,
 
-    }
+  }
 
   );
 
-  const { data: freelancersData, isLoading: isFreelancersLoading } =
-    useFreelancers();
+  const { data: freelancersData, isLoading: isFreelancersLoading } = useFreelancers();
   const { getParams, setParams } = useQueryParams();
   const navigate = useNavigate();
   const navigateWithQuery = useNavigateWithQuery();
@@ -91,7 +91,7 @@ const Homepage = () => {
                 >
                   {freelancersData.map((freelancer) => (
                     <SmallFreelancerCard
-                      key={freelancer.id}
+                      key={freelancer.user.id}
                       freelancer={freelancer}
                       onCardClick={handleFreelancerCardClick}
                     />
