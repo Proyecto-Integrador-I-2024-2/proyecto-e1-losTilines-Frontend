@@ -55,62 +55,62 @@ export const projectsData = [
       { img: "/img/team-1.jpeg", name: "Carlos Pérez" },
     ],
   },
-  {
-    id: 5,
-    image: null,
-    name: "Dark-Themed Code Editor",
-    tag: "Project #5",
-    description:
-      "Editor de código con tema oscuro y resaltado de sintaxis avanzado.",
-    members: [
-      { img: "/img/team-4.jpeg", name: "María Rodríguez" },
-      { img: "/img/team-3.jpeg", name: "Luis Martínez" },
-      { img: "/img/team-2.jpeg", name: "Ana Gómez" },
-      { img: "/img/team-1.jpeg", name: "Carlos Pérez" },
-    ],
-  },
-  {
-    id: 6,
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475",
-    name: "Customizable Code Editor",
-    tag: "Project #6",
-    description:
-      "Editor de código con tema claro y esquemas de color personalizables.",
-    members: [
-      { img: "/img/team-4.jpeg", name: "María Rodríguez" },
-      { img: "/img/team-3.jpeg", name: "Luis Martínez" },
-      { img: "/img/team-2.jpeg", name: "Ana Gómez" },
-      { img: "/img/team-1.jpeg", name: "Carlos Pérez" },
-    ],
-  },
-  {
-    id: 7,
-    image: "https://images.unsplash.com/photo-1556761175-4b46a572b786",
-    name: "E-Learning Platform",
-    tag: "Project #7",
-    description:
-      "Plataforma de aprendizaje en línea con perfiles de usuario y seguimiento de progreso.",
-    members: [
-      { img: "/img/team-1.jpeg", name: "Carlos Pérez" },
-      { img: "/img/team-2.jpeg", name: "Ana Gómez" },
-      { img: "/img/team-3.jpeg", name: "Luis Martínez" },
-      { img: "/img/team-4.jpeg", name: "María Rodríguez" },
-    ],
-  },
-  {
-    id: 8,
-    image: "https://images.unsplash.com/photo-1517433456452-f9633a875f6f",
-    name: "Smart Security System",
-    tag: "Project #8",
-    description:
-      "Sistema de seguridad inteligente con monitoreo en tiempo real y alertas automáticas.",
-    members: [
-      { img: "/img/team-4.jpeg", name: "María Rodríguez" },
-      { img: "/img/team-3.jpeg", name: "Luis Martínez" },
-      { img: "/img/team-2.jpeg", name: "Ana Gómez" },
-      { img: "/img/team-1.jpeg", name: "Carlos Pérez" },
-    ],
-  },
+  // {
+  //   id: 5,
+  //   image: null,
+  //   name: "Dark-Themed Code Editor",
+  //   tag: "Project #5",
+  //   description:
+  //     "Editor de código con tema oscuro y resaltado de sintaxis avanzado.",
+  //   members: [
+  //     { img: "/img/team-4.jpeg", name: "María Rodríguez" },
+  //     { img: "/img/team-3.jpeg", name: "Luis Martínez" },
+  //     { img: "/img/team-2.jpeg", name: "Ana Gómez" },
+  //     { img: "/img/team-1.jpeg", name: "Carlos Pérez" },
+  //   ],
+  // },
+  // {
+  //   id: 6,
+  //   image: "https://images.unsplash.com/photo-1518770660439-4636190af475",
+  //   name: "Customizable Code Editor",
+  //   tag: "Project #6",
+  //   description:
+  //     "Editor de código con tema claro y esquemas de color personalizables.",
+  //   members: [
+  //     { img: "/img/team-4.jpeg", name: "María Rodríguez" },
+  //     { img: "/img/team-3.jpeg", name: "Luis Martínez" },
+  //     { img: "/img/team-2.jpeg", name: "Ana Gómez" },
+  //     { img: "/img/team-1.jpeg", name: "Carlos Pérez" },
+  //   ],
+  // },
+  // {
+  //   id: 7,
+  //   image: "https://images.unsplash.com/photo-1556761175-4b46a572b786",
+  //   name: "E-Learning Platform",
+  //   tag: "Project #7",
+  //   description:
+  //     "Plataforma de aprendizaje en línea con perfiles de usuario y seguimiento de progreso.",
+  //   members: [
+  //     { img: "/img/team-1.jpeg", name: "Carlos Pérez" },
+  //     { img: "/img/team-2.jpeg", name: "Ana Gómez" },
+  //     { img: "/img/team-3.jpeg", name: "Luis Martínez" },
+  //     { img: "/img/team-4.jpeg", name: "María Rodríguez" },
+  //   ],
+  // },
+  // {
+  //   id: 8,
+  //   image: "https://images.unsplash.com/photo-1517433456452-f9633a875f6f",
+  //   name: "Smart Security System",
+  //   tag: "Project #8",
+  //   description:
+  //     "Sistema de seguridad inteligente con monitoreo en tiempo real y alertas automáticas.",
+  //   members: [
+  //     { img: "/img/team-4.jpeg", name: "María Rodríguez" },
+  //     { img: "/img/team-3.jpeg", name: "Luis Martínez" },
+  //     { img: "/img/team-2.jpeg", name: "Ana Gómez" },
+  //     { img: "/img/team-1.jpeg", name: "Carlos Pérez" },
+  //   ],
+  // },
 ];
 
 export default projectsData;

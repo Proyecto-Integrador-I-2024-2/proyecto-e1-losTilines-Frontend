@@ -96,18 +96,23 @@ export function EditSkillsPopup({ open, onOpen, skills, editSkill, addSkill, del
                     />
                 </div>
                 <div className="mt-4">
-                    <Select
-                        label="Selecciona una habilidad para agregar"
-                        value={skillToAdd}
-                        onChange={(value) => setSkillToAdd(value)}
-                        disabled={isSkillsLoading}
-                    >
-                        {skillsData && skillsData.map((skill) => (
-                            <Option key={skill.id} value={skill.id.toString()}>
-                                {skill.name} - {skill.type}
-                            </Option>
-                        ))}
-                    </Select>
+                    {
+                        skillsData && (
+                            <Select
+                                label="Selecciona una habilidad para agregar"
+                                value={skillToAdd}
+                                onChange={(value) => setSkillToAdd(value)}
+                                disabled={isSkillsLoading}
+                            >
+                                {skillsData && skillsData.map((skill) => (
+                                    <Option key={skill.id} value={skill.id.toString()}>
+                                        {skill.name} - {skill.type}
+                                    </Option>
+                                ))}
+                            </Select>
+                        )
+                    }
+
                 </div>
 
             </DialogBody>

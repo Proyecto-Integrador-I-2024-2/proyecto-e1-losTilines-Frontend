@@ -1,6 +1,18 @@
 import routes from "@/routes";
+import {
+  Tabs,
+  TabsHeader,
+  Tab,
+} from "@material-tailwind/react";
+
+import {
+  HomeIcon,
+  ChatBubbleLeftEllipsisIcon,
+  Cog6ToothIcon,
+} from "@heroicons/react/24/solid";
+
 import { Route, Routes } from "react-router-dom";
-import { NavigationTopBar } from "@/widgets/layout";
+import { NavigationTopBar, ProfileTopBar } from "@/widgets/layout";
 
 export function ProfileLayout() {
   return (

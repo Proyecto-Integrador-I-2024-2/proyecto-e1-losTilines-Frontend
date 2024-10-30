@@ -1,3 +1,5 @@
+import { profile_pic } from '@/data/placeholder';
+import { Button, Textarea, IconButton } from '@material-tailwind/react';
 import React, { useState } from 'react';
 
 export const ReviewSection = ({ reviews }) => {
@@ -23,7 +25,7 @@ export const ReviewSection = ({ reviews }) => {
                         <div className="flex items-center mb-4">
                             <img
                                 className="w-12 h-12 rounded-full mr-4"
-                                src={review.reviewerImage}
+                                src={review.reviewerImage || profile_pic}
                                 alt={review.reviewerName}
                             />
                             <div>
@@ -41,19 +43,33 @@ export const ReviewSection = ({ reviews }) => {
                             </div>
                         ) : (
                             <div className="mt-4">
-                                <textarea
-                                    className="w-full p-2 bg-gray-100 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    rows="2"
-                                    placeholder="Escribe una respuesta..."
-                                    value={responses[review.id] || ''}
-                                    onChange={(e) => handleResponseChange(e, review.id)}
-                                />
-                                <button
-                                    onClick={() => handleResponseSubmit(review.id)}
-                                    className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                                >
-                                    Responder
-                                </button>
+                                <Textarea variant="static" placeholder="Your Comment" rows={8} />
+                                <div className="flex w-full justify-between py-1.5">
+                                    <IconButton variant="text" color="blue-gray" size="sm">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            strokeWidth={2}
+                                            className="h-4 w-4"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"
+                                            />
+                                        </svg>
+                                    </IconButton>
+                                    <div className="flex gap-2">
+                                        <Button size="sm" color="red" variant="text" className="rounded-md">
+                                            Cancel
+                                        </Button>
+                                        <Button size="sm" className="rounded-md">
+                                            Post Comment
+                                        </Button>
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>
