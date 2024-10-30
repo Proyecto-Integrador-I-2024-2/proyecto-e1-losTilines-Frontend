@@ -399,7 +399,7 @@ export function Profile() {
                             sectionSubtitle={"Associated Projects"}
                         >
                             {projectsToUse.map((project) => (
-                                <CustomListItem key={project.id} title={project.name} tag={`$${project.budget}`} description={project.description} img={"https://images.unsplash.com/photo-1518770660439-4636190af475"} route={"/project/detail"} />
+                                <CustomListItem key={project.id} title={project.name} tag={`$${project.budget}`} description={project.description} img={"https://images.unsplash.com/photo-1518770660439-4636190af475"} route={`/project/detail/${project.id}`} />
                             ))}
                         </CustomList>
                         :
