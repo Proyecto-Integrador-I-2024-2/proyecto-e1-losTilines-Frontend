@@ -2,17 +2,24 @@ import { ListCard } from "@/widgets/list";
 import { NumberInfo } from "@/widgets/statistics/numberInfo";
 import Chart from "@/widgets/statistics/chart";
 import { Button, Card } from "@material-tailwind/react";
-import { Link, useNavigate } from "react-router-dom";
-import { useUser, useQueryParams, useProjects} from "@/hooks";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useNavigationType,
+} from "react-router-dom";
+import { useUser, useQueryParams, useProjects } from "@/hooks";
 import { useEffect, useState } from "react";
 import { CreateAreaPopUp } from "@/widgets/areaWidgets";
 import { SpinnerCustom } from "@/widgets/layout";
 import { useNavigateWithQuery } from "@/hooks/utils";
-import { useWorkers } from "@/hooks/workers";
+import { Identifiers, useWorkers } from "@/hooks/workers";
 import { useAreas } from "@/hooks/areas";
 import { ListRowStructure } from "@/widgets/list";
 import { ListRowWithImage } from "@/widgets/list";
-import {Typography} from "@material-tailwind/react";
+import { Typography } from "@material-tailwind/react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import apiClient from "@/services/apiClient";
 
 export function DashboardBusinessManager() {
   //Popup
@@ -27,24 +34,51 @@ export function DashboardBusinessManager() {
 
   const [isArea, setIsArea] = useState(true); //Used to define if there are areas or projects
 
+  //Navigation staff
+
+  const [queryParams, setQueryParams] = useState({});
+
+  const { getParams, setParams } = useQueryParams();
+
+  const location = useLocation();
+
+  const navigationType = useNavigationType();
+
+
   /*-----------------------------------------------*/
 
-  // Fetchers
-
-  const role = sessionStorage.getItem("role");
-
+  //FETCHERS
+  
   const { data: user, isLoading: userLoading } = useUser();
 
+
+
+
+  console.log("User company id:", user.company);
   const { data: areas, isLoading: isLoadingAreas } = useAreas({
     company: user.company,
   }); // Fetch areas
 
-  const { data: workers, isLoading: isLoadingWorkers } = useWorkers({
-    company: user.company,
-  }); // Fetch workers
+  //fetch workers based on query params from url.
 
+  useEffect(() => {
+    const params = Object.fromEntries(getParams().entries());
+    setQueryParams(params);
+  }, [location, navigationType]);
 
-
+  const { data: workers, isLoading: isLoadingWorkers } = useQuery(
+    [Identifiers.workers, queryParams], // Incluir parámetros en la clave de consulta
+    async () => {
+      const { data } = await apiClient.get("workers/", {
+        params: queryParams,
+      });
+      return data;
+    },
+    {
+      staleTime: 5 * 60 * 1000,
+      cacheTime: 30 * 60 * 1000,
+    }
+  );
 
   /*-----------------------------------------------*/
 
@@ -54,33 +88,42 @@ export function DashboardBusinessManager() {
 
   const navigateWithQuery = useNavigateWithQuery();
 
-  const { getParams, setParams } = useQueryParams();
-
-  const areaSelected  = getParams().get("area"); //Get the area from the url
+  const areaSelected = getParams().get("area"); //Get the area from the url
 
   const areaId = areaSelected ? Number(areaSelected) : null;
 
-  
   /*-----------------------------------------------*/
 
   console.log("Selected area", areaSelected);
-  const { data: projects, isLoading: isLoadingProjects, error: projectsError } = useProjects({area : areaId, company: user.company}); // Fetch projects by area
+  const {
+    data: projects,
+    isLoading: isLoadingProjects,
+    error: projectsError,
+  } = useProjects({ area: areaId, company: user.company }); // Fetch projects by area
 
   let workersFilteredBusinessManager = [];
 
-  if (!isLoadingWorkers) {
+  if (!isLoadingWorkers && workers) {
     workersFilteredBusinessManager = workers.filter(
-      (item) => item.role != "Business Manager"
+      (item) =>
+        item.role != "Business Manager" &&
+        item.role != null &&
+        item.role != "Freelancer"
     ); // Filter workers to show workers with role different to Business Manager
   }
 
   /*-----------------------------------------------*/
 
   const handleSelecedArea = (item) => {
-
     setParams({ area: item });
-
   };
+
+  const handleSelectedProject = (item) => {
+
+      navigateTo(`/project/detail/${item}`, { replace: true });
+
+
+  }
 
   /*-----------------------------------------------*/
 
@@ -90,13 +133,12 @@ export function DashboardBusinessManager() {
     if (areaSelected) {
       setSelectecItem(areaSelected);
       setIsArea(false);
-      
     } else {
       setSelectecItem(null);
       setIsArea(true);
     }
   }, [areaSelected, areas]);
-  
+
 
   /*-----------------------------------------------*/
 
@@ -129,7 +171,7 @@ export function DashboardBusinessManager() {
               <>
                 {isArea ? (
                   <>
-                    {/*----------------------------Render areas----------------------------*/}
+                    {/*----------------------------Render areas or projects----------------------------*/}
 
                     {areas && areas.length > 0 ? (
                       areas.map((item) => {
@@ -160,7 +202,7 @@ export function DashboardBusinessManager() {
                             id={item.id}
                             rowName={item.name}
                             chipValue={item.status_name}
-                            setSelected={handleSelecedArea}
+                            setSelected={handleSelectedProject}
                           />
                         );
                       })

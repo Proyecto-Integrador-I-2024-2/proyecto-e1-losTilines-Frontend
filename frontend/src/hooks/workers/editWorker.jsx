@@ -3,10 +3,14 @@ import apiClient from "@/services/apiClient";
 import { Identifiers } from "../tanstackIdentifiers";
 
 export const useEditWorker = () => {
+
+  console.log("useEditWorker trigger");
   const queryClient = useQueryClient();
 
   // Función para realizar el PATCH al trabajador
   const patchWorker = async (workerData) => {
+
+    console.log("Worker data:", workerData);
     const response = await apiClient.patch(`workers/${workerData.id}/`, workerData.data);
     return response.data;
   };

@@ -23,7 +23,7 @@ export function EditWorkerPopup({ open, setOpen, currentWorker, areas }) {
   
   // State for selected area and role
   const [selectedArea, setSelectedArea] = useState(
-    currentWorker ? currentWorker.area : ""
+    currentWorker ? currentWorker.area?.id : ""
   );
   const [selectedRole, setSelectedRole] = useState(
     currentWorker ? currentWorker.role : "Project Manager"
@@ -43,7 +43,7 @@ export function EditWorkerPopup({ open, setOpen, currentWorker, areas }) {
     setEmailEdit(currentWorker ? currentWorker.email : "");
     setFirstNameEdit(currentWorker ? currentWorker.first_name : "");
     setLastNameEdit(currentWorker ? currentWorker.last_name : "");
-    setSelectedArea(currentWorker ? currentWorker.area : "");
+    setSelectedArea(currentWorker ? currentWorker.area?.id : "");
     setSelectedRole(currentWorker ? currentWorker.role : "Project Manager");
 
     setSuccessMessage("");
@@ -129,7 +129,7 @@ export function EditWorkerPopup({ open, setOpen, currentWorker, areas }) {
       hasEmailChanged =
         emailEdit.trim().toLowerCase() !==
         currentWorker.email.trim().toLowerCase();
-      hasAreaChanged = selectedArea !== currentWorker.area;
+      hasAreaChanged = selectedArea !== currentWorker.area?.id;
       hasRoleChanged = selectedRole !== currentWorker.role;
     } else {
       // If no currentWorker, consider all fields as changed
@@ -159,6 +159,9 @@ export function EditWorkerPopup({ open, setOpen, currentWorker, areas }) {
     if (hasEmailChanged) updatedData.email = emailEdit.trim();
     if (hasAreaChanged) updatedData.area = selectedArea;
     if (hasRoleChanged) updatedData.role = selectedRole;
+
+
+    console.log("Update data from editWorker: ", updatedData)
 
     // Execute the mutation
     if (currentWorker) {
@@ -200,6 +203,22 @@ export function EditWorkerPopup({ open, setOpen, currentWorker, areas }) {
     : "No Worker Selected";
 
   /*-----------------------------------------------------------------------------*/
+
+
+  // Log (optional)
+
+  useEffect(() => {
+
+
+    if(currentWorker){
+
+      console.log("Selected area on log EditWorker ", selectedArea)
+
+    }
+
+
+
+  }, [ selectedArea])
 
   return (
     <>

@@ -7,11 +7,13 @@ import {
   Input,
 } from "@material-tailwind/react";
 import { SearchBar, SpinnerCustom } from "@/widgets/layout";
-import { useQueryParams } from "@/hooks";
-import { useEditWorker, useWorkers } from "@/hooks/workers";
+import { useQueryParams, useUser } from "@/hooks";
+import { Identifiers, useEditWorker, useWorkers } from "@/hooks/workers";
 import { useAreas } from "@/hooks/areas";
 import { CreateWorkerPopup, EditWorkerPopup } from "@/widgets/workersWidgets";
 import { ListCollapseGeneral } from "@/widgets/workersWidgets";
+import { useQuery } from "@tanstack/react-query";
+import apiClient from "@/services/apiClient";
 
 function Workers() {
   /*------------------------------------------------*/
@@ -55,6 +57,8 @@ function Workers() {
 
   const filters = Object.fromEntries(getParams()); // Get query params from URL
 
+  console.log("Filters:", filters)
+
   /*------------------------------------------------*/
 
   // Fetch workers
@@ -79,7 +83,7 @@ function Workers() {
   let workersFilteredBM = [];
   if(workers != undefined){
 
-    workersFilteredBM = workers.filter((worker) => worker.role != "Business Manager" && worker.role != null); 
+    workersFilteredBM = workers.filter((worker) => worker.role != "Business Manager" && worker.role != null && worker.role != "Freelancer"); 
 
   }
 
@@ -87,8 +91,31 @@ function Workers() {
 
   // Fetch areas to allow selecting an area for a worker
 
-  const { data: areas, isLoading: isLoadingAreas } = useAreas(filters);
+  const { data: user, isLoading: userLoading } = useUser()
 
+  const { data: areas, isLoading: isLoadingAreas, error: areasError } = useQuery(
+    [Identifiers.areas, { company: user?.company }],
+    async () => {
+      // Asegúrate de que `user.company` esté definido
+
+      const { data } = await apiClient.get("areas/", { params: { company: user.company } });
+      return data;
+    },
+    {
+      enabled: !!user && !!user.company, // Solo ejecuta la consulta si `user` y `user.company` están definidos
+      onSuccess: (data) => {
+        console.log("Areas success:", data);
+      },
+      onError: (error) => {
+        console.error("Error while fetching areas:", error);
+      },
+      staleTime: 5 * 60 * 1000, // 5 minutos
+      cacheTime: 30 * 60 * 1000, // 30 minutos
+      retry: 2, 
+    }
+  );
+
+  console.log("Areas:", areas);
   
   useEffect(() => {
     if (!isLoadingAreas && areas) {
