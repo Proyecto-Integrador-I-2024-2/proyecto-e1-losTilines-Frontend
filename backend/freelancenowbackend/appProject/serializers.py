@@ -14,7 +14,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     freelancers = ProjectFreelancerSerializer(source='projectfreelancer_set', many=True, read_only=True)
     company = serializers.StringRelatedField(read_only=True)
     user = UserSerializer(read_only=True)  # Rellenar automáticamente con el usuario actual
-    status = serializers.PrimaryKeyRelatedField(queryset=Status.objects.all())
+    status = serializers.PrimaryKeyRelatedField(read_only=True)
     status_name = serializers.CharField(source='status.name', read_only=True)
     skills = serializers.SerializerMethodField() 
     
