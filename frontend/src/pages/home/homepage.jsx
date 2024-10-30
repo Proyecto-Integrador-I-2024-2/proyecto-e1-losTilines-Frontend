@@ -23,7 +23,7 @@ import { useNavigateWithQuery } from "@/hooks/utils";
 import { func } from "prop-types";
 import { useQuery } from "@tanstack/react-query";
 import { Identifiers } from "@/hooks/tanstackIdentifiers";
-
+import apiClient from "@/services/apiClient";
 const Homepage = () => {
   
   
@@ -37,7 +37,7 @@ const Homepage = () => {
   // We use a custom useQuery due to the dashboard projects fetch had the same identifier so,
   // when the user opened the dashboard, the projects were the home projects.
   // However, now they have different identifiers. 
-  
+
   const { data: projectsData, isLoading: isProjectsLoading } = useQuery(
 
     [ Identifiers.projectsHome], fetchProjects, {
@@ -65,7 +65,7 @@ const Homepage = () => {
     navigate(`/profile?freelancer=${id}`);
   }
   function handleProjectCardClick(id) {
-    navigate(`/project/detail/${id}`);
+    navigate(`/project/detail/${id}`);  
   }
 
   return (

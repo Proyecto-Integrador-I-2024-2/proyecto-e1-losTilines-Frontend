@@ -142,8 +142,6 @@ export function CreateWorkerPopup({ open, setOpen, areas }) {
 
   //Logs (optional)
 
-  console.log("Selected role", selectedRole)
-  console.log("Boolean", selectedRole === "Area Admin")
 
   return (
     <>

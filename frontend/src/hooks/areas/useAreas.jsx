@@ -5,9 +5,13 @@ import apiClient from "@/services/apiClient";
 import { Identifiers } from "../tanstackIdentifiers";
 
 export const useAreas = (queryParams = {}, options = {}) => {
+
+  console.log("Query params:", queryParams);
+
   return useQuery(
     [Identifiers.areas],
     async () => {
+
       const { data } = await apiClient.get("areas/", { params: queryParams });
       return data;
     },
