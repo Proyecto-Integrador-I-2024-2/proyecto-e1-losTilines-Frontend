@@ -8,10 +8,12 @@ export function ProjectLayout() {
   const location = useLocation();
   const currentPath = location.pathname
   console.log("Ruta actual:", currentPath);
+  const id = currentPath.substring(currentPath.lastIndexOf('/') + 1)
+  console.log("ID del proyecto en layout:", id);
   return (
     <div className="flex flex-col min-h-screen h-screen md:h-screen overflow">
       <NavigationTopBar />
-
+      {(currentPath.includes("/project/detail") || currentPath.includes("/project/milestones")) && <ProjectTopBar projectId={id || ""} />}
       <Routes>
         {routes.map(
           ({ layout, pages }) =>
