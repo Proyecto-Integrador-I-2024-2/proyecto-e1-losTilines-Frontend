@@ -167,17 +167,19 @@ class Experience(models.Model):
         return f'{self.occupation} at {self.company}'
 
 class Comment(models.Model):
-    title = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     stars = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(5.0)])
-    freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE, related_name='freelancer_comments')
-    writer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='worker_comments', null=True)
+    freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE, related_name='comments')
+    writer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments', null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    response = models.TextField(blank=True, null=True)  # Campo para respuesta del freelancer
 
     def __str__(self):
-        return self.title
+        return f"Comment by {self.writer} on {self.freelancer}"
+
     def save(self, *args, **kwargs):
         if self.writer.groups.filter(name="Freelancer").exists():
-            raise ValueError("You cannot comment this")
+            raise ValueError("Only clients can post comments")
         super().save(*args, **kwargs)
 
 # ---------------------- PROJECTS ---------------------- #

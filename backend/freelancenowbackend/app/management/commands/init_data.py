@@ -310,27 +310,27 @@ class Command(BaseCommand):
             experiences.append(experience)
 
         # Crear comentarios
-        comments = []
-        for i, freelancer in enumerate(freelancers_instances):
-            writer = project_managers[i % len(project_managers)]
-            try:
-                comment, created = Comment.objects.get_or_create(
-                    freelancer=freelancer,
-                    writer=writer,
-                    defaults={
-                        'title': f'Título del comentario {i+1}',
-                        'description': f'Descripción del comentario {i+1}',
-                        'stars': 4.5 - i
-                    }
-                )
-                if created:
-                    self.stdout.write(self.style.SUCCESS(f'Comentario para "{freelancer.user.email}" creado por "{writer.email}"'))
-                else:
-                    self.stdout.write(self.style.WARNING(f'Comentario ya existe para "{freelancer.user.email}"'))
-            except ValueError as e:
-                self.stdout.write(self.style.ERROR(f'Error al crear comentario: {str(e)}'))
-                continue
-            comments.append(comment)
+        # comments = []
+        # for i, freelancer in enumerate(freelancers_instances):
+        #     writer = project_managers[i % len(project_managers)]
+        #     try:
+        #         comment, created = Comment.objects.get_or_create(
+        #             freelancer=freelancer,
+        #             writer=writer,
+        #             defaults={
+        #                 'title': f'Título del comentario {i+1}',
+        #                 'description': f'Descripción del comentario {i+1}',
+        #                 'stars': 4.5 - i
+        #             }
+        #         )
+        #         if created:
+        #             self.stdout.write(self.style.SUCCESS(f'Comentario para "{freelancer.user.email}" creado por "{writer.email}"'))
+        #         else:
+        #             self.stdout.write(self.style.WARNING(f'Comentario ya existe para "{freelancer.user.email}"'))
+        #     except ValueError as e:
+        #         self.stdout.write(self.style.ERROR(f'Error al crear comentario: {str(e)}'))
+        #         continue
+        #     comments.append(comment)
 
         # Crear estados de proyecto (Status)
         project_statuses = []
