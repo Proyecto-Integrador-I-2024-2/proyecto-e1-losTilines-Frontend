@@ -7,6 +7,7 @@ router.register(r'freelancer', FreelancerDetailViewSet)
 router.register(r'freelancer-skills', FreelancerSkillViewSet)
 router.register(r'skills', SkillViewSet)
 router.register(r'experience', ExperienceViewSet)
+router.register(r'comments', CommentViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
