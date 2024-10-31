@@ -209,7 +209,8 @@ class Project(models.Model):
 class ProjectFreelancer(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
-
+    status = models.ForeignKey(Status, on_delete=models.CASCADE, null=True, blank=True)
+    
     def __str__(self):
         return f'{self.freelancer} working on {self.project}'
     
