@@ -50,15 +50,7 @@ class ProjectFreelancerViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]  
     serializer_class = ProjectFreelancerSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_class = ProjectsFreelancerFilter
-
-    def perform_create(self, serializer):
-        status_name = self.request.data.get("status_name")
-        if not status_name:
-            raise ValidationError({"status_name": "This field is required."})
-
-        status, created = Status.objects.get_or_create(name=status_name)
-        serializer.save(status=status)
+    filterset_fields = ['project', 'freelancer', 'status']
 
 #------------------------------------------------------------------------#
 

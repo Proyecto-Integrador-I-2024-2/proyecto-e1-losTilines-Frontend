@@ -373,22 +373,22 @@ class Command(BaseCommand):
             projects.append(project)
 
         # Crear ProjectFreelancer
-        project_freelancers = []
-        for i, project in enumerate(projects):
-            freelancer = freelancers_instances[i % len(freelancers_instances)]
-            try:
-                project_freelancer, created = ProjectFreelancer.objects.get_or_create(
-                    project=project,
-                    freelancer=freelancer,
-                )
-                if created:
-                    self.stdout.write(self.style.SUCCESS(f'Freelancer "{freelancer.user.email}" asignado al proyecto "{project.name}"'))
-                else:
-                    self.stdout.write(self.style.WARNING(f'Freelancer "{freelancer.user.email}" ya asignado al proyecto "{project.name}"'))
-            except ValueError as e:
-                self.stdout.write(self.style.ERROR(f'Error al asignar freelancer al proyecto: {str(e)}'))
-                continue
-            project_freelancers.append(project_freelancer)
+        # project_freelancers = []
+        # for i, project in enumerate(projects):
+        #     freelancer = freelancers_instances[i % len(freelancers_instances)]
+        #     try:
+        #         project_freelancer, created = ProjectFreelancer.objects.get_or_create(
+        #             project=project,
+        #             freelancer=freelancer,
+        #         )
+        #         if created:
+        #             self.stdout.write(self.style.SUCCESS(f'Freelancer "{freelancer.user.email}" asignado al proyecto "{project.name}"'))
+        #         else:
+        #             self.stdout.write(self.style.WARNING(f'Freelancer "{freelancer.user.email}" ya asignado al proyecto "{project.name}"'))
+        #     except ValueError as e:
+        #         self.stdout.write(self.style.ERROR(f'Error al asignar freelancer al proyecto: {str(e)}'))
+        #         continue
+        #     project_freelancers.append(project_freelancer)
 
         # Crear habilidades requeridas para proyectos (ProjectSkill)
         project_skills = []
