@@ -207,10 +207,21 @@ class Project(models.Model):
         super().save(*args, **kwargs)
     
 class ProjectFreelancer(models.Model):
+    STATUS_CHOICES = [
+        ('created', 'Created'),
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+        ('canceled', 'Canceled'),
+        ('freelancer_interested', 'Freelancer Interested'),
+        ('company_interested', 'Company Interested'),
+        ('rejected', 'Rejected'),
+        ('undefined', 'Undefined'),
+    ]
+
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
-    status = models.ForeignKey(Status, on_delete=models.CASCADE, null=True, blank=True)
-    
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='undefined')
+
     def __str__(self):
         return f'{self.freelancer} working on {self.project}'
     
