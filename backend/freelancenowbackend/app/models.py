@@ -225,6 +225,10 @@ class ProjectFreelancer(models.Model):
     def __str__(self):
         return f'{self.freelancer} working on {self.project}'
     
+    @classmethod
+    def get_status_choices(cls):
+        return cls.STATUS_CHOICES
+    
 class ProjectSkill(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     skill = models.ForeignKey(Skill, on_delete=models.CASCADE)

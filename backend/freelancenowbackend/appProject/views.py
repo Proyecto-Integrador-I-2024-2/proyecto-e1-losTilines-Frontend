@@ -1,4 +1,5 @@
-from rest_framework import generics, status, viewsets
+from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -51,6 +52,11 @@ class ProjectFreelancerViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectFreelancerSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['project', 'freelancer', 'status']
+
+    @action(detail=False, methods=['get'])
+    def status(self, request):
+        status_choices = ProjectFreelancer.get_status_choices()
+        return Response(status_choices)
 
 #------------------------------------------------------------------------#
 
