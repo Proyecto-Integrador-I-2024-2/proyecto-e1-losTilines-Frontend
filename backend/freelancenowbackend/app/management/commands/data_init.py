@@ -8,7 +8,8 @@ from django.contrib.auth.models import Group
 import random
 from app.models import (
     User, UserRole, Notification, UserNotification, Company, Area, UserCompany,
-    Freelancer, SkillType, Skill, FreelancerSkill, Status, Project, ProjectFreelancer, ProjectSkill
+    Freelancer, SkillType, Skill, FreelancerSkill, Status, Project, ProjectFreelancer, ProjectSkill, 
+    Experience, Comment, Payment, Deliverable, Milestone, Status
 )
 
 project_paragraph_templates = [
@@ -37,9 +38,13 @@ notification_templates = [
 ]
 
 projects = ['plataforma web', 'API', 'backend', 'sistema de gestión', 'aplicación móvil']
+
 technologies = ['Docker', 'Kubernetes', 'Python', 'React', 'AWS', 'DevOps', 'CI/CD', 'machine learning']
+
 teams = ['DevOps', 'Backend', 'Frontend', 'QA', 'Infraestructura']
+
 solutions = ['API REST', 'arquitectura de microservicios', 'solución cloud', 'pipelines de CI/CD']
+
 platforms = ['AWS', 'Azure', 'Google Cloud', 'infraestructura local']
 
 
@@ -52,14 +57,18 @@ freelancer_paragraph_templates = [
 ]
 
 fields = ['desarrollo web', 'desarrollo móvil', 'ciberseguridad', 'automatización de procesos', 'gestión de bases de datos']
+
 strengths = ['solucionar problemas complejos', 'optimizar la arquitectura del sistema', 'mejorar la seguridad', 'desarrollar interfaces amigables']
+
 years_experience = ['5', '7', '10', '3', '12']
 
 fake = Faker('es_CO')
 
+
 AREA_CHOICES = [
     'RRHH', 'Finanzas', 'Marketing', 'Ventas', 'Operaciones', 'Tecnología', 'Soporte', 'Producto', 'Calidad', 'Logística', 'Atención Cliente', 'Innovación', 'Legal', 'Admin', 'Proyectos'
     ]
+
 SKILL_CHOICES = ['Python', 'Django', 'JavaScript', 'React', 'Vue.js', 'Angular', 'HTML', 'CSS', 'SQL', 'NoSQL', 'Java', 'C++', 'C#', 'Go', 'Ruby', 'PHP', 'Node.js', 
                  'TypeScript', 'REST APIs', 'GraphQL', 'Docker', 'Kubernetes', 'AWS', 'Azure', 'Google Cloud', 'DevOps', 'Machine Learning', 'Data Science', 
                  'Artificial Intelligence', 'Blockchain', 'Cybersecurity', 'Scrum', 'Kanban', 'UI/UX Design', 'Mobile Development (iOS)', 'Mobile Development (Android)', 
@@ -75,6 +84,42 @@ PROJECT_CHOICES = ['Desarrollo Plataforma Web', 'Aplicación Móvil', 'API Backe
                    'Sistema de Reservas', 'Aplicación de Monitoreo', 'Dashboard Analítico', 'Plataforma de Educación en Línea']
 
 tech_keywords = ['plataforma', 'API', 'backend', 'microservicios', 'DevOps', 'Docker', 'Kubernetes', 'cloud', 'seguridad', 'machine learning']
+
+positive_comment_templates = [
+    "¡Gran trabajo de {freelancer} en {project}! Mostró excelentes habilidades en {skill}.",
+    "{freelancer} fue un placer trabajar con él en {project}. La colaboración fue fluida y los resultados impresionantes.",
+    "{freelancer} superó las expectativas en {project}, especialmente en el área de {skill}.",
+    "Recomendaría a {freelancer} para futuros proyectos. Excelente desempeño en {project}.",
+]
+
+negative_comment_templates = [
+    "El trabajo de {freelancer} en {project} fue decepcionante. Necesita mejorar sus habilidades en {skill}.",
+    "{freelancer} tuvo dificultades para cumplir con los plazos en {project}.",
+    "No quedé satisfecho con el trabajo de {freelancer} en {project}. El {skill} no estuvo a la altura.",
+    "La comunicación con {freelancer} fue un desafío durante {project}. El desempeño en {skill} debe mejorar.",
+]
+
+milestone_templates = [
+    "Finalización del módulo {module} para el proyecto {project}.",
+    "Entrega para el proyecto {project} con la ayuda de {freelancer}.",
+    "Hito {module} completado por {freelancer} en el proyecto {project}.",
+    "{freelancer} completó la revisión del {module} en {project}.",
+]
+
+deliverable_templates = [
+    "Documentación técnica para {milestone}.",
+    "Entrega del código fuente de {milestone}.",
+    "Informe de progreso sobre {milestone}.",
+    "Archivos de diseño finalizados para {milestone}.",
+]
+
+milestone_templates_names = [
+    "Finalizar {module} del proyecto {project}",
+    "Implementación de {module} para {project}",
+    "Revisión y pruebas del {module} en {project}",
+    "Entrega final de {module} para el {project}",
+]
+
 
 profile_images = [
     'https://i.pinimg.com/736x/a3/53/66/a3536654d44f08f16044ae301a8be184.jpg',
@@ -177,7 +222,7 @@ class CompanyFactory(DjangoModelFactory):
     address = factory.Faker('address')
     telephone = factory.LazyAttribute(lambda _: fake.phone_number()[:15])
     email = factory.LazyAttribute(lambda obj: f'info@{obj.name.lower().replace(" ", "")}.com')
-    user = factory.SubFactory(UserFactory, assign_group='Business Manager')
+    user = factory.LazyAttribute(lambda obj: obj.user)
 
 class AreaFactory(DjangoModelFactory):
     class Meta:
@@ -185,7 +230,7 @@ class AreaFactory(DjangoModelFactory):
 
     name = factory.Iterator(AREA_CHOICES, cycle=False) 
     company = factory.SubFactory(CompanyFactory)
-    user = factory.SubFactory(UserFactory, assign_group='Area Admin')
+    user = factory.LazyAttribute(lambda obj: obj.user)
 
 class FreelancerFactory(DjangoModelFactory):
     class Meta:
@@ -239,26 +284,125 @@ class ProjectFactory(DjangoModelFactory):
     name = factory.LazyAttribute(lambda _: choice(PROJECT_CHOICES))
     description = factory.LazyFunction(generate_project_paragraph)  
     start_date = factory.LazyFunction(timezone.now)
-    user = factory.SubFactory(UserFactory, assign_group='Project Manager')
+    user = factory.LazyAttribute(lambda obj: obj.user)
     budget = factory.LazyAttribute(lambda _: fake.random_int(min=10000, max=50000))
 
 class ProjectFreelancerFactory(DjangoModelFactory):
     class Meta:
         model = ProjectFreelancer
 
-    project = factory.SubFactory(ProjectFactory)
-    freelancer = factory.SubFactory(FreelancerFactory)
+    project = factory.LazyAttribute(lambda obj: obj.project)
+    freelancer = factory.LazyAttribute(lambda obj: obj.user)
 
 class ProjectSkillFactory(DjangoModelFactory):
     class Meta:
         model = ProjectSkill
 
-    project = factory.SubFactory(ProjectFactory)
-    skill = factory.SubFactory(SkillFactory)
+    project = factory.LazyAttribute(lambda obj: obj.project)
+    skill = factory.LazyAttribute(lambda obj: obj.skill)  # Relacionar con skill existente
     level = factory.LazyAttribute(lambda _: fake.random_int(min=50, max=100))
+
+class UserCompanyFactory(DjangoModelFactory):
+    class Meta:
+        model = UserCompany
+
+    company = factory.LazyAttribute(lambda obj: obj.company)
+    user = factory.LazyAttribute(lambda obj: obj.admin)
+    area = factory.LazyAttribute(lambda obj: obj.area)
+
+class UserRoleFactory(DjangoModelFactory):
+    class Meta:
+        model = UserRole
+
+    role = factory.LazyAttribute(lambda obj: obj.user)
+    user = factory.LazyAttribute(lambda obj: obj.role)
+
+class ExperienceFactory(DjangoModelFactory):
+    class Meta:
+        model = Experience
+
+    start_date = factory.Faker('date_between', start_date='-5y', end_date='today')
+    final_date = factory.Faker('date_between', start_date='today', end_date='+1y')
+    occupation = factory.Faker('job')
+    description = factory.Faker('sentence')
+    company = factory.Faker('company')
+    freelancer = factory.LazyAttribute(lambda obj: obj.user)
+
+class CommentFactory(DjangoModelFactory):
+    class Meta:
+        model = Comment
+
+    title = factory.Faker('sentence')
+    
+    description = factory.LazyAttribute(lambda obj: random.choice(
+        positive_comment_templates if random.choice([True, False]) else negative_comment_templates
+    ).format(
+        freelancer=obj.freelancer.user.first_name,
+        project=random.choice(projects),
+        skill=random.choice(SKILL_CHOICES)
+    ))
+    
+    stars = factory.LazyAttribute(lambda _: random.choice([i * 0.5 for i in range(11)]))
+    
+    freelancer = factory.LazyAttribute(lambda obj: obj.freelancer)
+    writer = factory.LazyAttribute(lambda obj: obj.writer)
+
+class MilestoneFactory(DjangoModelFactory):
+    class Meta:
+        model = Milestone
+
+    name = factory.LazyAttribute(lambda obj: random.choice(milestone_templates_names).format(
+        module=random.choice(["API", "dashboard", "frontend", "backend"]),
+        project=obj.project.name,
+    ))
+    description = factory.LazyAttribute(lambda obj: random.choice(milestone_templates).format(
+        module=random.choice(["API", "dashboard", "frontend", "backend"]),
+        project=obj.project.name,
+        freelancer=obj.freelancer.user.first_name
+    ))
+    due_date = factory.Faker('date_between', start_date='today', end_date='+1y')
+    freelancer = factory.LazyAttribute(lambda obj: obj.freelancer)
+    project = factory.LazyAttribute(lambda obj: obj.project)
+    status = factory.LazyAttribute(lambda _: random.choice(statuss))
+
+class DeliverableFactory(DjangoModelFactory):
+    class Meta:
+        model = Deliverable
+
+    name = factory.LazyAttribute(lambda obj: (random.choice(deliverable_templates).format(
+        milestone=obj.milestone.name
+    ))[:100])  
+
+    description = factory.LazyAttribute(lambda obj: (random.choice(deliverable_templates).format(
+        milestone=obj.milestone.name
+    ))[:100]) 
+
+    milestone = factory.SubFactory(MilestoneFactory)
+
+class PaymentFactory(DjangoModelFactory):
+    class Meta:
+        model = Payment 
+
+    date = factory.Faker('date_this_year')
+    status = factory.Iterator(['pending', 'completed', 'failed'])
+    amount = factory.LazyAttribute(lambda _: fake.random_number(digits=5, fix_len=False))
+    project = factory.LazyAttribute(lambda obj: obj.project)
+    freelancer = factory.LazyAttribute(lambda obj: obj.freelancer)
+
+class StatusFactory(DjangoModelFactory):
+    class Meta:
+        model = Status
+
+    name = factory.LazyAttribute(lambda obj: obj.name)  
+
+stat1 = StatusFactory.create(name="En progreso")
+stat2 = StatusFactory.create(name="Completado")
+stat3 = StatusFactory.create(name="Pendiente")
+statuss = [stat1, stat2, stat3]
 
 def cargar_datos():
 
+    roles = []
     try:
         freelancer_group = create_group_if_not_exists('Freelancer')
         business_manager_group = create_group_if_not_exists('Business Manager')
@@ -268,73 +412,184 @@ def cargar_datos():
     except Exception as e:
         print(f"Error al crear grupos: {str(e)}")
         return
-    
-    try:
-        companies = CompanyFactory.create_batch(6)
-        for company in companies:
-            print(f'Compañía creada: {company.name}')
-    except Exception as e:
-        print(f"Error al crear compañías: {str(e)}")
-        return
 
     try:
-        for company in companies:
-            AreaFactory.create_batch(2, company=company)
-            print(f'Áreas creadas para la compañía: {company.name}')
-    except Exception as e:
-        print(f"Error al crear áreas: {str(e)}")
-        return
+        freelancers = FreelancerFactory.create_batch(2)
 
-    try:
-        freelancers = FreelancerFactory.create_batch(5)
-        print(f"Freelancers creados.")
-    except Exception as e:
-        print(f"Error al crear freelancers: {str(e)}")
-        return
-
-    try:
-        business_managers = UserFactory.create_batch(5, assign_group='Business Manager')
-        print(f"Business Managers creados.")
-    except Exception as e:
-        print(f"Error al crear Business Managers: {str(e)}")
-        return
-
-    try:
-        area_admins = UserFactory.create_batch(5, assign_group='Area Admin')
-        print(f"Area Admins creados.")
-    except Exception as e:
-        print(f"Error al crear Area Admins: {str(e)}")
-        return
-
-    try:
-        skills = SkillFactory.create_batch(6)
         for freelancer in freelancers:
-            FreelancerSkillFactory.create(freelancer=freelancer, skill=skills[fake.random_int(0, 2)])
+            uR = UserRoleFactory(user=freelancer.user, role=freelancer_group)  # Usa la instancia de Group
+            roles.append(uR)
+        print(f"Freelancers creados y roles asignados.")
+    except Exception as e:
+        print(f"Error al crear freelancers o asignar roles: {str(e)}")
+        return
+
+    try:
+        skills = SkillFactory.create_batch(20)
+        for freelancer in freelancers:
+            FreelancerSkillFactory.create(freelancer=freelancer, skill=skills[fake.random_int(0, len(skills) - 1)])
         print("Habilidades asignadas a freelancers.")
     except Exception as e:
         print(f"Error al asignar habilidades: {str(e)}")
         return
 
     try:
-        projects = ProjectFactory.create_batch(6)
+        business_managers = UserFactory.create_batch(2, assign_group='Business Manager')
+        for manager in business_managers:
+            # Asignar el rol "Business Manager"
+            uR = UserRoleFactory(user=manager, role=business_manager_group)
+            roles.append(uR)
+        print(f"Business Managers creados y roles asignados.")
+    except Exception as e:
+        print(f"Error al crear Business Managers o asignar roles: {str(e)}")
+        return
+
+    try:
+        area_admins = UserFactory.create_batch(4, assign_group='Area Admin')
+        for admin in area_admins:
+            # Asignar el rol "Area Admin"
+            uR = UserRoleFactory(user=admin, role=area_admin_group)
+            roles.append(uR)
+        print(f"Area Admins creados y roles asignados.")
+    except Exception as e:
+        print(f"Error al crear Area Admins o asignar roles: {str(e)}")
+        return
+
+    try:
+        project_managers = UserFactory.create_batch(3, assign_group='Project Manager')
+        for pm in project_managers:
+            # Asignar el rol "Project Manager"
+            uR = UserRoleFactory(user=pm, role=project_manager_group)
+            roles.append(uR)
+        print(f"Project Managers creados y roles asignados.")
+    except Exception as e:
+        print(f"Error al crear Project Managers o asignar roles: {str(e)}")
+        return
+
+    try:
+        companies = []  # Lista para almacenar las compañías creadas
+
+        for bm in business_managers:
+            company = CompanyFactory(user=bm)
+            companies.append(company)  # Agregar la compañía creada a la lista
+            print(f'Compañía creada: {company.name} asignada a {bm.email}')
+
+    except Exception as e:
+        print(f"Error al crear compañías: {str(e)}")
+        return
+
+    try:
+        areas = []
+        admin_index = 0  
+        for company in companies:
+            for _ in range(2):
+                if admin_index >= len(area_admins):
+                    print("Se alcanzó el número máximo de Area Admins disponibles.")
+                    break
+
+                admin = area_admins[admin_index]
+                if not Area.objects.filter(user=admin).exists():
+                    area = AreaFactory(company=company, user=admin)
+                    areas.append(area)
+                    UserCompanyFactory(company=company, user=admin, area=area)
+
+                admin_index += 1
+            print(f'Áreas creadas para la compañía: {company.name}')
+            if admin_index >= len(area_admins):
+                break
+
+    except Exception as e:
+        print(f"Error al crear áreas: {str(e)}")
+        return
+
+    try:
+        projects = [] 
+        for pm in project_managers:
+            project = ProjectFactory.create(user=pm)
+            projects.append(project)
+
         for project in projects:
-            ProjectFreelancerFactory.create(project=project, freelancer=freelancers[fake.random_int(0, 2)])
-            ProjectSkillFactory.create_batch(2, project=project)
-        print("Proyectos creados y freelancers asignados.")
+            for freelancer in freelancers:
+                ProjectFreelancerFactory.create(project=project, freelancer=freelancer)
+
+            project_skills = random.sample(skills, 2)  
+            for skill in project_skills:
+                ProjectSkillFactory.create(project=project, skill=skill)
+
+        print("Proyectos creados, freelancers y skills asignados.")
+
     except Exception as e:
         print(f"Error al crear proyectos o asignar freelancers: {str(e)}")
         return
 
     try:
-        notifications = NotificationFactory.create_batch(12)
-        for notification in notifications:
-            for freelancer in freelancers:
-                UserNotificationFactory.create(notification=notification, user=freelancer.user)
-            for user in business_managers + area_admins:
-                UserNotificationFactory.create(notification=notification, user=user)
-        print("Notificaciones creadas.")
+        for project in projects:
+            # Generar dos notificaciones para el proyecto actual
+            notification_1 = NotificationFactory.create(message=f"Actualización importante del proyecto {project.name}")
+            notification_2 = NotificationFactory.create(message=f"Nueva versión disponible para {project.name}")
+
+            # Asignar ambas notificaciones al Project Manager relacionado con el proyecto
+            UserNotificationFactory.create(notification=notification_1, user=project.user)  # Project Manager es el 'user' del proyecto
+            UserNotificationFactory.create(notification=notification_2, user=project.user)
+
+            # Obtener todos los freelancers relacionados con este proyecto
+            freelancers_in_project = ProjectFreelancer.objects.filter(project=project).select_related('freelancer')
+            
+            # Asignar ambas notificaciones a todos los freelancers relacionados con el proyecto
+            for project_freelancer in freelancers_in_project:
+                freelancer_user = project_freelancer.freelancer.user  # Obtener el usuario del freelancer asignado a este proyecto
+                UserNotificationFactory.create(notification=notification_1, user=freelancer_user)
+                UserNotificationFactory.create(notification=notification_2, user=freelancer_user)
+                    
+        print("Notificaciones creadas y asignadas correctamente por proyecto.")
+        
     except Exception as e:
         print(f"Error al crear notificaciones: {str(e)}")
         return
+
+    try:
+        for freelancer in freelancers:
+            ExperienceFactory.create_batch(2, freelancer=freelancer)
+        print("Experiencia asignada a los freelancers.")
+    except Exception as e:
+        print(f"Error al asignar experiencia: {str(e)}")
+        return
+
+    try:
+        for freelancer in freelancers:
+            for manager in business_managers:
+                CommentFactory.create(freelancer=freelancer, writer=manager)
+        print("Comentarios creados para los freelancers.")
+    except Exception as e:
+        print(f"Error al crear comentarios: {str(e)}")
+        return
+    
+    try:
+        for project in projects:
+            for freelancer in freelancers:
+                try:
+                    milestones = MilestoneFactory.create_batch(3, project=project, freelancer=freelancer, status=random.choice(statuss))
+                except Exception as e:
+                    print(f"Error al crear milestones para {project.name} y {freelancer.user.first_name}: {str(e)}")
+                    continue
+
+                for milestone in milestones:
+                    try:
+                        DeliverableFactory.create_batch(2, milestone=milestone)
+                    except Exception as e:
+                        print(f"Error al crear deliverables para el milestone {milestone.name}: {str(e)}")
+                        continue
+    except Exception as e:
+        print(f"Error general: {str(e)}")
+
+    try:
+        for project in projects:
+            for freelancer in freelancers:
+                PaymentFactory.create(project=project, freelancer=freelancer, status='pending')
+        print("Pagos creados.")
+    except Exception as e:
+        print(f"Error al crear pagos: {str(e)}")
+        return
+
 
     print("Datos cargados exitosamente.")
