@@ -114,13 +114,15 @@ export function DashboardBusinessManager() {
 
   /*-----------------------------------------------*/
 
+  //Handlers for navigation when a row is selected
+
   const handleSelecedArea = (item) => {
     setParams({ area: item });
   };
 
   const handleSelectedProject = (item) => {
 
-      navigateTo(`/project/detail/${item}`, { replace: true });
+      navigateTo(`/project/detail/${item}`);
 
 
   }

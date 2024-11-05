@@ -4,7 +4,7 @@ import Chart from "@/widgets/statistics/chart";
 import { Button, Card } from "@material-tailwind/react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUser, useQueryParams, useProjects} from "@/hooks";
-import {  useState } from "react";
+import {  useEffect, useState } from "react";
 import { SpinnerCustom } from "@/widgets/layout";
 import { useNavigateWithQuery } from "@/hooks/utils";
 import { useWorkers } from "@/hooks/workers";
@@ -29,11 +29,15 @@ export function DashboardAreaAdmin() {
 
   const { data: user, isLoading: userLoading } = useUser();
 
+  console.log("user id and company", { worker: user.id, company: user.company });
+
   const { data: workers, isLoading: isLoadingWorkers, isError:isWorkersError } = useWorkers({
-    company: user.company, area: user.area
+    company: user.company, area: user.area.id
   }); // Fetch workers
 
   /*--------------------------------------------*/
+
+
 
   //Navigation and url staff
 
@@ -42,6 +46,14 @@ export function DashboardAreaAdmin() {
   const navigateWithQuery = useNavigateWithQuery();
 
   const { getParams, setParams } = useQueryParams();
+
+  useEffect(()=>{
+
+    setParams({ area: user.area.id });
+
+
+  },[user?.area?.id])
+
 
   /*-----------------------------------------------*/
 
@@ -56,6 +68,14 @@ export function DashboardAreaAdmin() {
   }
 
   /*-----------------------------------------------*/
+
+  //Handlers for navigation when a row is selected
+
+  const handleSelectedProject = (item) => {
+
+    navigateTo(`/project/detail/${item}`); 
+
+}
 
  
   /*-----------------------------------------------*/
@@ -82,7 +102,7 @@ export function DashboardAreaAdmin() {
                       id={item.id}
                       rowName={item.name}
                       chipValue={item.status_name}
-                      setSelected={() => {}}
+                      setSelected={handleSelectedProject}
                     />
                   );
                 })

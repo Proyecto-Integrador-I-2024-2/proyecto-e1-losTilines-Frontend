@@ -1,56 +1,212 @@
+import React, { useState } from "react";
 import {
   List,
   ListItem,
   ListItemSuffix,
   Card,
-  IconButton,
   Typography,
+  Input,
 } from "@material-tailwind/react";
-
-function TrashIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      className="h-5 w-5"
-    >
-      <path
-        fillRule="evenodd"
-        d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
-}
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { PopUp } from "../popUp";
+import apiClient from "@/services/apiClient";
 
 export function DeliverableCard({ deliverable }) {
+  const [open, setOpen] = useState(false); // For edit pop-up
+  const [openConfirmDelete, setOpenConfirmDelete] = useState(false); // For delete confirmation pop-up
+
+  // State variables for editing deliverable
+  const [nameEdit, setNameEdit] = useState(deliverable.name);
+  const [descriptionEdit, setDescriptionEdit] = useState(deliverable.description);
+  const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleOpen = () => setOpen(!open);
+
+  const handleEdit = async () => {
+    // Clear previous messages
+    setErrors({});
+    setSuccessMessage("");
+    setErrorMessage("");
+
+    // Validate inputs
+    const newErrors = {};
+    if (!nameEdit || nameEdit.trim() === "") {
+      newErrors.name = "Name is required";
+    }
+    if (!descriptionEdit || descriptionEdit.trim() === "") {
+      newErrors.description = "Description is required";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    // Submit the edit via axios (URL can be adjusted later)
+    try {
+      const response = await apiClient.put(`/deliverables/${deliverable.id}/`, {
+        name: nameEdit,
+        description: descriptionEdit,
+      });
+
+      setSuccessMessage("Deliverable updated successfully");
+      // Optionally update the deliverable data in parent component if needed
+      // Close the pop-up after some time or immediately
+      setOpen(false);
+    } catch (error) {
+      setErrorMessage("Failed to update deliverable");
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    // Clear previous messages
+    setErrorMessage("");
+    setSuccessMessage("");
+
+    // Submit the delete request via axios (URL can be adjusted later)
+    try {
+      await apiClient.delete(`/deliverables/${deliverable.id}/`);
+      setSuccessMessage("Deliverable deleted successfully");
+      // Optionally remove the deliverable from the list in parent component
+      setOpenConfirmDelete(false);
+    } catch (error) {
+      setErrorMessage("Failed to delete deliverable");
+    }
+  };
+
   return (
-    <Card className="w-auto h-auto">
-      <div className="flex justify-between p-2">
-        <div>
-          <List>
-            <ListItem ripple={false} className="py-1 pr-1 pl-4">
-              {deliverable.name}
-              <ListItemSuffix>
-                {deliverable.description}
-                {/* <IconButton variant="text" color="blue-gray">
-                  <TrashIcon />
-                </IconButton> */}
-              </ListItemSuffix>
-            </ListItem>
-          </List>
+    <>
+      <Card className="w-auto h-auto">
+        <div className="flex justify-between p-2">
+          <div>
+            <List>
+              <ListItem
+                ripple={false}
+                className="py-1 pr-1 pl-4 group w-full space-x-8"
+              >
+                {deliverable.name}
+                <ListItemSuffix className="flex flex-row justify-between items-center">
+                  {deliverable.description}
+                </ListItemSuffix>
 
+                <button
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    // Open the edit pop-up
+                    setOpen(true);
+                  }}
+                  className="p-0 m-0 focus:outline-none"
+                  aria-label="Edit Deliverable"
+                >
+                  <PencilIcon
+                    className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+                    color="gray"
+                  />
+                </button>
+              </ListItem>
+            </List>
+          </div>
         </div>
-        {/* <div className="flex items-center gap-2 mt-1">
-                <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-500 p-2"></span>
-                <Typography className="text-gray-500 text-sm">Done</Typography>
-                <Typography className="text-gray-900 font-medium">$150.000</Typography>
-            </div> */}
+      </Card>
 
-      </div>
+      {/* Pop-up for deliverable edit */}
+      <PopUp
+        title={"Edit Deliverable Info"}
+        submitFunc={handleEdit}
+        open={open}
+        setOpen={setOpen}
+        handleOpen={handleOpen}
+        isFit={true}
+      >
+        <main className="flex flex-col w-full px-6 justify-start items-center md:px-32">
+          <section className="flex flex-col w-full items-center justify-start my-4 space-y-4">
+            {/* Change name */}
+            <Typography color="gray">Change the deliverable's name:</Typography>
+            <Input
+              value={nameEdit}
+              onChange={(event) => setNameEdit(event.target.value)}
+              placeholder="Enter new name"
+              error={!!errors.name}
+              helperText={errors.name}
+              label="Name"
+            />
 
-    </Card>
+            {/* Change description */}
+            <Typography color="gray">
+              Change the deliverable's description:
+            </Typography>
+            <Input
+              value={descriptionEdit}
+              onChange={(event) => setDescriptionEdit(event.target.value)}
+              placeholder="Enter new description"
+              error={!!errors.description}
+              helperText={errors.description}
+              label="Description"
+            />
+
+            {/* Divider */}
+            <div className="w-2/3 h-0.5 bg-blue-gray-200"></div>
+
+            {/* Icon to delete */}
+            <button
+              onClick={(event) => {
+                event.stopPropagation();
+                // Open the delete confirmation pop-up
+                setOpenConfirmDelete(true);
+              }}
+              className="p-0 m-0 focus:outline-none"
+              aria-label="Delete Deliverable"
+            >
+              <TrashIcon className="h-6 w-6 text-black hover:text-red-500 cursor-pointer transition-colors duration-200" />
+            </button>
+
+            {/* Feedback messages */}
+            {successMessage && (
+              <Typography color="green" className="mt-2">
+                {successMessage}
+              </Typography>
+            )}
+            {errorMessage && (
+              <Typography color="red" className="mt-2">
+                {errorMessage}
+              </Typography>
+            )}
+          </section>
+        </main>
+
+
+      </PopUp>
+
+      {/* Pop-up for deliverable deletion */}
+
+      <PopUp
+        title={"Confirm Deletion"}
+        submitFunc={handleConfirmDelete}
+        open={openConfirmDelete}
+        setOpen={setOpenConfirmDelete}
+        handleOpen={() => {}}
+        isFit={true}
+      >
+        <div className="flex flex-col items-center justify-center">
+          <Typography color="gray">
+            Are you sure you want to delete this deliverable?
+          </Typography>
+
+          <Typography color="red">
+            {errorMessage ? errorMessage : ""}
+          </Typography>
+
+          <Typography color="green">
+            {successMessage ? successMessage : ""}
+          </Typography>
+        </div>
+      </PopUp>
+
+   
+
+    </>
   );
 }
 
