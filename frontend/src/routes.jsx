@@ -56,7 +56,7 @@ export const routes = [
         name: "detail",
         path: "/",
         element: <Profile />,
-      },
+      },  
     ],
   },
 

@@ -12,4 +12,4 @@ export const getMilestoneDeliverables = async ({ id }) => {
     const url = `${userType}?milestone=${id}`;
     const { data } = await apiClient.get(url);
     return data;
-}
+}   

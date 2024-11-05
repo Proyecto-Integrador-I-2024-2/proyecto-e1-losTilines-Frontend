@@ -5,15 +5,15 @@ import { Identifiers } from "../tanstackIdentifiers";
 
 export const useWorkers = (params = {}, options = {}) => {
   // Filtrar parámetros para eliminar valores nulos o indefinidos
-  const filteredParams = Object.fromEntries(
-    Object.entries(params).filter(([_, value]) => value != null)
-  );
+
+
+  console.log("params from workers", params);
 
   return useQuery(
     [Identifiers.workers, params], // Incluir parámetros en la clave de consulta
     async () => {
       const { data } = await apiClient.get("workers/", {
-        params: filteredParams, // Pasar los parámetros filtrados
+        params: params, // Pasar los parámetros filtrados
       });
       return data;  
     },

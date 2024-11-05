@@ -36,10 +36,7 @@ export function ProjectTopBar({ projectId }) {
                 <ChatBubbleLeftEllipsisIcon className="-mt-0.5 mr-2 inline-block h-5 w-5" />
                 Milestones
               </Tab>
-              <Tab value="board">
-                <Cog6ToothIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
-                Board
-              </Tab>
+       
             </TabsHeader>
           </Tabs>
         </CardBody>
