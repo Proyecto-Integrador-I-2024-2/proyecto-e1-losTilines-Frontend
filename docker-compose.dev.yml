@@ -3,12 +3,12 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.dev
-    command: sh -c "
+    command: >
+      sh -c "
       echo 'Waiting DB...' &&
-      while ! nc -z db 5432; do
-      sleep 1;
-      done &&
-      echo 'Date base available!' &&
+      while ! nc -z db 5432; do sleep 1; done &&
+      while ! nc -z redis 6379; do sleep 1; done &&
+      echo 'Database available!' &&
       python manage.py makemigrations &&
       python manage.py migrate &&
       echo 'Testing process' &&
@@ -18,9 +18,11 @@ services:
       echo 'Django admin created' &&
       echo 'Turn on server process:' &&
       python manage.py init_data &&
-      python manage.py runserver 0.0.0.0:8000"
+      daphne -p 8000 -b 0.0.0.0 freelancenowbackend.asgi:application
+      "
     depends_on:
       - db
+      - redis
     volumes:
       - ./backend/freelancenowbackend:/app
     environment:
@@ -28,10 +30,9 @@ services:
       - DJANGO_SUPERUSER_PASSWORD=admin123
       - DJANGO_SUPERUSER_FIRST_NAME=Admin
       - DJANGO_SUPERUSER_LAST_NAME=User
-    
+      - DJANGO_SETTINGS_MODULE=freelancenowbackend.settings
     ports:
       - 29000:8000
-      - 29001:8000
 
   frontend:
     build:
@@ -79,5 +80,11 @@ services:
       - ./servers.json:/pgadmin4/servers.json
     depends_on:
       - db
+
+  redis:
+    image: "redis:alpine"
+    container_name: redis_dev
+    ports:
+      - "6379:6379"
 volumes:
   postgres_data:

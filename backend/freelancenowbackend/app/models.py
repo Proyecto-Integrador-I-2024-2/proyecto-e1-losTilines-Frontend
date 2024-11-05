@@ -230,24 +230,13 @@ class Project(models.Model):
         project_manager = self.user
 
         recipients = [
-            {"email": project_manager.email, "name": project_manager.first_name, "message": "Your project creation request has been created successfully."}
+            {"user": project_manager, "message": "Your project creation request has been created successfully."},
+            {"user": business_manager, "message": f"{project_manager.first_name} has submitted a request to create the project {self.name} in the {area.name} area of your company."},
+            {"user": admin_area, "message": f"{project_manager.first_name} has submitted a request to create the project {self.name} in your area."}
         ]
 
-        if admin_area:
-            recipients.append({
-                "email": admin_area.email,
-                "name": admin_area.first_name,
-                "message": f"{project_manager.first_name} has submitted a request to create the project {self.name} in your area."
-            })
-            
-        if business_manager:
-            recipients.append({
-                "email": business_manager.email,
-                "name": business_manager.first_name,
-                "message": f"{project_manager.first_name} has submitted a request to create the project {self.name} in the {area.name} area of your company."
-            })
-
         return recipients
+
     
 class ProjectFreelancer(models.Model):
     STATUS_CHOICES = [
