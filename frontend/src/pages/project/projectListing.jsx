@@ -94,9 +94,7 @@ export function ProjectListing() {
         </SpeedDial>
       </div>
       {userType !== "Freelancer" && (
-        <AddProject open={dialogOpen} setOpen={setDialogOpen} color="purple" size="lg" ripple={true} className="rounded-full shadow-lg">
-          + Añadir Proyecto
-        </AddProject>
+        <AddProject open={dialogOpen} setOpen={setDialogOpen} color="purple" size="lg" ripple={true} className="rounded-full shadow-lg" />
       )}
 
     </div>

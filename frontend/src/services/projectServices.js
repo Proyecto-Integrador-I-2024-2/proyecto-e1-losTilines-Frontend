@@ -13,3 +13,12 @@ export const getMilestoneDeliverables = async ({ id }) => {
     const { data } = await apiClient.get(url);
     return data;
 }
+
+// ----------------------------------------------------------------------
+
+export const addSkill = async ({ id, body }) => {
+    var userType = "skills";
+    const url = `${userType}/`;
+    const { data } = await apiClient.post(url, body);
+    return data;
+}
