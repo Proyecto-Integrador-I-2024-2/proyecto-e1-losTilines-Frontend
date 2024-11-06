@@ -24,7 +24,7 @@ import { useQueryParams } from "@/hooks";
 import { useProject } from "@/hooks";
 import { profile_pic } from "@/data/placeholder";
 import { EditProjectPopUp, EditSkillsPopup, FreelancerInterestPopUp } from "@/widgets/popUp";
-import { addSkillToProject, editProject, postFreelancerInterest } from "@/services";
+import { addSkillToProject, deleteProjectSkill, editProject, editProjectSkill, postFreelancerInterest } from "@/services";
 import { useQueryClient } from "@tanstack/react-query";
 
 
@@ -81,17 +81,21 @@ export function ProjectDetail() {
   }
 
   function handleEditSkill(id, body) {
-    console.log("ID", id);
-    // editFreelancerSkill({ id, body })
-    // queryClient.invalidateQueries(['project', id]);
-    // userRefetch()
+    const skillToEditData = {
+      project: body.project,
+      level: body.level,
+      skill: body.skill.id
+    }
+    editProjectSkill({ id, body: skillToEditData })
+    queryClient.invalidateQueries(['project', id]);
+    projectRefetch()
   }
 
   function handleDeleteSkill(id) {
     console.log("ID", id);
-    // deleteFreelancerSkill({ id })
-    // queryClient.invalidateQueries(['project', id]);
-    // userRefetch()
+    deleteProjectSkill({ id })
+    queryClient.invalidateQueries(['project', id]);
+    projectRefetch()
   }
 
   // Project basic Data
