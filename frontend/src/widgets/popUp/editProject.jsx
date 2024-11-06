@@ -28,13 +28,7 @@ export function EditProjectPopUp({ open, setOpen, project, handleProjectSave }) 
     }
 
     handleProjectSave(projectData);
-
-    setProjectName("")
-    setBudget("")
-    setDescription("")
-    setDate("")
     setOpen(prev => !prev)
-
   }
 
 
@@ -47,7 +41,7 @@ export function EditProjectPopUp({ open, setOpen, project, handleProjectSave }) 
           <Input
             label="Name project"
             name="nameproject"
-            value={project.name}
+            value={projectName}
             onChange={(e) => setProjectName(e.target.value)}
             size="lg"
             required
@@ -55,7 +49,7 @@ export function EditProjectPopUp({ open, setOpen, project, handleProjectSave }) 
           <Input
             label="Budget"
             name="budget"
-            value={project.budget}
+            value={budget}
             onChange={(e) => setBudget(e.target.value)}
             size="lg"
             required
@@ -63,7 +57,7 @@ export function EditProjectPopUp({ open, setOpen, project, handleProjectSave }) 
           <Textarea
             label="Description"
             name="description"
-            value={project.description}
+            value={description}
             onChange={(e) => setDescription(e.target.value)}
             size="lg"
             required
@@ -72,7 +66,7 @@ export function EditProjectPopUp({ open, setOpen, project, handleProjectSave }) 
             label="Start date"
             name="start_date"
             type="date"
-            value={project.start_date}
+            value={start_date}
             onChange={(e) => setDate(e.target.value)}
             size="lg"
           />
