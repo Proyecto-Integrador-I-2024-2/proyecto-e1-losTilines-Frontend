@@ -201,10 +201,42 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
+    
     def save(self, *args, **kwargs):
         if self.user.groups.filter(name="freelancer").exists():
             raise ValueError("This user type cannot contain a project")
         super().save(*args, **kwargs)
+
+    def get_notification_recipient(self):
+        user_company = UserCompany.objects.filter(user=self.user).first()
+        if not user_company:
+            return []
+        
+        company = user_company.company
+        area = user_company.area
+
+        # Business Manager
+        business_manager = User.objects.filter(
+            usercompany__company=company,
+            groups__name='Business Manager'
+        ).first()
+
+        # Area Admin
+        admin_area = User.objects.filter(
+            usercompany__area=area,
+            groups__name='Area Admin'
+        ).exclude(pk=business_manager.pk if business_manager else None).first()
+
+        project_manager = self.user
+
+        recipients = [
+            {"user": project_manager, "message": "Your project creation request has been created successfully."},
+            {"user": business_manager, "message": f"{project_manager.first_name} has submitted a request to create the project {self.name} in the {area.name} area of your company."},
+            {"user": admin_area, "message": f"{project_manager.first_name} has submitted a request to create the project {self.name} in your area."}
+        ]
+
+        return recipients
+
     
 class ProjectFreelancer(models.Model):
     STATUS_CHOICES = [
