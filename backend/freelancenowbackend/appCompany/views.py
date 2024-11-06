@@ -29,9 +29,11 @@ class WorkerViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         worker = self.get_object()
-        
+
+        # Obtener datos de la solicitud
         new_role = request.data.get('role', None)
         is_active = request.data.get('is_active', None)
+        new_area_id = request.data.get('area', None)
 
         # Obtener el rol actual del usuario
         current_role = worker.userrole_set.first()
@@ -43,28 +45,53 @@ class WorkerViewSet(viewsets.ModelViewSet):
             
             elif current_role and current_role.role.name == 'Project Manager' and new_role == 'Area Admin':
                 self.handle_project_manager_to_area_admin(worker, new_role)
-        
+
         # Manejo de Desactivación de Usuario
         if is_active is not None and not is_active:
             self.handle_deactivation(worker, request)
 
-        # Actualizar información general del usuario
+        # Si se recibe un área, actualizamos el área del trabajador
+        if new_area_id:
+            self.update_user_area(worker, new_area_id)
+
+        # Actualizar la información del trabajador usando el serializer
         serializer = self.get_serializer(worker, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
+    def partial_update(self, request, *args, **kwargs):
+        print("Entering partial_update method")  # Confirmación de entrada
+        kwargs['partial'] = True  # Aseguramos que la actualización sea parcial
+        return self.update(request, *args, **kwargs)
+
+    def update_user_area(self, worker, new_area_id):
+        try:
+            # Verificar que el área existe
+            new_area = Area.objects.get(pk=new_area_id)
+            print(f"Área encontrada: {new_area}")
+        except Area.DoesNotExist:
+            raise ValidationError("The specified area does not exist.")
+
+        # Validar que el usuario sea miembro de la misma empresa que el área
+        user_company = UserCompany.objects.filter(user=worker, company=new_area.company).first()
+        if not user_company:
+            raise ValidationError("The user must belong to the same company as the selected area.")
+
+        # Actualizar el área en UserCompany
+        user_company.area = new_area
+        user_company.save()
+
     def handle_area_admin_to_project_manager(self, worker, request, new_role):
         worker_company = worker.usercompany_set.first()
 
-        # Si tiene un área asignada, necesitamos reasignar el área
+        # Si tiene un área asignada, reasignar el área
         if worker_company and worker_company.area:
             new_admin_id = request.data.get('new_admin_id')
             if not new_admin_id:
                 raise ValidationError("You must assign another Area Admin before changing to Project Manager.")
 
-            # Reasignar el área a otro "Area Admin"
             try:
                 new_admin = User.objects.get(pk=new_admin_id)
                 new_admin_role = UserRole.objects.filter(user=new_admin).first()
@@ -81,14 +108,11 @@ class WorkerViewSet(viewsets.ModelViewSet):
             except User.DoesNotExist:
                 raise ValidationError("The new Admin Area is invalid.")
 
-        # Actualizar el grupo del usuario
-        try:
-            project_manager_group = Group.objects.get(name=new_role)
-            worker.groups.clear()  # Limpiar grupos anteriores
-            worker.groups.add(project_manager_group)  # Añadir el nuevo grupo
-            worker.save()
-        except Group.DoesNotExist:
-            raise ValidationError(f"The role {new_role} does not exist.")
+        # Cambiar el rol del usuario a "Project Manager"
+        project_manager_group = Group.objects.get(name=new_role)
+        worker.groups.clear()
+        worker.groups.add(project_manager_group)
+        worker.save()
 
         # Cambiar el rol a "Project Manager" en UserRole
         current_role = worker.userrole_set.first()
