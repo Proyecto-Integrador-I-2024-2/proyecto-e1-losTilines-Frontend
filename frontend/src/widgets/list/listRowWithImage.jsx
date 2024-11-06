@@ -9,9 +9,9 @@ import {
   Avatar,
 } from "@material-tailwind/react";
 
-export function ListRowWithImage({ avatar, rowName, description, chipValue }) {
+export function ListRowWithImage({ avatar, rowName, description, chipValue, setSelected, id }) {
   return (
-    <ListItem className="flex-row w-full justify-start">
+    <ListItem className="flex-row w-full justify-start" onClick={() => setSelected(id)}>
       <section>
         <Avatar
           variant="circular"

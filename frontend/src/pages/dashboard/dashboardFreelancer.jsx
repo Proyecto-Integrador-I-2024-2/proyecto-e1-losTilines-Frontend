@@ -47,6 +47,13 @@ export function DashboardFreelancer() {
   let workersFilteredBusinessManager = [];
 
 
+  const handleSelectedProject = (item) => {
+
+    navigateTo(`/project/detail/${item}`); 
+
+}
+
+
   /*-----------------------------------------------*/
 
   return (
@@ -71,7 +78,7 @@ export function DashboardFreelancer() {
                       id={item.id}
                       rowName={item.name}
                       chipValue={item.status_name}
-                      setSelected={() => {}}
+                      setSelected={handleSelectedProject}
                     />
                   );
                 })

@@ -51,7 +51,7 @@ export function DashboardBusinessManager() {
   
   const { data: user, isLoading: userLoading } = useUser();
 
-
+  if (userLoading) return <SpinnerCustom />;
 
 
   console.log("User company id:", user.company);
@@ -126,6 +126,19 @@ export function DashboardBusinessManager() {
 
 
   }
+
+  /*-----------------------------------------------*/
+
+    //Set the company id in the query params when the user is loaded
+   useEffect(()=> {
+
+      if(user){
+        setParams({ company: user.company });
+      }
+
+
+   },[user])
+
 
   /*-----------------------------------------------*/
 
