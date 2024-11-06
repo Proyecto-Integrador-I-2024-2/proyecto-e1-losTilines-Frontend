@@ -1,6 +1,7 @@
 from django.apps import AppConfig
 
-
-class AppcomunicationConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
+class AppComunicationConfig(AppConfig):
     name = 'appComunication'
+
+    def ready(self):
+        import appComunication.signals

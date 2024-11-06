@@ -25,8 +25,7 @@ SECRET_KEY = 'django-insecure-9d7rb3gbup5)vm^1h9-ys05hjj)#0^3lg)u8&)y(3(68x%bm($
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0']
 
 # Application definition
 
@@ -44,9 +43,10 @@ INSTALLED_APPS = [
     'appProfile',
     'appCompany',
     'appProject',
-    'appComunication',
+    'appComunication.apps.AppComunicationConfig',
     'corsheaders',
     'django_filters',
+    'channels'
 ]
 
 MIDDLEWARE = [
@@ -65,8 +65,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:29003",  # Development
     "http://localhost:29002",  # Development
     "https://tu-dominio.com",  # Deployed
+    "ws://localhost:29000",     # WebSocket (ajusta si usas un puerto diferente)
 ]
-
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -100,7 +100,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'freelancenowbackend.wsgi.application'
-
+ASGI_APPLICATION = 'freelancenowbackend.asgi.application'
 
 # Carpeta donde se almacenarán los archivos de medios
 MEDIA_URL = '/media/'
@@ -166,6 +166,10 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
         },
+        'django.mail': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
     },
 }
 
@@ -190,3 +194,22 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Configuración de envío de correos electrónicos
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'saludipu71@gmail.com'
+EMAIL_HOST_PASSWORD = 'fnhaaoagbvhbxwrg'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# Configuración de canales
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('redis', 6379)],
+        },
+    },
+}
