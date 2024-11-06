@@ -1,6 +1,6 @@
 import apiClient from "@/services/apiClient";
 
-// ----------------------- Freelancer Skills CRUD -----------------------}
+// ----------------------- Freelancer Skills CRUD -----------------------
 
 export const getFreelancer = async ({ id }) => {
     var route = "freelancer";

@@ -8,6 +8,7 @@ import {
     TabsHeader,
     Tab,
     Spinner,
+    Button,
 } from "@material-tailwind/react";
 
 import {
@@ -21,10 +22,10 @@ import { useState, useEffect } from "react";
 import { ProfileInfoCard, MessageCard } from "@/widgets/cards";
 import { CustomList, CustomListItem } from "@/widgets/horList";
 import { SkillsSection, GitButton, ExperienceSection } from "@/widgets/custom";
-import { EditExperiencePopup, EditProfilePopUp, EditSkillsPopup } from "@/widgets/popUp";
+import { CompanyInterestPopUp, EditExperiencePopup, EditProfilePopUp, EditSkillsPopup } from "@/widgets/popUp";
 import { useCompany, useQueryParams, useUser } from "@/hooks";
 import { userExample, freelancerExample, profile_pic } from "@/data/placeholder";
-import { addFreelancerSkill, deleteFreelancerExperience, deleteFreelancerSkill, editFreelancerExperience, editFreelancerSkill, editWorkerProfile, getCompany, getFreelancer } from "@/services";
+import { addFreelancerSkill, deleteFreelancerExperience, deleteFreelancerSkill, editFreelancerExperience, editFreelancerSkill, editWorkerProfile, getCompany, getFreelancer, postCompanyInterest } from "@/services";
 import { useQueryClient } from "@tanstack/react-query";
 import ReviewSection from "@/widgets/custom/reviews";
 import { reviews } from "@/data/reviews-data";
@@ -39,6 +40,7 @@ export function Profile() {
     const [showProfilePopUp, setShowProfilePopUp] = useState(false);
     const [showExperiencePopUp, setShowExperiencePopUp] = useState(false);
     const [showSkillsPopUp, setShowSkillsPopUp] = useState(false);
+    const [companyInterestPopUp, setCompanyInterestPopUp] = useState(false);
 
     const role = sessionStorage.getItem("role");
 
@@ -53,35 +55,35 @@ export function Profile() {
     const [isLoadingExternalFreelancer, setIsLoadingExternalFreelancer] = useState(true);
     const [isLoadingExternalCompany, setIsLoadingExternalCompany] = useState(true);
 
+    async function fetchExternalFreelancer() {
+        if (externalFreelancerId) {
+            setIsLoadingExternalFreelancer(true);
+            try {
+                const data = await getFreelancer({ id: externalFreelancerId });
+                setExternalFreelancerData(data);
+            } catch (error) {
+                console.error("Error fetching freelancer data:", error);
+            } finally {
+                setIsLoadingExternalFreelancer(false);
+            }
+        }
+    }
+
+    async function fetchExternalCompany() {
+        if (externalCompanyId) {
+            setIsLoadingExternalCompany(true);
+            try {
+                const data = await getCompany({ id: externalCompanyId });
+                setExternalCompanyData(data);
+            } catch (error) {
+                console.error("Error fetching company data:", error);
+            } finally {
+                setIsLoadingExternalCompany(false);
+            }
+        }
+    }
+
     useEffect(() => {
-        async function fetchExternalFreelancer() {
-            if (externalFreelancerId) {
-                setIsLoadingExternalFreelancer(true);
-                try {
-                    const data = await getFreelancer({ id: externalFreelancerId });
-                    setExternalFreelancerData(data);
-                } catch (error) {
-                    console.error("Error fetching freelancer data:", error);
-                } finally {
-                    setIsLoadingExternalFreelancer(false);
-                }
-            }
-        }
-
-        async function fetchExternalCompany() {
-            if (externalCompanyId) {
-                setIsLoadingExternalCompany(true);
-                try {
-                    const data = await getCompany({ id: externalCompanyId });
-                    setExternalCompanyData(data);
-                } catch (error) {
-                    console.error("Error fetching company data:", error);
-                } finally {
-                    setIsLoadingExternalCompany(false);
-                }
-            }
-        }
-
         // Llamadas a las APIs
         fetchExternalFreelancer();
         fetchExternalCompany();
@@ -186,6 +188,18 @@ export function Profile() {
         userRefetch()
     }
 
+    // ----------------------- Company interest -----------------------
+
+    function handleInterest(projectId) {
+        const body = {
+            project: projectId,
+            freelancer: externalFreelancerId,
+            status: "company_interested"
+        }
+        postCompanyInterest(body);
+        fetchExternalFreelancer();
+    }
+
     // ----------------------- PopUp Handlers -----------------------
 
     function handleProfilePopup() {
@@ -196,6 +210,9 @@ export function Profile() {
     }
     function handleSkillsPopUp() {
         setShowSkillsPopUp(pop => !pop);
+    }
+    function handleCompanyInterestPopUp() {
+        setCompanyInterestPopUp(pop => !pop);
     }
 
 
@@ -209,9 +226,10 @@ export function Profile() {
                             <div className="mb-10 flex items-center justify-between flex-wrap gap-6 h-auto">
                                 <div className="flex items-center gap-6">
                                     <Avatar
-                                        src={((isFreelancer && !isUserLoading) || externalFreelancerData) ? (profile_picture || profile_pic) : (profile_picture || profile_pic)}
+                                        src={((isFreelancer && !isUserLoading) || externalFreelancerData) ? (profile_picture?.replace(/\s+/g, '') || profile_pic) : (profile_picture || profile_pic)}
                                         alt="bruce-mars"
                                         size="xl"
+                                        onError={(e) => { e.target.onerror = null; e.target.src = profile_pic }}
                                         variant="circular"
                                         className="rounded-lg shadow-lg shadow-blue-gray-500/40"
                                     />
@@ -223,11 +241,22 @@ export function Profile() {
                                             variant="small"
                                             className="font-normal text-blue-gray-600"
                                         >
-                                            {!isUserLoading && role}
+                                            {!isUserLoading && !externalCompanyData && !externalFreelancerData && role}
                                         </Typography>
                                         <Rating value={0} />
+                                        {
+                                            isFreelancer && externalFreelancerData && (
+                                                <div className="w-full flex flex-row items-end justify-end">
+                                                    <Button onClick={handleCompanyInterestPopUp}>
+                                                        Invite
+                                                    </Button>
+                                                </div>
+                                            )
+                                        }
                                     </div>
+
                                 </div>
+
                                 {/* Quien soy yo */}
                             </div > :
                             <div className="mb-10 flex items-center justify-between flex-wrap gap-6 h-auto">
@@ -414,6 +443,7 @@ export function Profile() {
                         </>
                     }
                     <ReviewSection reviews={reviews} />
+                    {userData?.company && <CompanyInterestPopUp open={companyInterestPopUp} onOpen={setCompanyInterestPopUp} companyId={userData.company} handleInterest={handleInterest} />}
                 </>
             }
         </div >
