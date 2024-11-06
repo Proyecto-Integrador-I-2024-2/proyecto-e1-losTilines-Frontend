@@ -7,7 +7,9 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-backend/freelancenowbackend/app/migrations
+
+backend/freelancenowbackend/app/migrations/*
+!backend/freelancenowbackend/app/migrations/__init__.py
 
 node_modules
 dist
