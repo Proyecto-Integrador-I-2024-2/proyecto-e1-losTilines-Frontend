@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from app.models import Project, Company, ProjectFreelancer, Status, UserCompany, Milestone, Freelancer
+from app.serializers import ProjectSerializer, ProjectSkillCreateSerializer
 from .serializers import *
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import *
@@ -97,3 +98,16 @@ class DeliverableViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['milestone', 'milestone__project']
+
+class ProjectSkillViewSet(viewsets.ModelViewSet):
+    queryset = ProjectSkill.objects.all()
+    serializer_class = ProjectSkillSerializer
+    permission_classes = [AllowAny]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['project', 'skill']
+
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return ProjectSkillCreateSerializer
+        return ProjectSkillSerializer
+    

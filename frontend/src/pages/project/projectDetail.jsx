@@ -23,13 +23,20 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQueryParams } from "@/hooks";
 import { useProject } from "@/hooks";
 import { profile_pic } from "@/data/placeholder";
-import { EditSkillsPopup } from "@/widgets/popUp";
+import { EditProjectPopUp, EditSkillsPopup, FreelancerInterestPopUp } from "@/widgets/popUp";
+import { addSkillToProject, editProject, postFreelancerInterest } from "@/services";
+import { useQueryClient } from "@tanstack/react-query";
+
 
 export function ProjectDetail() {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { getParams } = useQueryParams();
   const { id } = useParams();
   const [showSkillsPopUp, setShowSkillsPopUp] = useState(false);
+  const [showEditProjectPopUp, setShowEditProjectPopUp] = useState(false);
+  const [freelancerInterestPopUp, setFreelancerInterestPopUp] = useState(false);
+
   console.log("ID del proyecto:", id); // Para depuración
 
   // Obtener la información del proyecto usando el hook
@@ -60,12 +67,17 @@ export function ProjectDetail() {
     return <Typography variant="h6" color="red">Proyecto no encontrado.</Typography>;
   }
 
-  // Freelancer Skill Data
+  // Project Skill Data
   function handleAddSkill(body) {
     console.log("Body", body);
-    // addFreelancerSkill({ body })
-    // queryClient.invalidateQueries(['project', id]);
-    // userRefetch()
+    const skillToAddData = {
+      project: id,
+      skill: body.skill,
+      level: body.level
+    }
+    addSkillToProject({ body: skillToAddData })
+    queryClient.invalidateQueries(['project', id]);
+    projectRefetch()
   }
 
   function handleEditSkill(id, body) {
@@ -80,6 +92,26 @@ export function ProjectDetail() {
     // deleteFreelancerSkill({ id })
     // queryClient.invalidateQueries(['project', id]);
     // userRefetch()
+  }
+
+  // Project basic Data
+  function handleEditProject(body) {
+    console.log("Body", body);
+    editProject({ id, body })
+    queryClient.invalidateQueries(['project', id]);
+    projectRefetch()
+  }
+
+  // Freelancer Interest
+  function handleFreelancerInterest() {
+
+    const body = {
+      project: id,
+      freelancer: 0,
+      status: "freelancer_interested"
+    }
+
+    postFreelancerInterest(body)
   }
 
 
@@ -110,7 +142,7 @@ export function ProjectDetail() {
                     </Typography>
                   </div>
                 </div>
-                <Button color="light-blue">Apply Now!</Button>
+                <Button color="light-blue" onClick={() => setFreelancerInterestPopUp(prev => !prev)}>Apply Now!</Button>
 
               </div >
             </CardBody>
@@ -146,8 +178,8 @@ export function ProjectDetail() {
                     </IconButton>
                   </MenuHandler>
                   <MenuList>
-                    <MenuItem>Edit project information</MenuItem>
-                    <MenuItem>Edit project skills</MenuItem>
+                    <MenuItem onClick={() => setShowEditProjectPopUp(prev => !prev)}>Edit project information</MenuItem>
+                    <MenuItem onClick={() => setShowSkillsPopUp(prev => !prev)}>Edit project skills</MenuItem>
                   </MenuList>
                 </Menu>
               </CardHeader>
@@ -171,8 +203,9 @@ export function ProjectDetail() {
           </div>
         </div>
       </div>
-      <EditSkillsPopup open={showSkillsPopUp} onOpen={setShowSkillsPopUp} skills={skills || []} editSkill={handleEditSkill} addSkill={handleAddSkill} deleteSkill={handleDeleteSkill} />
-      <EditButton toolTip="Edit Profile" onClick={() => setShowSkillsPopUp(prev => !prev)} />
+      <EditSkillsPopup open={showSkillsPopUp} onOpen={setShowSkillsPopUp} skills={project.skills || []} editSkill={handleEditSkill} addSkill={handleAddSkill} deleteSkill={handleDeleteSkill} />
+      <EditProjectPopUp open={showEditProjectPopUp} setOpen={setShowEditProjectPopUp} project={project} handleProjectSave={handleEditProject} />
+      <FreelancerInterestPopUp open={freelancerInterestPopUp} onOpen={setFreelancerInterestPopUp} handleInterest={handleFreelancerInterest} project={project} />
     </>
   );
 }
