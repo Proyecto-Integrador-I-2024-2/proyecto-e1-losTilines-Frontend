@@ -1,6 +1,6 @@
 from .serializers import WorkerSerializer, CompanyDetailSerializer
 from .filters import WorkerFilter, CompanyFilter
-from app.models import User, UserRole, Project, Area, Company
+from app.models import User, UserRole, Project, Area, Company, UserCompany
 from .serializers import AreaSerializer
 from django.contrib.auth.models import Group 
 from rest_framework.permissions import AllowAny 
@@ -183,6 +183,13 @@ class AreaViewSet(viewsets.ModelViewSet):
         area_admin_id = request.data.get('user')
 
         area = self.validate_area(area_name, company_id, area_admin_id)
+
+        user = User.objects.get(id=area_admin_id)
+        
+        if user.groups.filter(name="Freelancer").exists():
+            raise ValueError("This user type cannot be in a company")
+
+        UserCompany.objects.update_or_create(user=user, defaults={'area': area})
 
         return Response(AreaSerializer(area).data, status=status.HTTP_201_CREATED)
 
