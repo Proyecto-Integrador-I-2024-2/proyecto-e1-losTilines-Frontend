@@ -41,6 +41,10 @@ export function AddProject({ open, setOpen }) {
             setInfoFetch("Project created successfully");
             queryClient.invalidateQueries("projects");
             setOpen(false); // Cierra el diálogo después de crear el proyecto
+            setProjectName("");
+            setBudget("");
+            setDescription("");
+            setDate("");
           },
           onError: (error) => {
             setInfoFetch(`Error creating project: ${error.message}`);

@@ -1,4 +1,5 @@
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, permissions
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from app.models import Skill, Experience, SkillType
 from app.serializers import SkillSerializer, ExperienceSerializer
@@ -8,7 +9,7 @@ from .filters import *
 from .serializers import *
 from rest_framework.response import Response
 from app.permission import IsOwnerOrReadOnly
-from app.models import Freelancer, FreelancerSkill
+from app.models import Freelancer, FreelancerSkill, Comment
 
 class FreelancerDetailViewSet(viewsets.ModelViewSet):
     queryset = Freelancer.objects.all()
@@ -113,3 +114,22 @@ class SkillViewSet(viewsets.ModelViewSet):
             raise ValidationError({"error": f"Skill with name '{skill_name}' already exists."})
 
         serializer.save(name=skill_name, is_predefined=is_predefined, type=skill_type)
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permissions = [AllowAny]
+    filterset_fields = ['freelancer', 'writer']
+
+    def perform_create(self, serializer):
+        serializer.save(writer=self.request.user)
+
+    @action(detail=True, methods=['patch'], serializer_class=FreelancerResponseSerializer)
+    def respond(self, request, pk=None):
+        comment = self.get_object()
+        if request.user != comment.freelancer.user:
+            return Response({"error": "Only the freelancer can respond to this comment"}, status=403)
+        serializer = self.get_serializer(comment, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)

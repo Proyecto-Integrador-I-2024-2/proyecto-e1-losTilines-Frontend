@@ -26,6 +26,8 @@ import { useCompany, useQueryParams, useUser } from "@/hooks";
 import { userExample, freelancerExample, profile_pic } from "@/data/placeholder";
 import { addFreelancerSkill, deleteFreelancerExperience, deleteFreelancerSkill, editFreelancerExperience, editFreelancerSkill, editWorkerProfile, getCompany, getFreelancer } from "@/services";
 import { useQueryClient } from "@tanstack/react-query";
+import ReviewSection from "@/widgets/custom/reviews";
+import { reviews } from "@/data/reviews-data";
 
 export function Profile() {
     const queryClient = useQueryClient();
@@ -114,7 +116,7 @@ export function Profile() {
             setProjectsToUse(projects);
 
         } else {
-            setProjectsToUse(externalCompanyData?.projects || companyData.at(0).projects || []);
+            setProjectsToUse(externalCompanyData?.projects || companyData?.at(0)?.projects || []);
         }
     }, [isFreelancer, projects, companyData]);
 
@@ -122,7 +124,19 @@ export function Profile() {
         if (userData && !externalFreelancerId && !externalCompanyId) {
             setIsEditable((userData?.user?.id == sessionStorage.getItem("id")) || (userData?.id == sessionStorage.getItem("id")));
         }
+        if (externalFreelancerId) {
+            setIsEditable(false);
+        }
     }, [userData, externalFreelancerId, externalCompanyId])
+
+    useEffect(() => {
+        if (!externalCompanyId) {
+            setExternalCompanyData(null);
+        }
+        if (!externalFreelancerId) {
+            setExternalFreelancerData(null);
+        }
+    }, [externalFreelancerId, externalCompanyId])
 
 
     // ----------------------- API consumption -----------------------
@@ -187,54 +201,35 @@ export function Profile() {
 
     return (
         <div className="w-full h-full">
-            <div className="mx-3 mt-4 mb-2 lg:mx-4 border border-blue-gray-100 h-2/3">
-                <Card className="h-full">
+            <div className="mx-3 mt-4 mb-2 lg:mx-4 h-2/3">
+                <Card className="h-full border border-blue-gray-100">
                     <CardBody className="h-full p-4">
                         {/* Seccion de identifiacion y tabs de herramientas */}
-                        {!externalCompanyData ? <div className="mb-10 flex items-center justify-between flex-wrap gap-6 h-auto">
-                            <div className="flex items-center gap-6">
-                                <Avatar
-                                    src={((isFreelancer && !isUserLoading) || externalFreelancerData) ? (profile_picture || profile_pic) : (profile_picture || profile_pic)}
-                                    alt="bruce-mars"
-                                    size="xl"
-                                    variant="circular"
-                                    className="rounded-lg shadow-lg shadow-blue-gray-500/40"
-                                />
-                                <div>
-                                    <Typography variant="h5" color="blue-gray" className="mb-1">
-                                        {isUserLoading ? <Spinner /> : `${first_name} ${last_name}`}
-                                    </Typography>
-                                    <Typography
-                                        variant="small"
-                                        className="font-normal text-blue-gray-600"
-                                    >
-                                        {!isUserLoading && role}
-                                    </Typography>
-                                    <Rating value={0} />
+                        {!externalCompanyData ?
+                            <div className="mb-10 flex items-center justify-between flex-wrap gap-6 h-auto">
+                                <div className="flex items-center gap-6">
+                                    <Avatar
+                                        src={((isFreelancer && !isUserLoading) || externalFreelancerData) ? (profile_picture || profile_pic) : (profile_picture || profile_pic)}
+                                        alt="bruce-mars"
+                                        size="xl"
+                                        variant="circular"
+                                        className="rounded-lg shadow-lg shadow-blue-gray-500/40"
+                                    />
+                                    <div>
+                                        <Typography variant="h5" color="blue-gray" className="mb-1">
+                                            {isUserLoading ? <Spinner /> : `${first_name} ${last_name}`}
+                                        </Typography>
+                                        <Typography
+                                            variant="small"
+                                            className="font-normal text-blue-gray-600"
+                                        >
+                                            {!isUserLoading && role}
+                                        </Typography>
+                                        <Rating value={0} />
+                                    </div>
                                 </div>
-                            </div>
-                            {/* Quien soy yo */}
-
-                            <div className="w-96">
-                                <Tabs value="app">
-                                    <TabsHeader>
-                                        <Tab value="app">
-                                            <HomeIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
-                                            App
-                                        </Tab>
-                                        <Tab value="message">
-                                            <ChatBubbleLeftEllipsisIcon className="-mt-0.5 mr-2 inline-block h-5 w-5" />
-                                            Message
-                                        </Tab>
-                                        <Tab value="settings">
-                                            <Cog6ToothIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
-                                            Settings
-                                        </Tab>
-                                    </TabsHeader>
-                                </Tabs>
-                            </div>
-                            {/* tabs de config */}
-                        </div > :
+                                {/* Quien soy yo */}
+                            </div > :
                             <div className="mb-10 flex items-center justify-between flex-wrap gap-6 h-auto">
                                 {/* Avatar e información básica de la empresa */}
                                 <div className="flex items-center gap-6">
@@ -286,7 +281,7 @@ export function Profile() {
                             <div>
                                 {(!isUserLoading && !externalCompanyData) ? <ProfileInfoCard
                                     title="Profile Information"
-                                    description={isFreelancer ? description : companyData.at(0).description}
+                                    description={isFreelancer ? description : companyData?.at(0)?.description || "No description y soy company"}
                                     details={isFreelancer ? {
                                         "first name": first_name,
                                         "last name": last_name,
@@ -343,8 +338,8 @@ export function Profile() {
                                             <Typography variant="h6" color="blue-gray" className="mb-4">
                                                 Freelancers that have worked here
                                             </Typography>
-                                            {!externalCompanyData ? <div className="space-y-6 h-full overflow-y-auto no-scrollbar">
-                                                {companyData.at(0).freelancers.map((freelancer) => (
+                                            {!externalCompanyData && companyData ? <div className="space-y-6 h-full overflow-y-auto no-scrollbar">
+                                                {companyData?.at(0)?.freelancers.map((freelancer) => (
                                                     <MessageCard
                                                         key={freelancer.user.name}
                                                         img={freelancer.user.img || profile_pic}
@@ -380,7 +375,7 @@ export function Profile() {
                                         <SkillsSection sectionName={"Skills"} skills={skills} editable={isEditable} onEdit={handleSkillsPopUp} />)
                                     :
                                     (isCompanyLoading ? <Spinner /> :
-                                        !externalCompanyData && (companyData && <SkillsSection sectionName={"Tech Stack"} skills={companyData?.at(0).skills || []} editable={false} />))
+                                        !externalCompanyData && (companyData && <SkillsSection sectionName={"Tech Stack"} skills={companyData?.at(0)?.skills || []} editable={false} />))
                                 }
                                 {
                                     externalCompanyData && <SkillsSection sectionName={"Tech Stack"} skills={externalCompanyData?.skills || []} editable={false} />
@@ -410,14 +405,16 @@ export function Profile() {
                 </CardBody>
             </Card>
             {isUserLoading ? <Spinner /> :
-
-                (isEditable) &&
                 <>
-                    <EditProfilePopUp open={showProfilePopUp} onOpen={setShowProfilePopUp} profile={userToUse} onChange={handleEditWorkerProfile} />
-                    <EditExperiencePopup open={showExperiencePopUp} onOpen={setShowExperiencePopUp} experiences={experience_set || []} editExperience={handleEditExperience} addExperience={{}} deleteExperience={handleDeleteExperience} />
-                    <EditSkillsPopup open={showSkillsPopUp} onOpen={setShowSkillsPopUp} skills={skills || []} editSkill={handleEditSkill} addSkill={handleAddSkill} deleteSkill={handleDeleteSkill} />
+                    {(isEditable) &&
+                        <>
+                            <EditProfilePopUp open={showProfilePopUp} onOpen={setShowProfilePopUp} profile={userToUse} onChange={handleEditWorkerProfile} />
+                            <EditExperiencePopup open={showExperiencePopUp} onOpen={setShowExperiencePopUp} experiences={experience_set || []} editExperience={handleEditExperience} addExperience={{}} deleteExperience={handleDeleteExperience} />
+                            <EditSkillsPopup open={showSkillsPopUp} onOpen={setShowSkillsPopUp} skills={skills || []} editSkill={handleEditSkill} addSkill={handleAddSkill} deleteSkill={handleDeleteSkill} />
+                        </>
+                    }
+                    <ReviewSection reviews={reviews} />
                 </>
-
             }
         </div >
     );

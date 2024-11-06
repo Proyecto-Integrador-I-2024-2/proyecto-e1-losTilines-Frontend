@@ -3,8 +3,6 @@ from .views import *
 from django.urls import path, include
 
 router = DefaultRouter()
-router.register(r'comments', CommentViewset)
-
 
 urlpatterns = [
     path('', include(router.urls)),
