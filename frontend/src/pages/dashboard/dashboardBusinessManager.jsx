@@ -94,12 +94,15 @@ export function DashboardBusinessManager() {
 
   /*-----------------------------------------------*/
 
-  console.log("Selected area", areaSelected);
-  const {
-    data: projects,
-    isLoading: isLoadingProjects,
-    error: projectsError,
-  } = useProjects({ area: areaId, company: user.company }); // Fetch projects by area
+  const [projectsFetch, setProjectFetch] = useState(null);
+
+
+  useEffect(() => {
+
+      console.log("ProjectsFetch:", projectsFetch);
+
+
+  }, projectsFetch)
 
   let workersFilteredBusinessManager = [];
 
@@ -118,6 +121,9 @@ export function DashboardBusinessManager() {
 
   const handleSelecedArea = (item) => {
     setParams({ area: item });
+    
+
+
   };
 
   const handleSelectedProject = (item) => {
@@ -144,8 +150,19 @@ export function DashboardBusinessManager() {
 
   // Effect use define the selected area based on query params on url
   // Area is actually the ID value of the query param "area" in the URL
-  useEffect(() => {
+  useEffect( () => {
     if (areaSelected) {
+
+      const fetchProjects = async () => {
+
+        console.log("Params en el hoook de useProjects: ",queryParams)
+        const { data } = await apiClient.get("projects/", { params: {area: areaSelected, company: user.company} });    
+        return data;
+      }
+      
+      fetchProjects().then(data => setProjectFetch(data)); 
+
+
       setSelectecItem(areaSelected);
       setIsArea(false);
     } else {
@@ -157,10 +174,6 @@ export function DashboardBusinessManager() {
 
   /*-----------------------------------------------*/
 
-  useEffect(() => {
-    console.log("Selected area:", selectItem);
-    console.log("Projects:", projects);
-  }, [selectItem, projects]);
   /*-----------------------------------------------*/
 
   return (
@@ -209,8 +222,8 @@ export function DashboardBusinessManager() {
                 ) : (
                   <>
                     {/*----------------------------Render projects of an area----------------------------*/}
-                    {projects && projects.length > 0 ? (
-                      projects.map((item) => {
+                    {projectsFetch && projectsFetch.length > 0 ? (
+                      projectsFetch.map((item) => {
                         return (
                           <ListRowStructure
                             key={item.id}

@@ -25,6 +25,9 @@ export function DashboardRenderByrole() {
 
   const { data: user, isLoading: userLoading } = useUser();
 
+  if (userLoading) return <SpinnerCustom />;
+
+
   /*-----------------------------------------------------------------------------------*/
 
   //Based on role define the component to render
