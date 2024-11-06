@@ -1,8 +1,10 @@
 import { profile_pic } from '@/data/placeholder';
+import useReviews from '@/hooks/profile/useReviews';
 import { Button, Textarea, IconButton } from '@material-tailwind/react';
 import React, { useState } from 'react';
 
-export const ReviewSection = ({ reviews }) => {
+export const ReviewSection = ({ id }) => {
+    const { data: reviews, isLoading } = useReviews({ freelancer: id });
     const [responses, setResponses] = useState({});
 
     // Función para manejar respuestas del freelancer
@@ -19,21 +21,21 @@ export const ReviewSection = ({ reviews }) => {
         <div className="bg-gray-50 p-6 rounded-lg shadow-lg">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Reviews</h2>
             <div className="space-y-6">
-                {reviews.map((review) => (
+                {(reviews && !isLoading) && reviews.map((review) => (
                     <div key={review.id} className="bg-white p-4 rounded-lg shadow-sm">
                         {/* Detalles de la review */}
                         <div className="flex items-center mb-4">
                             <img
                                 className="w-12 h-12 rounded-full mr-4"
-                                src={review.reviewerImage || profile_pic}
-                                alt={review.reviewerName}
+                                src={review?.writer?.profile_picture || profile_pic}
+                                alt={`${review?.writer?.first_name} ${review?.writer?.last_name}`}
                             />
                             <div>
-                                <h3 className="text-lg font-semibold">{review.reviewerName}</h3>
-                                <p className="text-gray-500 text-sm">{review.date}</p>
+                                <h3 className="text-lg font-semibold">{`${review?.writer?.first_name} ${review?.writer?.last_name}`}</h3>
+                                <p className="text-gray-500 text-sm">{review.created_at}</p>
                             </div>
                         </div>
-                        <p className="text-gray-700 mb-4">{review.content}</p>
+                        <p className="text-gray-700 mb-4">{review.description}</p>
 
                         {/* Respuesta del freelancer */}
                         {review.response ? (

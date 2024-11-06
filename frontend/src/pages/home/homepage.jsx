@@ -64,8 +64,11 @@ const Homepage = () => {
     navigate(`/profile?freelancer=${id}`);
   }
   function handleProjectCardClick(id) {
-    navigate(`/project/detail/${id}`);  
+    navigate(`/project/detail/${id}`);
   }
+
+  console.log("Freelancers: ", freelancersData);
+  console.log("Projects: ", projectsData);
 
   return (
     <LandingPage>

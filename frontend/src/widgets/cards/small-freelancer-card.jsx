@@ -11,7 +11,7 @@ export function SmallFreelancerCard({ freelancer, onCardClick }) {
         >
             <div className="h-32 w-32 mx-auto mb-2 rounded-full overflow-hidden">
                 <img
-                    src={freelancer.image || profile_pic}
+                    src={freelancer?.user?.profile_picture?.replace(/\s+/g, '') || profile_pic}
                     alt={`${freelancer?.user?.first_name || freelancer?.first_name || "John"} ${freelancer?.user?.last_name || freelancer?.last_name || "Doe"}`}
                     className="h-full w-full object-cover"
                 />
