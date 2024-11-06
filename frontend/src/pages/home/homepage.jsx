@@ -25,33 +25,27 @@ import { useQuery } from "@tanstack/react-query";
 import { Identifiers } from "@/hooks/tanstackIdentifiers";
 import apiClient from "@/services/apiClient";
 const Homepage = () => {
-
-
   const fetchProjects = async () => {
-
     const { data } = await apiClient.get("projects/");
     return data;
   };
 
-
   // We use a custom useQuery due to the dashboard projects fetch had the same identifier so,
   // when the user opened the dashboard, the projects were the home projects.
-  // However, now they have different identifiers. 
+  // However, now they have different identifiers.
 
   const { data: projectsData, isLoading: isProjectsLoading } = useQuery(
-
-    [Identifiers.projectsHome], fetchProjects, {
-
-
-    staleTime: 1000 * 60 * 3,
-    cachetime: 1000 * 60 * 30,
-    retry: 2,
-
-  }
-
+    [Identifiers.projectsHome],
+    fetchProjects,
+    {
+      staleTime: 1000 * 60 * 3,
+      cachetime: 1000 * 60 * 30,
+      retry: 2,
+    }
   );
 
-  const { data: freelancersData, isLoading: isFreelancersLoading } = useFreelancers();
+  const { data: freelancersData, isLoading: isFreelancersLoading } =
+    useFreelancers();
   const { getParams, setParams } = useQueryParams();
   const navigate = useNavigate();
   const navigateWithQuery = useNavigateWithQuery();
@@ -109,21 +103,23 @@ const Homepage = () => {
                 Incredible projects for you to hop on!
               </Typography>
 
-              {projectsData && (
-                <CustomList
-                  sectionTitle={""}
-                  sectionSubtitle={""}
-                  isDistributedEvenly={true}
-                >
-                  {projectsData.map((project) => (
-                    <ProjectCard
-                      key={project.id}
-                      project={project}
-                      onCardClick={handleProjectCardClick}
-                    />
-                  ))}
-                </CustomList>
-              )}
+              <div className="flex flex-col justify-center items-center w-full">
+                {projectsData && (
+                  <CustomList
+                    sectionTitle={""}
+                    sectionSubtitle={""}
+                    isDistributedEvenly={true}
+                  >
+                    {projectsData.map((project) => (
+                      <ProjectCard
+                        key={project.id}
+                        project={project}
+                        onCardClick={handleProjectCardClick}
+                      />
+                    ))}
+                  </CustomList>
+                )}
+              </div>
             </div>
           </>
         )}
