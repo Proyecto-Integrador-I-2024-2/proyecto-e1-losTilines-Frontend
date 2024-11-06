@@ -1,7 +1,7 @@
 import { getMilestoneDeliverables, getProjectMilestones } from "@/services";
 import { MilestoneCard, DeliverableCard } from "@/widgets/cards";
 import { ProjectTopBar } from "@/widgets/layout";
-import { MilestonesInfo } from "@/widgets/milestones";
+import { MilestonesInfo } from "@/widgets/milestonesAndDeliverables";
 import {
   Card,
   CardHeader,
@@ -70,20 +70,11 @@ export function MilestonesDetail() {
     }
   }, [milestoneID]);
 
-
-  useEffect(()=>{
-
-    if(milestones && milestones.length > 0){
-
+  useEffect(() => {
+    if (milestones && milestones.length > 0) {
       setMilestoneID(milestones[0].id);
-
     }
-
-
-
-  }, [milestones])
-
-
+  }, [milestones]);
 
   /*-----------------------------Handlers-----------------------------*/
 

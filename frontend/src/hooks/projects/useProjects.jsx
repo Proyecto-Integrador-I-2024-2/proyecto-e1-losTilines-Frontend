@@ -9,7 +9,7 @@ export const useProjects = (queryParams = {}) => {
 
     const fetchProjects = async () => {
 
-        console.log("Params en el hoook: ",queryParams)
+        console.log("Params en el hoook de useProjects: ",queryParams)
         const { data } = await apiClient.get("projects/", { params: queryParams });    
         return data;
     }

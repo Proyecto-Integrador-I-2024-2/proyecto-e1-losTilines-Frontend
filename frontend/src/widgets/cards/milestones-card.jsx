@@ -35,23 +35,13 @@ export function MilestoneCard({ milestone, onClick }) {
         color="transparent"
         floated={false}
         shadow={false}
-        className="mx-0 flex items-center gap-4 pt-0 pb-8"
+        className="mx-0 flex flex-col  items-center justify-center p-4"
       >
-        <div className="flex w-full flex-col gap-0.5 m-2">
-          <div className="flex items-center justify-between">
-            <Typography variant="h5" color="blue-gray">
+            <Typography variant="lead" color="blue-gray">
               {milestone.name} {/* Muestra el título del milestone */}
             </Typography>
+    
 
-            <Avatar
-              size="lg"
-              variant="circular"
-              src={milestone_pic} // Asegúrate de que este campo exista
-              alt={milestone.name} // Asegúrate de que este campo exista
-            />
-          </div>
-          <Typography color="blue-gray">{milestone.description}</Typography> {/* Muestra la descripción */}
-        </div>
       </CardHeader>
     </Card>
   );

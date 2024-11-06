@@ -29,6 +29,10 @@ export function DashboardFreelancer() {
   const { data: user, isLoading: userLoading } = useUser();
 
 
+  if (userLoading) return <SpinnerCustom />;
+
+
+
   /*--------------------------------------------*/
 
   //Navigation and url staff

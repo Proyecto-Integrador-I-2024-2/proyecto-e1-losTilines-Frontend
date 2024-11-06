@@ -29,6 +29,13 @@ export function DashboardAreaAdmin() {
 
   const { data: user, isLoading: userLoading } = useUser();
 
+ 
+  if (userLoading) {
+    return <SpinnerCustom />;
+  }
+
+
+
   console.log("user id and company", { worker: user.id, company: user.company });
 
   const { data: workers, isLoading: isLoadingWorkers, isError:isWorkersError } = useWorkers({
@@ -57,7 +64,10 @@ export function DashboardAreaAdmin() {
 
   /*-----------------------------------------------*/
 
-  const { data: projects, isLoading: isLoadingProjects, error: projectsError } = useProjects( {company: user.company, area:user.area}); // Fetch projects by area
+
+  console.log("Parameters: ", user.company, user.area);
+
+  const { data: projects, isLoading: isLoadingProjects, error: projectsError } = useProjects( {company: user.company, area:user.area.id}); // Fetch projects by area
 
   let workersFilteredBusinessManager = [];
 

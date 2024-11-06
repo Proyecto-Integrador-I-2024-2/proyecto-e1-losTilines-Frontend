@@ -22,6 +22,11 @@ export function DashboardProjectManager() {
 
   const { data: user, isLoading: userLoading } = useUser();
 
+
+
+  if (userLoading) return <SpinnerCustom />;
+
+
   /*--------------------------------------------*/
 
   //Navigation and url staff
