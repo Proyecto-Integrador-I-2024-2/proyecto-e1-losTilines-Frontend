@@ -7,7 +7,6 @@ import { useUser, useQueryParams, useProjects} from "@/hooks";
 import {  useState } from "react";
 import { SpinnerCustom } from "@/widgets/layout";
 import { useNavigateWithQuery } from "@/hooks/utils";
-import { useWorkers } from "@/hooks/workers";
 import { ListRowStructure } from "@/widgets/list";
 import { ListRowWithImage } from "@/widgets/list";
 import {Typography} from "@material-tailwind/react";

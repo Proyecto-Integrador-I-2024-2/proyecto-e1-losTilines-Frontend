@@ -220,8 +220,8 @@ class ProjectSkill(models.Model):
         return f'{self.skill} required for {self.project}'
     
 class Milestone(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.CharField(max_length=255, blank=True)
+    name = models.CharField(max_length=300)
+    description = models.CharField(max_length=1200, blank=True)
     due_date = models.DateField()
     freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)

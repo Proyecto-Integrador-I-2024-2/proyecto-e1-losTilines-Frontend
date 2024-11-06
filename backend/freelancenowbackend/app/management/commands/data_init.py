@@ -22,6 +22,7 @@ project_paragraph_templates = [
 ]
 
 objectives = ['automatizar procesos empresariales', 'optimizar la gestión de recursos', 'mejorar la experiencia del usuario', 'facilitar la integración de servicios', 'aumentar la seguridad de los datos']
+
 features = ['alta disponibilidad', 'escalabilidad', 'seguridad', 'rendimiento óptimo', 'integración continua']
 
 notification_templates = [
@@ -64,7 +65,6 @@ years_experience = ['5', '7', '10', '3', '12']
 
 fake = Faker('es_CO')
 
-
 AREA_CHOICES = [
     'RRHH', 'Finanzas', 'Marketing', 'Ventas', 'Operaciones', 'Tecnología', 'Soporte', 'Producto', 'Calidad', 'Logística', 'Atención Cliente', 'Innovación', 'Legal', 'Admin', 'Proyectos'
     ]
@@ -100,26 +100,60 @@ negative_comment_templates = [
 ]
 
 milestone_templates = [
-    "Finalización del módulo {module} para el proyecto {project}.",
-    "Entrega para el proyecto {project} con la ayuda de {freelancer}.",
-    "Hito {module} completado por {freelancer} en el proyecto {project}.",
-    "{freelancer} completó la revisión del {module} en {project}.",
+    "Desarrollar la arquitectura inicial del módulo {module} en el proyecto {project}, asegurando que cumpla con los estándares de diseño y esté preparado para futuras expansiones y optimizaciones.",
+    "Implementar las funciones clave del módulo {module} en el proyecto {project}, en colaboración con {freelancer}, garantizando una base sólida para futuras integraciones.",
+    "Completar el diseño y la estructura de datos del módulo {module} en {project}, permitiendo una gestión eficiente de la información y preparando el módulo para la fase de pruebas.",
+    "Configurar el entorno de desarrollo y los recursos necesarios para el módulo {module} en {project}, facilitando un flujo de trabajo eficiente y reduciendo posibles problemas en fases posteriores.",
+    "Realizar la fase inicial de pruebas de rendimiento en el módulo {module} del proyecto {project}, asegurando que el código cumpla con los parámetros de eficiencia definidos.",
+    "Desarrollar una interfaz intuitiva para el módulo {module} en el proyecto {project}, con {freelancer} implementando elementos de usabilidad para mejorar la experiencia del usuario final.",
+    "Integrar funcionalidades de seguridad en el módulo {module} para el proyecto {project}, reforzando los protocolos y asegurando que el módulo esté listo para auditorías de seguridad.",
+    "Finalizar la creación del módulo {module} en {project}, con el objetivo de cumplir con los requisitos de funcionalidad y asegurar una experiencia de usuario fluida.",
+    "Preparar la documentación técnica detallada para el módulo {module} en {project}, proporcionando a los equipos de soporte toda la información necesaria para futuras modificaciones.",
+    "Optimizar el módulo {module} en el proyecto {project}, centrándose en mejorar el rendimiento y reducir el tiempo de carga, preparando el módulo para pruebas intensivas.",
+    "Establecer los parámetros de control de calidad para el módulo {module} en {project}, con la participación de {freelancer}, definiendo métricas y criterios de aceptación para la fase de pruebas finales.",
+    "Configurar la integración continua para el módulo {module} en el proyecto {project}, asegurando que cada nueva implementación sea probada y validada automáticamente para mantener la estabilidad del sistema."
+    "Completar el desarrollo del módulo {module} para el proyecto {project}, asegurando la implementación de todas las funcionalidades requeridas y preparando el módulo para las pruebas de calidad e integración.",
+    "Finalizar la entrega del módulo correspondiente al proyecto {project} con el apoyo de {freelancer}, incluyendo documentación y pruebas preliminares para garantizar que cumpla con los requisitos establecidos.",
+    "Lograr el avance en el desarrollo del módulo {module} dentro del proyecto {project}, con {freelancer} enfocándose en la creación de funcionalidades clave y preparando el módulo para la fase de revisión.",
+    "Realizar una revisión y validación inicial del módulo {module} en el proyecto {project} con {freelancer}, asegurando que el código esté optimizado y listo para la fase de pruebas detalladas."
 ]
 
 deliverable_templates = [
-    "Documentación técnica para {milestone}.",
-    "Entrega del código fuente de {milestone}.",
-    "Informe de progreso sobre {milestone}.",
-    "Archivos de diseño finalizados para {milestone}.",
+    "Especificaciones detalladas del sistema para la milestone {milestone}.",
+    "Resultados de pruebas y validación para la milestone {milestone}.",
+    "Manual de usuario inicial correspondiente a la milestone {milestone}.",
+    "Guía de instalación y configuración para la milestone {milestone}.",
+    "Prototipo funcional preliminar de la milestone {milestone}.",
+    "Plan de implementación para la milestone {milestone}.",
+    "Resumen ejecutivo del avance en la milestone {milestone}.",
+    "Presentación de resultados para la milestone {milestone}.",
+    "Análisis de riesgos y mitigación para la milestone {milestone}.",
+    "Esquemas de arquitectura para la milestone {milestone}.",
+    "Resultados de pruebas de carga y estrés para la milestone {milestone}.",
+    "Reporte de errores encontrados en la milestone {milestone}.",
+    "Plan de capacitación relacionado con la milestone {milestone}.",
+    "Evaluación de compatibilidad del sistema para la milestone {milestone}.",
+    "Lista de control de calidad cumplida en la milestone {milestone}."
 ]
 
 milestone_templates_names = [
-    "Finalizar {module} del proyecto {project}",
-    "Implementación de {module} para {project}",
-    "Revisión y pruebas del {module} en {project}",
-    "Entrega final de {module} para el {project}",
+    "Desarrollo inicial de {module} en {project}",
+    "Configuración básica de {module} para {project}",
+    "Optimización de {module} en el proyecto {project}",
+    "Integración de {module} en {project}",
+    "Documentación técnica de {module} para {project}",
+    "Preparación de entorno para {module} en {project}",
+    "Pruebas de funcionalidad del módulo {module} en {project}",
+    "Validación de seguridad de {module} en {project}",
+    "Revisión de interfaz de usuario para {module} en {project}",
+    "Ajustes finales del módulo {module} en {project}",
+    "Pruebas de rendimiento de {module} en {project}",
+    "Entrega preliminar de {module} para el proyecto {project}",
+    "Implementación de mejoras en {module} para {project}",
+    "Configuración de parámetros para {module} en {project}",
+    "Despliegue inicial de {module} en {project}",
+    "Evaluación de calidad del módulo {module} en {project}"
 ]
-
 
 profile_images = [
     'https://i.pinimg.com/736x/a3/53/66/a3536654d44f08f16044ae301a8be184.jpg',
@@ -129,6 +163,7 @@ profile_images = [
     'https://i.pinimg.com/control/564x/b8/2c/5a/b82c5a7a7c122bcdd87dbe495edf7294.jpg',
     'https://i.pinimg.com/564x/7e/ac/b0/7eacb0cd582fb0d069281511adacdddd.jpg'
 ]
+
 
 def generate_project_paragraph():
     paragraph = " ".join([
@@ -195,7 +230,7 @@ class UserFactory(DjangoModelFactory):
 
     @factory.post_generation
     def set_password(self, create, extracted, **kwargs):
-        password = 'defaultpassword' if not extracted else extracted
+        password = '123' if not extracted else extracted
         self.set_password(password)
         if create:
             self.save()
@@ -285,7 +320,7 @@ class ProjectFactory(DjangoModelFactory):
     description = factory.LazyFunction(generate_project_paragraph)  
     start_date = factory.LazyFunction(timezone.now)
     user = factory.LazyAttribute(lambda obj: obj.user)
-    budget = factory.LazyAttribute(lambda _: fake.random_int(min=10000, max=50000))
+    budget = factory.LazyAttribute(lambda _: fake.random_int(min=35000, max=125000))
 
 class ProjectFreelancerFactory(DjangoModelFactory):
     class Meta:
@@ -385,7 +420,7 @@ class PaymentFactory(DjangoModelFactory):
 
     date = factory.Faker('date_this_year')
     status = factory.Iterator(['pending', 'completed', 'failed'])
-    amount = factory.LazyAttribute(lambda _: fake.random_number(digits=5, fix_len=False))
+    amount = factory.LazyAttribute(lambda _: fake.random_int(min=3500, max=12000))
     project = factory.LazyAttribute(lambda obj: obj.project)
     freelancer = factory.LazyAttribute(lambda obj: obj.freelancer)
 
@@ -414,10 +449,10 @@ def cargar_datos():
         return
 
     try:
-        freelancers = FreelancerFactory.create_batch(2)
+        freelancers = FreelancerFactory.create_batch(8)
 
         for freelancer in freelancers:
-            uR = UserRoleFactory(user=freelancer.user, role=freelancer_group)  # Usa la instancia de Group
+            uR = UserRoleFactory(user=freelancer.user, role=freelancer_group)  
             roles.append(uR)
         print(f"Freelancers creados y roles asignados.")
     except Exception as e:
@@ -456,7 +491,7 @@ def cargar_datos():
         return
 
     try:
-        project_managers = UserFactory.create_batch(3, assign_group='Project Manager')
+        project_managers = UserFactory.create_batch(4, assign_group='Project Manager')
         for pm in project_managers:
             # Asignar el rol "Project Manager"
             uR = UserRoleFactory(user=pm, role=project_manager_group)
@@ -467,18 +502,18 @@ def cargar_datos():
         return
 
     try:
-        companies = []  # Lista para almacenar las compañías creadas
+        companies = []  
 
         for bm in business_managers:
             company = CompanyFactory(user=bm)
-            companies.append(company)  # Agregar la compañía creada a la lista
+            companies.append(company)  
             UserCompanyFactory(company=company, user=bm, area=None)
-            print(f'Compañía creada: {company.name} asignada a {bm.email}')
 
+            print(f'Compañía creada: {company.name} asignada a {bm.email}')
     except Exception as e:
         print(f"Error al crear compañías: {str(e)}")
         return
-
+    #Areas
     try:
         areas = []
         admin_index = 0  
@@ -493,61 +528,63 @@ def cargar_datos():
                     area = AreaFactory(company=company, user=admin)
                     areas.append(area)
                     UserCompanyFactory(company=company, user=admin, area=area)
-
+                    pmanager = project_managers[admin_index]
+                    UserCompanyFactory(company=company, user=pmanager, area=area)
                 admin_index += 1
             print(f'Áreas creadas para la compañía: {company.name}')
             if admin_index >= len(area_admins):
                 break
-
     except Exception as e:
         print(f"Error al crear áreas: {str(e)}")
         return
-
+    #Proyectos
     try:
         projects = [] 
+        free_index = 0
         for pm in project_managers:
             project = ProjectFactory.create(user=pm)
             projects.append(project)
 
         for project in projects:
-            for freelancer in freelancers:
-                ProjectFreelancerFactory.create(project=project, freelancer=freelancer)
+            for _ in range(2):
+                    if free_index >= len(freelancers):
+                        print("Se alcanzó el número máximo de Freelancers disponibles.")
+                        break
+
+                    freelan = freelancers[free_index]
+                    ProjectFreelancerFactory.create(project=project, freelancer=freelan)
+                    free_index += 1
 
             project_skills = random.sample(skills, 2)  
             for skill in project_skills:
                 ProjectSkillFactory.create(project=project, skill=skill)
 
         print("Proyectos creados, freelancers y skills asignados.")
-
     except Exception as e:
         print(f"Error al crear proyectos o asignar freelancers: {str(e)}")
         return
-
+    #Notificaciones
     try:
         for project in projects:
-            # Generar dos notificaciones para el proyecto actual
+
             notification_1 = NotificationFactory.create(message=f"Actualización importante del proyecto {project.name}")
             notification_2 = NotificationFactory.create(message=f"Nueva versión disponible para {project.name}")
 
-            # Asignar ambas notificaciones al Project Manager relacionado con el proyecto
             UserNotificationFactory.create(notification=notification_1, user=project.user)  # Project Manager es el 'user' del proyecto
             UserNotificationFactory.create(notification=notification_2, user=project.user)
 
-            # Obtener todos los freelancers relacionados con este proyecto
             freelancers_in_project = ProjectFreelancer.objects.filter(project=project).select_related('freelancer')
             
-            # Asignar ambas notificaciones a todos los freelancers relacionados con el proyecto
             for project_freelancer in freelancers_in_project:
                 freelancer_user = project_freelancer.freelancer.user  # Obtener el usuario del freelancer asignado a este proyecto
                 UserNotificationFactory.create(notification=notification_1, user=freelancer_user)
                 UserNotificationFactory.create(notification=notification_2, user=freelancer_user)
                     
-        print("Notificaciones creadas y asignadas correctamente por proyecto.")
-        
+        print("Notificaciones creadas y asignadas correctamente por proyecto.") 
     except Exception as e:
         print(f"Error al crear notificaciones: {str(e)}")
         return
-
+    #Experiencia
     try:
         for freelancer in freelancers:
             ExperienceFactory.create_batch(2, freelancer=freelancer)
@@ -555,7 +592,7 @@ def cargar_datos():
     except Exception as e:
         print(f"Error al asignar experiencia: {str(e)}")
         return
-
+    #Comentarios
     try:
         for freelancer in freelancers:
             for manager in business_managers:
@@ -564,14 +601,16 @@ def cargar_datos():
     except Exception as e:
         print(f"Error al crear comentarios: {str(e)}")
         return
-    
+    #Milestones
     try:
         for project in projects:
-            for freelancer in freelancers:
+
+            freelancers_in_project = ProjectFreelancer.objects.filter(project=project).select_related('freelancer')
+            for freelancer in freelancers_in_project:
                 try:
-                    milestones = MilestoneFactory.create_batch(3, project=project, freelancer=freelancer, status=random.choice(statuss))
+                    milestones = MilestoneFactory.create_batch(2, project=project, freelancer=freelancer.freelancer, status=random.choice(statuss))
                 except Exception as e:
-                    print(f"Error al crear milestones para {project.name} y {freelancer.user.first_name}: {str(e)}")
+                    print(f"Error al crear milestones para {project.name} y {freelancer.freelancer.user.first_name}: {str(e)}")
                     continue
 
                 for milestone in milestones:
@@ -582,15 +621,16 @@ def cargar_datos():
                         continue
     except Exception as e:
         print(f"Error general: {str(e)}")
-
+    #Pagos
     try:
         for project in projects:
-            for freelancer in freelancers:
-                PaymentFactory.create(project=project, freelancer=freelancer, status='pending')
+            freelancers_in_project = ProjectFreelancer.objects.filter(project=project).select_related('freelancer')
+
+            for freelancer in freelancers_in_project:
+                PaymentFactory.create(project=project, freelancer=freelancer.freelancer, status='pending')
         print("Pagos creados.")
     except Exception as e:
         print(f"Error al crear pagos: {str(e)}")
         return
-
 
     print("Datos cargados exitosamente.")
