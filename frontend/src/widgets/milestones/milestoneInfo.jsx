@@ -135,7 +135,7 @@ export function MilestonesInfo({ milestone, deliverables }) {
   };
 
   return (
-    <main className="flex flex-col w-full h-full">
+    <div className="flex flex-col w-full h-full">
       {milestone && (
         <>
           <Card
@@ -202,6 +202,7 @@ export function MilestonesInfo({ milestone, deliverables }) {
           </Card>
 
           {/* Pop-up for milestone edit */}
+
           <PopUp
             title={"Edit Milestone Info"}
             submitFunc={handleEdit}
@@ -344,7 +345,7 @@ export function MilestonesInfo({ milestone, deliverables }) {
           </PopUp>
         </>
       )}
-    </main>
+    </div>
   );
 }
 

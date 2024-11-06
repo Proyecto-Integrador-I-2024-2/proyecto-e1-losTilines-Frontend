@@ -15,13 +15,6 @@ import { useEffect } from "react";
 import apiClient from "@/services/apiClient";
 
 export function DashboardProjectManager() {
-  //Popup
-
-  /*-----------------------------------------------*/
-
-  //Utils
-
-  const [selectItem, setSelectecItem] = useState(null); //Used to define the Project selected.
 
   /*-----------------------------------------------*/
 
@@ -35,9 +28,7 @@ export function DashboardProjectManager() {
 
   const navigateTo = useNavigate();
 
-  const navigateWithQuery = useNavigateWithQuery();
 
-  const { getParams, setParams } = useQueryParams();
 
   /*-----------------------------------------------*/
 
@@ -96,6 +87,25 @@ export function DashboardProjectManager() {
       fetchFreelancerInfoParallel();
     }
   }, [projects, isLoadingProjects]);
+
+
+
+
+  /*-----------------------*/
+
+  const handleSelectedProject = (item) => {
+
+    navigateTo(`/project/detail/${item}`); 
+
+}
+
+const handleSelectedFreelancer = (item) => {
+
+
+    console.log("Freelancer selected:", item);
+    navigateTo(`/profile?freelancer=${item}`); 
+
+}
   
 
   console.log("Freelancers Hired post useEffect:", freelancersHired);
@@ -126,7 +136,7 @@ export function DashboardProjectManager() {
                       id={item.id}
                       rowName={item.name}
                       chipValue={item.status_name}
-                      setSelected={() => {}}
+                      setSelected={handleSelectedProject }  
                     />
                   );
                 })
@@ -160,6 +170,7 @@ export function DashboardProjectManager() {
                         return (
                           <ListRowWithImage
                             key={item.id}
+                            id= {item.id}
                             avatar={
                               item.profile_picture ||
                               "/img/people/noProfile1.jpg"
@@ -167,6 +178,7 @@ export function DashboardProjectManager() {
                             rowName={`${item.first_name} ${item.last_name}`}
                             description={item.email}
                             chipValue={item.phone_number || "No phone number"}
+                            setSelected={handleSelectedFreelancer}
                           />
                         );
                       })}

@@ -70,6 +70,21 @@ export function MilestonesDetail() {
     }
   }, [milestoneID]);
 
+
+  useEffect(()=>{
+
+    if(milestones && milestones.length > 0){
+
+      setMilestoneID(milestones[0].id);
+
+    }
+
+
+
+  }, [milestones])
+
+
+
   /*-----------------------------Handlers-----------------------------*/
 
   function handleMilestoneClick(id) {
