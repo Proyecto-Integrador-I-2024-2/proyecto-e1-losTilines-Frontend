@@ -24,7 +24,6 @@ import { func } from "prop-types";
 import { useQuery } from "@tanstack/react-query";
 import { Identifiers } from "@/hooks/tanstackIdentifiers";
 import apiClient from "@/services/apiClient";
-
 const Homepage = () => {
 
 
@@ -65,7 +64,7 @@ const Homepage = () => {
     navigate(`/profile?freelancer=${id}`);
   }
   function handleProjectCardClick(id) {
-    navigate(`/project/detail/${id}`);
+    navigate(`/project/detail/${id}`);  
   }
 
   return (

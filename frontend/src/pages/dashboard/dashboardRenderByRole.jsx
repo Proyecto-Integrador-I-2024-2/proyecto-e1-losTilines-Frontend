@@ -3,12 +3,23 @@ import { useUser } from "@/hooks";
 import { DashboardBusinessManager } from "@/layouts";
 
 import { SpinnerCustom } from "@/widgets/layout";
-import { DashboardAreaAdmin, DashboardFreelancer, DashboardProjectManager } from ".";
+import { DashboardAreaAdmin, DashboardFreelancer, DashboardProjectManager, NoLoginDashboard } from ".";
 
 export function DashboardRenderByrole() {
   /*-----------------------------------------------------------------------------------*/
 
   // Fetchers
+
+
+ //If havent login, render no login dashboard.
+  if(sessionStorage.getItem("role") === null){
+
+
+    return <NoLoginDashboard/>
+
+
+
+  }
 
   const role = sessionStorage.getItem("role");
 
@@ -33,8 +44,9 @@ export function DashboardRenderByrole() {
       case "Project Manager":
         return <DashboardProjectManager />;
       case "Freelancer":
-        console.log("Freelancer");
         return <DashboardFreelancer/>;
+      default:
+        return <NoLoginDashboard/>  
     }
   }
 }
