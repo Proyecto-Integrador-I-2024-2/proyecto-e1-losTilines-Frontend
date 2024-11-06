@@ -35,19 +35,14 @@ class ProjectSerializer(serializers.ModelSerializer):
     
 
 class MilestoneSerializer(serializers.ModelSerializer):
-    freelancer = FreelancerSerializer(read_only=True)  # Rellenar automáticamente con el usuario actual
-    project = ProjectSerializer(read_only=True)  # Lo llenaremos en el viewset
-
     class Meta:
         model = Milestone
         fields = '__all__'
-        read_only_fields = ['freelancer', 'project']
+        read_only_fields = ['freelancer']
 
     due_date = serializers.DateField(required=True) 
 
-    # Validar el presupuesto u otras reglas de milestone si es necesario
     def validate(self, data):
-        # Puedes agregar más validaciones aquí si lo necesitas
         return data
     
 class DeliverableSerializer(serializers.ModelSerializer):
