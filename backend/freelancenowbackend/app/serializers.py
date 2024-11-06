@@ -130,3 +130,10 @@ class ProjectSkillSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectSkill
         fields = ['id', 'project', 'skill', 'level']
+
+class ProjectSkillCreateSerializer(serializers.ModelSerializer):
+    skill = serializers.PrimaryKeyRelatedField(queryset=Skill.objects.all())
+
+    class Meta:
+        model = ProjectSkill
+        fields = ['id', 'project', 'skill', 'level']
