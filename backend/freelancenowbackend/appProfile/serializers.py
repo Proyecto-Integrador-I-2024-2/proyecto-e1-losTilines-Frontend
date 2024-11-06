@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from app.models import Freelancer, ProjectFreelancer, Project
+from app.models import Freelancer, ProjectFreelancer, Project, Comment
 from app.serializers import FreelancerSkillSerializer, ExperienceSerializer, ProjectSerializer, UserSerializer
 
 class FreelancerDetailSerializer(serializers.ModelSerializer):
@@ -18,3 +18,16 @@ class FreelancerDetailSerializer(serializers.ModelSerializer):
         
         projects = Project.objects.filter(id__in=project_freelancers)
         return ProjectSerializer(projects, many=True).data
+
+class CommentSerializer(serializers.ModelSerializer):
+    writer = UserSerializer(read_only=True)
+    
+    class Meta:
+        model = Comment
+        fields = ['id', 'description', 'stars', 'freelancer', 'writer', 'created_at', 'response']
+        read_only_fields = ['writer', 'created_at', 'response']
+
+class FreelancerResponseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['response']

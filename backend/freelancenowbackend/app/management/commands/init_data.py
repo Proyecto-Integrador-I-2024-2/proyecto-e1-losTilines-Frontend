@@ -310,27 +310,27 @@ class Command(BaseCommand):
             experiences.append(experience)
 
         # Crear comentarios
-        comments = []
-        for i, freelancer in enumerate(freelancers_instances):
-            writer = project_managers[i % len(project_managers)]
-            try:
-                comment, created = Comment.objects.get_or_create(
-                    freelancer=freelancer,
-                    writer=writer,
-                    defaults={
-                        'title': f'Título del comentario {i+1}',
-                        'description': f'Descripción del comentario {i+1}',
-                        'stars': 4.5 - i
-                    }
-                )
-                if created:
-                    self.stdout.write(self.style.SUCCESS(f'Comentario para "{freelancer.user.email}" creado por "{writer.email}"'))
-                else:
-                    self.stdout.write(self.style.WARNING(f'Comentario ya existe para "{freelancer.user.email}"'))
-            except ValueError as e:
-                self.stdout.write(self.style.ERROR(f'Error al crear comentario: {str(e)}'))
-                continue
-            comments.append(comment)
+        # comments = []
+        # for i, freelancer in enumerate(freelancers_instances):
+        #     writer = project_managers[i % len(project_managers)]
+        #     try:
+        #         comment, created = Comment.objects.get_or_create(
+        #             freelancer=freelancer,
+        #             writer=writer,
+        #             defaults={
+        #                 'title': f'Título del comentario {i+1}',
+        #                 'description': f'Descripción del comentario {i+1}',
+        #                 'stars': 4.5 - i
+        #             }
+        #         )
+        #         if created:
+        #             self.stdout.write(self.style.SUCCESS(f'Comentario para "{freelancer.user.email}" creado por "{writer.email}"'))
+        #         else:
+        #             self.stdout.write(self.style.WARNING(f'Comentario ya existe para "{freelancer.user.email}"'))
+        #     except ValueError as e:
+        #         self.stdout.write(self.style.ERROR(f'Error al crear comentario: {str(e)}'))
+        #         continue
+        #     comments.append(comment)
 
         # Crear estados de proyecto (Status)
         project_statuses = []
@@ -373,22 +373,22 @@ class Command(BaseCommand):
             projects.append(project)
 
         # Crear ProjectFreelancer
-        project_freelancers = []
-        for i, project in enumerate(projects):
-            freelancer = freelancers_instances[i % len(freelancers_instances)]
-            try:
-                project_freelancer, created = ProjectFreelancer.objects.get_or_create(
-                    project=project,
-                    freelancer=freelancer,
-                )
-                if created:
-                    self.stdout.write(self.style.SUCCESS(f'Freelancer "{freelancer.user.email}" asignado al proyecto "{project.name}"'))
-                else:
-                    self.stdout.write(self.style.WARNING(f'Freelancer "{freelancer.user.email}" ya asignado al proyecto "{project.name}"'))
-            except ValueError as e:
-                self.stdout.write(self.style.ERROR(f'Error al asignar freelancer al proyecto: {str(e)}'))
-                continue
-            project_freelancers.append(project_freelancer)
+        # project_freelancers = []
+        # for i, project in enumerate(projects):
+        #     freelancer = freelancers_instances[i % len(freelancers_instances)]
+        #     try:
+        #         project_freelancer, created = ProjectFreelancer.objects.get_or_create(
+        #             project=project,
+        #             freelancer=freelancer,
+        #         )
+        #         if created:
+        #             self.stdout.write(self.style.SUCCESS(f'Freelancer "{freelancer.user.email}" asignado al proyecto "{project.name}"'))
+        #         else:
+        #             self.stdout.write(self.style.WARNING(f'Freelancer "{freelancer.user.email}" ya asignado al proyecto "{project.name}"'))
+        #     except ValueError as e:
+        #         self.stdout.write(self.style.ERROR(f'Error al asignar freelancer al proyecto: {str(e)}'))
+        #         continue
+        #     project_freelancers.append(project_freelancer)
 
         # Crear habilidades requeridas para proyectos (ProjectSkill)
         project_skills = []
