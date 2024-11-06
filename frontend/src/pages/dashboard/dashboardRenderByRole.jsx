@@ -25,7 +25,7 @@ export function DashboardRenderByrole() {
 
   const { data: user, isLoading: userLoading } = useUser();
 
-  if (userLoading) return <SpinnerCustom />;
+  if (!user && userLoading) return <SpinnerCustom />;
 
 
   /*-----------------------------------------------------------------------------------*/

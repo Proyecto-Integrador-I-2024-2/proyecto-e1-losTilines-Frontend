@@ -130,6 +130,7 @@ export function NavigationTopBar() {
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
   const token = sessionStorage.getItem("token");
+  console.log("Token: ", token);
   const queryClient = useQueryClient();
 
   function handleLogOut() {
@@ -150,7 +151,7 @@ export function NavigationTopBar() {
 
       socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        print(data.message);
+        console.log("WebSocket message received:", data.message);
         setNotifications((prevNotifications) => [...prevNotifications, data.message]);
       };
 

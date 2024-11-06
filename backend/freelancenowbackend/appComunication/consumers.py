@@ -11,12 +11,15 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                 self.channel_name
             )
             await self.accept()
-            print(f"Usuario en conexión WebSocket: {user}")
+            print(f"Usuario en conexión WebSocket: {user}") 
         else:
             print("Usuario no autenticado, cerrando conexión.")
             await self.close()
 
     async def disconnect(self, close_code):
+        user = self.scope['user']
+        self.room_group_name = f'notifications_{user.id}'
+
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
