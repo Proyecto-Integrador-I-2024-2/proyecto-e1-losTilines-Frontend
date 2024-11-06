@@ -57,13 +57,12 @@ class ProjectFreelancerViewSet(viewsets.ModelViewSet):
 class MilestoneViewSet(viewsets.ModelViewSet):
     queryset = Milestone.objects.all()
     serializer_class = MilestoneSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
-    #filterset_class = [MilestoneFilter]
     filterset_fields = ['project', 'freelancer']
 
     def perform_create(self, serializer):
-    # Obtenemos el usuario que está realizando la solicitud
+        # Obtenemos el usuario que está realizando la solicitud
         user = self.request.user
 
         # Verificamos si el usuario es un freelancer
@@ -76,14 +75,16 @@ class MilestoneViewSet(viewsets.ModelViewSet):
         except Freelancer.DoesNotExist:
             raise ValidationError("Freelancer profile not found.")
 
+        # project = request.project
+        # print(project)
         # Buscar el proyecto asociado al freelancer en ProjectFreelancer
-        project_freelancer = ProjectFreelancer.objects.filter(freelancer=freelancer).first()
+        # project_freelancer = ProjectFreelancer.objects.filter(project=project).first()
 
-        if not project_freelancer:
-            raise ValidationError("You are not assigned to any project.")
+        # if not project_freelancer:
+        #     raise ValidationError("Project not found.")
 
         # Creamos el milestone asociándolo automáticamente al freelancer y al proyecto
-        serializer.save(freelancer=freelancer, project=project_freelancer.project)
+        serializer.save(freelancer=freelancer)
 
 class DeliverableViewSet(viewsets.ModelViewSet):
     queryset = Deliverable.objects.all()
