@@ -42,6 +42,8 @@ export function MilestonesDetail() {
     try {
       const milestones = await getProjectMilestones({ id });
       setMilestones(milestones);
+
+      console.log("Milestones on fetch: ", milestones);
     } catch (error) {
       console.error("Error fetching milestones:", error);
     }
@@ -71,6 +73,7 @@ export function MilestonesDetail() {
   }, [milestoneID]);
 
   useEffect(() => {
+    console.log("Milestones: ", milestones);
     if (milestones && milestones.length > 0) {
       setMilestoneID(milestones[0].id);
     }
@@ -129,13 +132,13 @@ export function MilestonesDetail() {
   };
 
   return (
-    <>
+    <div className=" w-full h-full max-h-screen min-h-0 pb-4 ">
       {/* <ProjectTopBar projectId={id} /> */}
-      <div className="flex flex-row w-full h-full min-h-0 p-5 space-x-4 ">
+      <div className="flex flex-row w-full h-full min-h-0 space-x-4 ">
         {/* Section 1: Milestones */}
 
-        <Card className="flex flex-col w-1/3 h-full pb-4 px-4">
-          <div className="flex-grow flex-col justify-start overflow-auto">
+        <Card className="flex flex-col w-1/3 pb-2 px-4">
+          <div className="flex flex-col w-full h-full justify-start overflow-scroll">
             {milestones.length > 0 ? (
               milestones.map((milestone) => (
                 <MilestoneCard
@@ -145,7 +148,11 @@ export function MilestonesDetail() {
                 />
               ))
             ) : (
-              <Typography variant="h6" color="gray">
+              <Typography
+                variant="h6"
+                color="gray"
+                className="flex flex-col justify-start items-center mt-4"
+              >
                 There are no milestones available.
               </Typography>
             )}
@@ -153,21 +160,33 @@ export function MilestonesDetail() {
 
           <footer className="flex flex-row justify-center items-center w-full h-auto mt-2">
             {/* Button to open the create milestone pop-up */}
-            <Button variant="text" onClick={handleOpenCreateMilestone}>
+            <Button variant="text" color="cyan"  onClick={handleOpenCreateMilestone}>
               Propose Milestone
             </Button>
           </footer>
         </Card>
 
         {/* Section 2: Milestone and deliverables info */}
-        <main className="flex flex-col w-2/3 h-full">
-          {milestoneID && milestones && deliverables && (
-            <MilestonesInfo
-              milestone={milestones.find(
-                (milestone) => milestone.id === milestoneID
-              )}
-              deliverables={deliverables}
-            />
+
+        <main className="flex flex-col w-2/3 h-full ">
+          {milestones && milestones.length > 0 ? (
+              <MilestonesInfo
+                milestone={milestones.find(
+                  (milestone) => milestone.id === milestoneID
+                )}
+                deliverables={deliverables}
+              />
+      
+          ) : (
+            <Card className="p-4 flex flex-col justify-center items-center h-full">
+              <button className="w-fit h-fit opacity-40 transform transition-transform duration-300 hover:-translate-y-2"  onClick={handleOpenCreateMilestone}>
+                <img
+                  src="/img/company/add.png"
+                  alt="add button"
+                  className="w-24 h-24"
+                />
+              </button>
+            </Card>
           )}
         </main>
       </div>
@@ -221,7 +240,7 @@ export function MilestonesDetail() {
           </section>
         </main>
       </PopUp>
-    </>
+    </div>
   );
 }
 

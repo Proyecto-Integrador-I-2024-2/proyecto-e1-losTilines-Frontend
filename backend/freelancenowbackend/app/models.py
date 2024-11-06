@@ -286,8 +286,8 @@ class Milestone(models.Model):
             raise ValidationError('The due date cannot be before the project start date.')
 
 class Deliverable(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.CharField(max_length=255, blank=True)
+    name = models.CharField(max_length=150)
+    description = models.CharField(max_length=600, blank=True)
     milestone = models.ForeignKey(Milestone, on_delete=models.CASCADE)
     attachment = models.FileField(upload_to='uploads/', blank=True, null=True)
 
