@@ -16,9 +16,25 @@ export const getMilestoneDeliverables = async ({ id }) => {
 
 // ----------------------------------------------------------------------
 
-export const addSkill = async ({ id, body }) => {
-    var userType = "skills";
+export const addSkillToProject = async ({ body }) => {
+    var userType = "projectskills";
     const url = `${userType}/`;
     const { data } = await apiClient.post(url, body);
+    return data;
+}
+
+export const editProjectSkill = async ({ body }) => {
+    var userType = "projectskills";
+    const url = `${userType}/`;
+    const { data } = await apiClient.post(url, body);
+    return data;
+}
+
+// ----------------------------------------------------------------------
+
+export const editProject = async ({ id, body }) => {
+    var userType = "projects";
+    const url = `${userType}/${id}/`;
+    const { data } = await apiClient.patch(url, body);
     return data;
 }
