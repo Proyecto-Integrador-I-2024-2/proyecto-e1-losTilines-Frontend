@@ -224,7 +224,7 @@ export function Profile() {
                         {/* Seccion de identifiacion y tabs de herramientas */}
                         {!externalCompanyData ?
                             <div className="mb-10 flex items-center justify-between flex-wrap gap-6 h-auto">
-                                <div className="flex items-center gap-6">
+                                <div className="flex flex-row items-center gap-6 justify-between">
                                     <Avatar
                                         src={((isFreelancer && !isUserLoading) || externalFreelancerData) ? (profile_picture?.replace(/\s+/g, '') || profile_pic) : (profile_picture || profile_pic)}
                                         alt="bruce-mars"
@@ -244,16 +244,18 @@ export function Profile() {
                                             {!isUserLoading && !externalCompanyData && !externalFreelancerData && role}
                                         </Typography>
                                         <Rating value={0} />
-                                        {
-                                            isFreelancer && externalFreelancerData && (
-                                                <div className="w-full flex flex-row items-end justify-end">
-                                                    <Button onClick={handleCompanyInterestPopUp}>
-                                                        Invite
-                                                    </Button>
-                                                </div>
-                                            )
-                                        }
+
                                     </div>
+
+                                    {
+                                        isFreelancer && externalFreelancerData && (
+                                            <div className="w-full flex flex-row items-end justify-end">
+                                                <Button onClick={handleCompanyInterestPopUp}>
+                                                    Invite
+                                                </Button>
+                                            </div>
+                                        )
+                                    }
 
                                 </div>
 

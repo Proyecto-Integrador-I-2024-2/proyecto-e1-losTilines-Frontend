@@ -28,6 +28,7 @@ export const ReviewSection = ({ id }) => {
                             <img
                                 className="w-12 h-12 rounded-full mr-4"
                                 src={review?.writer?.profile_picture || profile_pic}
+                                onError={(e) => { e.target.onerror = null; e.target.src = profile_pic }}
                                 alt={`${review?.writer?.first_name} ${review?.writer?.last_name}`}
                             />
                             <div>
@@ -45,7 +46,7 @@ export const ReviewSection = ({ id }) => {
                             </div>
                         ) : (
                             <div className="mt-4">
-                                <Textarea variant="static" placeholder="Your Comment" rows={8} />
+                                <Textarea variant="" placeholder="Your Comment" rows={8} />
                                 <div className="flex w-full justify-between py-1.5">
                                     <IconButton variant="text" color="blue-gray" size="sm">
                                         <svg
