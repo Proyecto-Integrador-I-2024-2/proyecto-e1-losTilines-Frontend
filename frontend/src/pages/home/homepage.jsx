@@ -103,23 +103,21 @@ const Homepage = () => {
                 Incredible projects for you to hop on!
               </Typography>
 
-              <div className="flex flex-col justify-center items-center w-full">
-                {projectsData && (
-                  <CustomList
-                    sectionTitle={""}
-                    sectionSubtitle={""}
-                    isDistributedEvenly={true}
-                  >
-                    {projectsData.map((project) => (
-                      <ProjectCard
-                        key={project.id}
-                        project={project}
-                        onCardClick={handleProjectCardClick}
-                      />
-                    ))}
-                  </CustomList>
-                )}
-              </div>
+              {projectsData && (
+                <CustomList
+                  sectionTitle={""}
+                  sectionSubtitle={""}
+                  isDistributedEvenly={true}
+                >
+                  {projectsData.map((project) => (
+                    <ProjectCard
+                      key={project.id}
+                      project={project}
+                      onCardClick={handleProjectCardClick}
+                    />
+                  ))}
+                </CustomList>
+              )}
             </div>
           </>
         )}

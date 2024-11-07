@@ -312,7 +312,7 @@ export function Profile() {
                             <div>
                                 {(!isUserLoading && !externalCompanyData) ? <ProfileInfoCard
                                     title="Profile Information"
-                                    description={isFreelancer ? description : companyData?.at(0)?.description || "No description y soy company"}
+                                    description={isFreelancer ? description : companyData?.at(0)?.description || "Company Description not provided"}
                                     details={isFreelancer ? {
                                         "first name": first_name,
                                         "last name": last_name,
