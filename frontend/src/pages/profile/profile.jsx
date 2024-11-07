@@ -224,38 +224,32 @@ export function Profile() {
                         {/* Seccion de identifiacion y tabs de herramientas */}
                         {!externalCompanyData ?
                             <div className="mb-10 flex items-center justify-between flex-wrap gap-6 h-auto">
-                                <div className="flex flex-row items-center gap-6 justify-between">
-                                    <Avatar
-                                        src={((isFreelancer && !isUserLoading) || externalFreelancerData) ? (profile_picture?.replace(/\s+/g, '') || profile_pic) : (profile_picture || profile_pic)}
-                                        alt="bruce-mars"
-                                        size="xl"
-                                        onError={(e) => { e.target.onerror = null; e.target.src = profile_pic }}
-                                        variant="circular"
-                                        className="rounded-lg shadow-lg shadow-blue-gray-500/40"
-                                    />
-                                    <div>
-                                        <Typography variant="h5" color="blue-gray" className="mb-1">
-                                            {isUserLoading ? <Spinner /> : `${first_name} ${last_name}`}
-                                        </Typography>
-                                        <Typography
-                                            variant="small"
-                                            className="font-normal text-blue-gray-600"
-                                        >
-                                            {!isUserLoading && !externalCompanyData && !externalFreelancerData && role}
-                                        </Typography>
-                                        <Rating value={0} />
-
+                                <div className="flex items-center justify-between flex-row gap-6 h-auto w-full">
+                                    <div className="flex items-center gap-6">
+                                        <Avatar
+                                            src={((isFreelancer && !isUserLoading) || externalFreelancerData) ? (profile_picture?.replace(/\s+/g, '') || profile_pic) : (profile_picture?.replace(/\s+/g, '') || profile_pic)}
+                                            alt="bruce-mars"
+                                            size="xl"
+                                            onError={(e) => { e.target.onerror = null; e.target.src = profile_pic }}
+                                            variant="circular"
+                                            className="rounded-lg shadow-lg shadow-blue-gray-500/40"
+                                        />
+                                        <div>
+                                            <Typography variant="h5" color="blue-gray" className="mb-1">
+                                                {isUserLoading ? <Spinner /> : `${first_name} ${last_name}`}
+                                            </Typography>
+                                            <Typography
+                                                variant="small"
+                                                className="font-normal text-blue-gray-600"
+                                            >
+                                                {!isUserLoading && !externalCompanyData && !externalFreelancerData && role}
+                                            </Typography>
+                                            <Rating value={0} aria-disabled />
+                                        </div>
                                     </div>
-
-                                    {
-                                        isFreelancer && externalFreelancerData && (
-                                            <div className="w-full flex flex-row items-end justify-end">
-                                                <Button onClick={handleCompanyInterestPopUp}>
-                                                    Invite
-                                                </Button>
-                                            </div>
-                                        )
-                                    }
+                                    <Button onClick={handleCompanyInterestPopUp} color="light-blue">
+                                        Invite
+                                    </Button>
 
                                 </div>
 
@@ -282,7 +276,7 @@ export function Profile() {
                                         >
                                             {externalCompanyData.industry} Company
                                         </Typography>
-                                        <Rating value={5} />
+                                        <Rating value={5} aria-disabled />
                                     </div>
                                 </div>
 

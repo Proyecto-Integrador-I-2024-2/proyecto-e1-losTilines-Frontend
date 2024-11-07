@@ -26,13 +26,13 @@ export function CompanyInterestPopUp({ open, onOpen, companyId, handleInterest }
 
 
     return (
-        <Dialog open={open} handler={onOpen} size="md" className="overflow-auto">
+        <Dialog open={open} handler={onOpen} size="md" className="max-h-full">
             <DialogHeader>Interested on this freelancer?</DialogHeader>
-            <DialogBody divider className="max-h-96 overflow-y-auto">
+            <DialogBody divider>
                 <Typography variant="h5">
                     Invite them to Freelance Now with one of your projects.
                 </Typography>
-                <div className="mt-4">
+                <div className="mt-4 h-full">
                     {
                         projects && (
                             <Select
@@ -40,6 +40,7 @@ export function CompanyInterestPopUp({ open, onOpen, companyId, handleInterest }
                                 value={selectedProject}
                                 onChange={(value) => setSelectedProject(value)}
                                 disabled={isLoading}
+                                className="overflow-y-auto"
                             >
                                 {projects && projects.map((proj) => (
                                     <Option key={proj.id} value={proj.id.toString()}>

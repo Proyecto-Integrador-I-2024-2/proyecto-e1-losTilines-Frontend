@@ -12,7 +12,7 @@ import {
 } from "@material-tailwind/react";
 import { useWorkerProjects } from "@/hooks/projects/useWorkerProjects";
 import { useFreelancerProjects } from "@/hooks/projects/useFreelancerProjects";
-import { AddProject } from "@/widgets/popUp";
+import { AddProject, PopUp } from "@/widgets/popUp";
 import { useNavigate } from "react-router-dom";
 // import { projectsData } from "@/data";
 import { PlusIcon } from "@heroicons/react/24/outline";
@@ -23,6 +23,7 @@ import { useQueryClient } from "@tanstack/react-query";
 export function ProjectListing() {
   const [userType, setUserType] = useState();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [errorDialogOpen, setErrorDialogOpen] = useState(false);
   const navigateTo = useNavigate();
   const queryClient = useQueryClient();
   const id = sessionStorage.getItem("id");
@@ -48,6 +49,7 @@ export function ProjectListing() {
     const data = await createProject({ body: projectData });
     if (data.error) {
       console.error("Error creating project inside listing: ", data.error);
+      setErrorDialogOpen(true);
       // return;
     }
     // Si no hay error, puedes continuar con el procesamiento del proyecto creado
@@ -115,7 +117,12 @@ export function ProjectListing() {
       {userType !== "Freelancer" && (
         <AddProject open={dialogOpen} setOpen={setDialogOpen} handleCreateProject={handleCreateProject} size="lg" ripple={true} className="rounded-full shadow-lg" />
       )}
-
+      <PopUp open={errorDialogOpen} setOpen={setErrorDialogOpen} handleOpen={() => setErrorDialogOpen(prev => !prev)} isFit={true} disableSubmit={false} >
+        <div className="flex flex-col items-center justify-center w-full">
+          <Typography variant="h3" color="red">Error creating project</Typography>
+          <Typography variant="body1" color="gray">There was an error creating the project. Please try again later.</Typography>
+        </div>
+      </PopUp>
     </div>
   );
 }
