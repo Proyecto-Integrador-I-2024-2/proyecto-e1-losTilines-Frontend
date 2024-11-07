@@ -17,7 +17,7 @@ export function CustomList({ children, sectionTitle, sectionSubtitle, isDistribu
                 {sectionSubtitle}
             </Typography>
             <div className="flex flex-row w-auto">
-                <div className={`inline-flex gap-8 w-full items-center ${isDistributedEvenly ? "justify-evenly" : ""}`}>
+                <div className={`inline-flex gap-8 w-auto items-center ${isDistributedEvenly ? "justify-evenly" : ""}`}>
                     {children}
                 </div>
             </div>

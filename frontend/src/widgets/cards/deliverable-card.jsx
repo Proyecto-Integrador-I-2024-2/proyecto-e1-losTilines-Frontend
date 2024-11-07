@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   List,
   ListItem,
@@ -21,6 +21,14 @@ export function DeliverableCard({ deliverable }) {
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+
+  useEffect(() => {
+
+    console.log("Deliverable ID selected: ", deliverable.description);
+
+  }, [deliverable]);
+
 
   const handleOpen = () => setOpen(!open);
 
@@ -78,18 +86,19 @@ export function DeliverableCard({ deliverable }) {
 
   return (
     <>
-      <Card className="w-auto h-auto">
+      <Card className="w-full  mb-4">
         <div className="flex justify-between p-2">
-          <div>
-            <List>
-              <ListItem
-                ripple={false}
-                className="py-1 pr-1 pl-4 group w-full space-x-8"
-              >
-                {deliverable.name}
-                <ListItemSuffix className="flex flex-row justify-between items-center">
-                  {deliverable.description}
-                </ListItemSuffix>
+          <div className="w-full ">
+          
+              <ListItem className="flex flex-row items-center group w-full space-x-2">
+                <div className="flex flex-col h-auto w-full">
+                  <Typography variant="h6" className="whitespace-normal break-words">
+                    {deliverable.name}
+                  </Typography>
+                  <Typography className="whitespace-normal break-words h-auto w-auto">
+                    {deliverable.description}
+                  </Typography>
+                </div>
 
                 <button
                   onClick={(event) => {
@@ -106,7 +115,7 @@ export function DeliverableCard({ deliverable }) {
                   />
                 </button>
               </ListItem>
-            </List>
+            
           </div>
         </div>
       </Card>
@@ -175,12 +184,9 @@ export function DeliverableCard({ deliverable }) {
             )}
           </section>
         </main>
-
-
       </PopUp>
 
       {/* Pop-up for deliverable deletion */}
-
       <PopUp
         title={"Confirm Deletion"}
         submitFunc={handleConfirmDelete}
@@ -203,9 +209,6 @@ export function DeliverableCard({ deliverable }) {
           </Typography>
         </div>
       </PopUp>
-
-   
-
     </>
   );
 }
