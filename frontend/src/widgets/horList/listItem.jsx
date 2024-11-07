@@ -36,7 +36,7 @@ export function CustomListItem({ img, title, tag, description, members, route })
                 <Typography
                     variant="h5"
                     color="blue-gray"
-                    className="mt-1 mb-2"
+                    className="mt-1 mb-2 overflow-hidden"
                 >
                     {title}
                 </Typography>

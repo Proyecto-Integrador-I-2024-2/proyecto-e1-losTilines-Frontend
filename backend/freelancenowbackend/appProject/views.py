@@ -31,18 +31,26 @@ class ProjectViewSet(viewsets.ModelViewSet):
         user_company = UserCompany.objects.filter(user=user).first()
         if user_company is None:
             raise PermissionDenied("The user does not belong to any company.")
-        
-        status, _ = Status.objects.get_or_create(name="Pending")
+
+        # Verificación adicional para status
+        status, created = Status.objects.get_or_create(name="Pending")
+        if not status:
+            raise PermissionDenied("Status not found or could not be created.")
+
         serializer.save(user=user, status=status)
 
     def partial_update(self, request, *args, **kwargs):
         user = request.user
         instance = self.get_object()
 
-        # Verificar permisos de modificación, por ejemplo:
+        # Verificar permisos de modificación
         if user.groups.filter(name='Freelancer').exists():
             raise PermissionDenied("You do not have permission to modify this project.")
-        
+
+        # Verificación adicional para instance
+        if not instance:
+            raise PermissionDenied("Project instance not found.")
+
         # Lógica de actualización adicional si es necesario
         return super().partial_update(request, *args, **kwargs)
 

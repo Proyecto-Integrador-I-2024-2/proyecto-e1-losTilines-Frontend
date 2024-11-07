@@ -12,17 +12,13 @@ import { useCreateProject } from "@/hooks/projects";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
-export function AddProject({ open, setOpen }) {
+export function AddProject({ open, setOpen, handleCreateProject }) {
   const { data: user } = useUser();
-  const queryClient = useQueryClient();
 
   const [projectName, setProjectName] = useState("");
   const [budget, setBudget] = useState("");
   const [description, setDescription] = useState("");
   const [start_date, setDate] = useState("");
-  const [infoFetch, setInfoFetch] = useState("");
-
-  const createProjectMutation = useCreateProject();
 
   const handleProjectCreation = async () => {
     if (projectName && budget && description && start_date) {
@@ -35,24 +31,18 @@ export function AddProject({ open, setOpen }) {
         user: user?.id,
       };
 
+      console.log("projectData", projectData);
+
       try {
-        createProjectMutation.mutate(projectData, {
-          onSuccess: () => {
-            setInfoFetch("Project created successfully");
-            queryClient.invalidateQueries("projects");
-            setOpen(false); // Cierra el diálogo después de crear el proyecto
-            setProjectName("");
-            setBudget("");
-            setDescription("");
-            setDate("");
-          },
-          onError: (error) => {
-            setInfoFetch(`Error creating project: ${error.message}`);
-          },
-        });
+        handleCreateProject(projectData);
       } catch (error) {
         console.error("Error creating project: ", error);
       }
+      setProjectName("");
+      setBudget("");
+      setDescription("");
+      setDate("");
+      setOpen(false);
     } else {
       alert("Please fill all fields before submitting.");
     }

@@ -126,7 +126,7 @@ export function EditSkillsPopup({ open, onOpen, skills, editSkill, addSkill, del
                 </div>
                 <div className="mt-4">
                     {
-                        (skillsData && !selectedSkill) && (
+                        (skillsData && !((selectedSkill !== null))) && (
                             <Select
                                 label="Selecciona una habilidad para agregar"
                                 value={skillToAdd}
