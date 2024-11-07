@@ -159,7 +159,7 @@ profile_images = [
     'https://i.pinimg.com/736x/a3/53/66/a3536654d44f08f16044ae301a8be184.jpg',
     'https://i.pinimg.com/564x/9e/47/79/9e47798a74eb85a391204f7f32c509d1.jpg',
     'https://i.pinimg.com/564x/c5/cc/82/c5cc82bec47291eb587de8d9a6c92bb7.jpg',
-    'https://i.pinimg.com/con   trol/564x/00/62/87/006287d3aa9c240f2ca4fdfe90d67a39.jpg',
+    'https://i.pinimg.com/control/564x/00/62/87/006287d3aa9c240f2ca4fdfe90d67a39.jpg',
     'https://i.pinimg.com/control/564x/b8/2c/5a/b82c5a7a7c122bcdd87dbe495edf7294.jpg',
     'https://i.pinimg.com/564x/7e/ac/b0/7eacb0cd582fb0d069281511adacdddd.jpg'
 ]
@@ -367,7 +367,6 @@ class CommentFactory(DjangoModelFactory):
     class Meta:
         model = Comment
 
-    title = factory.Faker('sentence')
     
     description = factory.LazyAttribute(lambda obj: random.choice(
         positive_comment_templates if random.choice([True, False]) else negative_comment_templates
@@ -603,12 +602,17 @@ def cargar_datos():
         return
     #Milestones
     try:
+        
+        print("Creando milestones...")
+        print(f"Cantidad de proyectos: {len(projects)}")
+        
         for project in projects:
-
+            print(f"Creando milestones para {project.name}")
             freelancers_in_project = ProjectFreelancer.objects.filter(project=project).select_related('freelancer')
             for freelancer in freelancers_in_project:
                 try:
                     milestones = MilestoneFactory.create_batch(2, project=project, freelancer=freelancer.freelancer, status=random.choice(statuss))
+                    
                 except Exception as e:
                     print(f"Error al crear milestones para {project.name} y {freelancer.freelancer.user.first_name}: {str(e)}")
                     continue
