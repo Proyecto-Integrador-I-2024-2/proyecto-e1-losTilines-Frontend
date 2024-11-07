@@ -18,6 +18,7 @@ class CompanyDetailViewSet(viewsets.ReadOnlyModelViewSet):
 
     filter_backends = [DjangoFilterBackend]
     filterset_class = CompanyFilter
+    filterset_fields = ['industry', 'name', 'tax_id']
 
 class WorkerViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny] 

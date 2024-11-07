@@ -35,7 +35,8 @@ class CompanyDetailSerializer(serializers.ModelSerializer):
         projects_in_company = Project.objects.filter(user__usercompany__company=obj)
         
         freelancers = Freelancer.objects.filter(
-            projectfreelancer__project__in=projects_in_company
+            projectfreelancer__project__in=projects_in_company,
+            projectfreelancer__status__in=['completed', 'in_progress']
         ).distinct()
         
         return FreelancerSerializer(freelancers, many=True).data
