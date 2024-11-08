@@ -46,20 +46,6 @@ class UserRole(models.Model):
     def __str__(self):
         return str(self.user)
 
-class Notification(models.Model):
-    message = models.CharField(max_length=2000)
-    created_at = models.DateField()
-
-    def __str__(self):
-        return self.message
-
-class UserNotification(models.Model):
-    notification = models.ForeignKey(Notification, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return str(self.id)
-
 # ---------------------- COMPANIES ---------------------- #
 class Company(models.Model):
     tax_id = models.CharField(max_length=30, unique=True, validators=[RegexValidator(regex=r'^[A-Z0-9]{1,30}$', message='Company ID must be alphanumeric and up to 30 characters.')])
@@ -133,16 +119,9 @@ class Freelancer(models.Model):
             raise ValueError("The user must be part of the 'freelancer' group.")
         super().save(*args, **kwargs)
 
-class SkillType(models.Model):
-    name = models.CharField(max_length=30, unique=True)
-
-    def __str__(self):
-        return self.name
-
 class Skill(models.Model):
     name = models.CharField(max_length=30, unique=True)
-    is_predefined = models.BooleanField(default=False)
-    type = models.ForeignKey(SkillType, on_delete=models.CASCADE)   
+    is_predefined = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -190,13 +169,23 @@ class Status(models.Model):
         return self.name
 
 class Project(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('open_to_apply', 'Open to apply'),
+        ('in_progress', 'In Progress'),
+        ('in_progress_and_open_to_apply', 'In Progress and open to apply'),
+        ('finished', 'Finished'),
+        ('rejected', 'Rejected'),
+        ('canceled', 'Canceled'),
+    ]
+
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=2000)
     start_date = models.DateField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     budget = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.00)])
     file = models.FileField(upload_to='uploads/', blank=True, null=True)
-    status = models.ForeignKey(Status, on_delete=models.CASCADE, blank=True, null=True)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='pending')
     image = models.ImageField(upload_to='uploads/', blank=True, null=True)
 
     def __str__(self):
@@ -236,8 +225,7 @@ class Project(models.Model):
         ]
 
         return recipients
-
-    
+   
 class ProjectFreelancer(models.Model):
     STATUS_CHOICES = [
         ('created', 'Created'),
@@ -270,13 +258,21 @@ class ProjectSkill(models.Model):
         return f'{self.skill} required for {self.project}'
     
 class Milestone(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('to_do', 'To Do'),
+        ('in_progress', 'In Progress'),
+        ('review', 'Review'),
+        ('done', 'Done')
+    ]
+
     name = models.CharField(max_length=300)
     description = models.CharField(max_length=1200, blank=True)
     due_date = models.DateField()
     freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     file = models.FileField(upload_to='uploads/', blank=True, null=True)
-    status = models.ForeignKey(Status, on_delete=models.CASCADE, blank=True, null=True)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='pending')
 
     def __str__(self):
         return self.name
@@ -286,9 +282,17 @@ class Milestone(models.Model):
             raise ValidationError('The due date cannot be before the project start date.')
 
 class Deliverable(models.Model):
+    STATUS_CHOICES = [
+        ('to_do', 'To Do'),
+        ('in_progress', 'In Progress'),
+        ('review', 'Review'),
+        ('done', 'Done')
+    ]
+
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=255, blank=True)
     milestone = models.ForeignKey(Milestone, on_delete=models.CASCADE)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='to_do')
     attachment = models.FileField(upload_to='uploads/', blank=True, null=True)
 
     def __str__(self):
