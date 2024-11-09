@@ -24,7 +24,7 @@ import { useQueryParams } from "@/hooks";
 import { useProject } from "@/hooks";
 import { profile_pic } from "@/data/placeholder";
 import { EditProjectPopUp, EditSkillsPopup, FreelancerInterestPopUp } from "@/widgets/popUp";
-import { addSkillToProject, editProject, postFreelancerInterest } from "@/services";
+import { addSkillToProject, deleteProjectSkill, editProject, editProjectSkill, postFreelancerInterest } from "@/services";
 import { useQueryClient } from "@tanstack/react-query";
 
 
@@ -81,17 +81,22 @@ export function ProjectDetail() {
   }
 
   function handleEditSkill(id, body) {
-    console.log("ID", id);
-    // editFreelancerSkill({ id, body })
-    // queryClient.invalidateQueries(['project', id]);
-    // userRefetch()
+    const skillToEditData = {
+      project: body.project,
+      level: body.level,
+      skill: body.skill.id
+    }
+    editProjectSkill({ id, body: skillToEditData })
+    console.log("ID de proyecto al editar", id);
+    queryClient.invalidateQueries(['project', id]);
+    projectRefetch()
   }
 
   function handleDeleteSkill(id) {
     console.log("ID", id);
-    // deleteFreelancerSkill({ id })
-    // queryClient.invalidateQueries(['project', id]);
-    // userRefetch()
+    deleteProjectSkill({ id })
+    queryClient.invalidateQueries(['project', id]);
+    projectRefetch()
   }
 
   // Project basic Data
@@ -99,6 +104,9 @@ export function ProjectDetail() {
     console.log("Body", body);
     editProject({ id, body })
     queryClient.invalidateQueries(['project', id]);
+    const userId = sessionStorage.getItem("id");
+    queryClient.invalidateQueries(['freelancer_projects', userId]);
+    queryClient.invalidateQueries(['worker_projects', userId]);
     projectRefetch()
   }
 
@@ -121,7 +129,7 @@ export function ProjectDetail() {
         <div className="mx-3 mt-4 mb-4 lg:mx-4">
           <Card className="inline-flex w-full border border-blue-gray-100 mb-2">
             <CardBody className="h-full p-4">
-              <div className=" flex items-center justify-between flex-wrap gap-6 h-auto">
+              <div className="flex items-center justify-between flex-wrap gap-6 h-auto">
                 <div className="flex items-center gap-6">
                   <Avatar
                     src={project.image || profile_pic}

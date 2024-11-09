@@ -23,10 +23,17 @@ export const addSkillToProject = async ({ body }) => {
     return data;
 }
 
-export const editProjectSkill = async ({ body }) => {
+export const editProjectSkill = async ({ id, body }) => {
     var userType = "projectskills";
-    const url = `${userType}/`;
-    const { data } = await apiClient.post(url, body);
+    const url = `${userType}/${id}/`;
+    const { data } = await apiClient.patch(url, body);
+    return data;
+}
+
+export const deleteProjectSkill = async ({ id }) => {
+    var userType = "projectskills";
+    const url = `${userType}/${id}/`;
+    const { data } = await apiClient.delete(url);
     return data;
 }
 
@@ -38,3 +45,16 @@ export const editProject = async ({ id, body }) => {
     const { data } = await apiClient.patch(url, body);
     return data;
 }
+
+
+// ----------------------------------------------------------------------
+
+export const createProject = async ({ body }) => {
+    const url = "projects/";
+    try {
+        const { data } = await apiClient.post(url, body);
+        return data;
+    } catch (error) {
+        return { error: error.response };
+    }
+};

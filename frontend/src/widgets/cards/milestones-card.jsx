@@ -37,7 +37,7 @@ export function MilestoneCard({ milestone, onClick }) {
         shadow={false}
         className="mx-0 flex flex-col  items-center justify-center p-4"
       >
-            <Typography variant="lead" color="blue-gray">
+            <Typography variant="" color="blue-gray">
               {milestone.name} {/* Muestra el título del milestone */}
             </Typography>
     
