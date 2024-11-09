@@ -220,7 +220,7 @@ class Project(models.Model):
 
         recipients = [
             {"user": project_manager, "message": "Your project creation request has been created successfully."},
-            {"user": business_manager, "message": f"{project_manager.first_name} has submitted a request to create the project {self.name} in the {area.name} area of your company."},
+            {"user": business_manager, "message": f"{project_manager.first_name} has submitted a request to create the project {self.name} in the {area} area of your company."},
             {"user": admin_area, "message": f"{project_manager.first_name} has submitted a request to create the project {self.name} in your area."}
         ]
 

@@ -31,13 +31,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         user_company = UserCompany.objects.filter(user=user).first()
         if user_company is None:
             raise PermissionDenied("The user does not belong to any company.")
-
-        # Verificación adicional para status
-        status, created = Status.objects.get_or_create(name="Pending")
-        if not status:
-            raise PermissionDenied("Status not found or could not be created.")
-
-        serializer.save(user=user, status=status)
+        serializer.save(user=user)
 
     def partial_update(self, request, *args, **kwargs):
         user = request.user
