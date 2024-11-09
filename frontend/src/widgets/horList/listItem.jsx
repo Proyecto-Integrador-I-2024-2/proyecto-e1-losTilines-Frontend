@@ -14,7 +14,7 @@ import { Link } from "react-router-dom";
 
 export function CustomListItem({ img, title, tag, description, members, route }) {
     return (
-        <Card key={title} color="transparent" shadow={false}>
+        <Card key={title} color="transparent" shadow={false} className="w-96">
             <CardHeader
                 floated={false}
                 color="gray"
@@ -36,13 +36,13 @@ export function CustomListItem({ img, title, tag, description, members, route })
                 <Typography
                     variant="h5"
                     color="blue-gray"
-                    className="mt-1 mb-2"
+                    className="mt-1 mb-2 overflow-hidden"
                 >
                     {title}
                 </Typography>
                 <Typography
                     variant="small"
-                    className="font-normal text-blue-gray-500"
+                    className="font-normal text-blue-gray-500 overflow-hidden"
                 >
                     {description}
                 </Typography>

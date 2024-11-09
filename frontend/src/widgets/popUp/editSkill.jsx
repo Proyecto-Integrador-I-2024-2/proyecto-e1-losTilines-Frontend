@@ -45,7 +45,13 @@ export function EditSkillsPopup({ open, onOpen, skills, editSkill, addSkill, del
         onOpen(false);
     };
 
+
     const handleEdit = (index) => {
+        if (selectedSkill === index) {
+            setSelectedSkill(null);
+            setNewSkill({ skill_name: "", level: "" });
+            return;
+        }
         setSelectedSkill(index);
         setNewSkill(skills[index]);
         onOpen(true);
@@ -57,6 +63,13 @@ export function EditSkillsPopup({ open, onOpen, skills, editSkill, addSkill, del
     };
 
     const handleChange = (e) => {
+        if (e.target.name === "level") {
+            if (e.target.value < 0) {
+                e.target.value = 0;
+            } else if (e.target.value > 100) {
+                e.target.value = 100;
+            }
+        }
         const { name, value } = e.target;
         setNewSkill({ ...newSkill, [name]: value });
     };
@@ -83,6 +96,21 @@ export function EditSkillsPopup({ open, onOpen, skills, editSkill, addSkill, del
                         </div>
                     ))}
                 </div>
+                {
+                    (selectedSkill !== null) && (
+                        <div className="mt-6 space-y-4">
+                            <Input
+                                label={skills[selectedSkill]?.skill_name || skills[selectedSkill]?.skill?.name}
+                                name="level"
+                                type="number"
+                                min="0"
+                                max="100"
+                                value={selectedSkill?.skill?.name}
+                                disabled
+                            />
+                        </div>
+                    )
+                }
                 <div className="mt-6 space-y-4">
                     <Input
                         label="Nivel (%)"
@@ -90,6 +118,7 @@ export function EditSkillsPopup({ open, onOpen, skills, editSkill, addSkill, del
                         type="number"
                         min="0"
                         max="100"
+                        step="5"
                         value={newSkill.level}
                         onChange={handleChange}
                         required
@@ -97,7 +126,7 @@ export function EditSkillsPopup({ open, onOpen, skills, editSkill, addSkill, del
                 </div>
                 <div className="mt-4">
                     {
-                        skillsData && (
+                        (skillsData && !((selectedSkill !== null))) && (
                             <Select
                                 label="Selecciona una habilidad para agregar"
                                 value={skillToAdd}
