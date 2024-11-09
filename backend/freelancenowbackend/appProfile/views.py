@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
-from app.models import Skill, Experience, SkillType
+from app.models import Skill, Experience
 from app.serializers import SkillSerializer, ExperienceSerializer
 from rest_framework.exceptions import ValidationError, PermissionDenied
 from django_filters.rest_framework import DjangoFilterBackend
@@ -105,15 +105,11 @@ class SkillViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         skill_name = self.request.data.get('name')
-        is_predefined = self.request.data.get('is_predefined', False)
-        skill_type_name = self.request.data.get('type')
-
-        skill_type, _ = SkillType.objects.get_or_create(name=skill_type_name)
 
         if Skill.objects.filter(name=skill_name).exists():
             raise ValidationError({"error": f"Skill with name '{skill_name}' already exists."})
 
-        serializer.save(name=skill_name, is_predefined=is_predefined, type=skill_type)
+        serializer.save(name=skill_name)
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
