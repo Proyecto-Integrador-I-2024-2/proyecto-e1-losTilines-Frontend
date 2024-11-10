@@ -38,6 +38,14 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
+    depends_on:
+      - backend
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+    
     command: npm run dev
     volumes:
       - ./frontend:/usr/src/app
