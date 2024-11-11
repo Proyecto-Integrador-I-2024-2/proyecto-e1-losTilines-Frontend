@@ -6,6 +6,7 @@ from random import choice
 from django.db import transaction
 from django.contrib.auth.models import Group
 import random
+from datetime import date
 from app.models import (
     User, UserRole, Company, Area, UserCompany,
     Freelancer, Skill, FreelancerSkill, Status, Project, ProjectFreelancer, ProjectSkill, 
@@ -66,7 +67,7 @@ years_experience = ['5', '7', '10', '3', '12']
 fake = Faker('es_CO')
 
 AREA_CHOICES = [
-    'RRHH', 'Finanzas', 'Marketing', 'Ventas', 'Operaciones', 'Tecnología', 'Soporte', 'Producto', 'Calidad', 'Logística', 'Atención Cliente', 'Innovación', 'Legal', 'Admin', 'Proyectos'
+    'Soporte', 'Finanzas', 'Marketing', 'Ventas', 'Operaciones', 'Tecnología', 'RRHH', 'Producto', 'Calidad', 'Logística', 'Atención Cliente', 'Innovación', 'Legal', 'Admin', 'Proyectos'
     ]
 
 SKILL_CHOICES = ['Python', 'Django', 'JavaScript', 'React', 'Vue.js', 'Angular', 'HTML', 'CSS', 'SQL', 'NoSQL', 'Java', 'C++', 'C#', 'Go', 'Ruby', 'PHP', 'Node.js', 
@@ -294,7 +295,7 @@ class FreelancerFactory(DjangoModelFactory):
     class Meta:
         model = Freelancer
 
-    user = factory.SubFactory(MaleUserFactory, assign_group='Freelancer')  # Solo hombres
+    user = factory.SubFactory(MaleUserFactory, assign_group='Freelancer')
     description = factory.LazyFunction(generate_freelancer_paragraph)  
     country = factory.Faker('country')
     city = factory.Faker('city')
@@ -313,11 +314,32 @@ class CompanyFactory(DjangoModelFactory):
     email = factory.LazyAttribute(lambda obj: f'info@{obj.name.lower().replace(" ", "")}.com')
     user = factory.LazyAttribute(lambda obj: obj.user)
 
+class especificCompanyFactory(DjangoModelFactory):
+    class Meta:
+        model = Company
+
+    tax_id = "COMPANY2000"
+    name = "Tecnologias Quigua" 
+    country = "Colombia"
+    city = "Cali"
+    address = "Calle 3N #16-105"
+    telephone = "3055550102"
+    email = factory.LazyAttribute(lambda obj: f'info@{obj.name.lower().replace(" ", "")}.com')
+    user = factory.LazyAttribute(lambda obj: obj.user)
+
 class AreaFactory(DjangoModelFactory):
     class Meta:
         model = Area
 
     name = factory.Iterator(AREA_CHOICES, cycle=False) 
+    company = factory.SubFactory(CompanyFactory)
+    user = factory.LazyAttribute(lambda obj: obj.user)
+
+class especificAreaFactory(DjangoModelFactory):
+    class Meta:
+        model = Area
+
+    name = "Soporte" 
     company = factory.SubFactory(CompanyFactory)
     user = factory.LazyAttribute(lambda obj: obj.user)
 
@@ -359,6 +381,19 @@ class ProjectFactory(DjangoModelFactory):
     start_date = factory.LazyFunction(timezone.now)
     user = factory.LazyAttribute(lambda obj: obj.user)
     budget = factory.LazyAttribute(lambda _: fake.random_int(min=35000, max=125000))
+
+class especificProjectFactory(DjangoModelFactory):
+    class Meta:
+        model = Project
+
+    name = "Freelance Aplication"
+    description = (
+        "Una plataforma intuitiva que conecta freelancers con empresas, facilitando la gestión de "
+        "proyectos, contratación y colaboración. Ideal para encontrar talento y coordinar equipos de "
+        "trabajo de manera eficiente.")
+    start_date = date(2024, 7, 20)  # Fecha específica: 20 de julio de 2024
+    user = factory.LazyAttribute(lambda obj: obj.user)
+    budget = 6000.00  # Presupuesto fijo de 6000
 
 class ProjectFreelancerFactory(DjangoModelFactory):
     class Meta:
@@ -465,9 +500,18 @@ class StatusFactory(DjangoModelFactory):
 
     name = factory.LazyAttribute(lambda obj: obj.name)  
 
+
+
+
+
 def cargar_datos():
 
     roles = []
+    freelancers = []
+    business_managers = []
+    area_admins = []
+    project_managers = []
+
     try:
         freelancer_group = create_group_if_not_exists('Freelancer')
         business_manager_group = create_group_if_not_exists('Business Manager')
@@ -479,11 +523,27 @@ def cargar_datos():
         return
 
     try:
-        freelancers = FreelancerFactory.create_batch(8)
+        specific_freelancer = FreelancerFactory.create(
+            user__first_name="Ricardo",
+            user__last_name="Urbina",
+            user__email="ricardo.urbina@example.com",
+            user__profile_picture=choice(male_profile_images),
+            user__is_active=True
+        )
+        random_freelancers = FreelancerFactory.create_batch(8)
+        freelancers.extend(random_freelancers)  
 
+        print("Freelancers específicos y aleatorios creados.")
+    except Exception as e:
+        print(f"Error al crear freelancers o asignar roles: {str(e)}")
+        return
+
+    try:
         for freelancer in freelancers:
             uR = UserRoleFactory(user=freelancer.user, role=freelancer_group)  
             roles.append(uR)
+        uRSpecific = UserRoleFactory(user=specific_freelancer.user, role=freelancer_group)
+        roles.append(uRSpecific)
         print(f"Freelancers creados y roles asignados.")
     except Exception as e:
         print(f"Error al crear freelancers o asignar roles: {str(e)}")
@@ -493,39 +553,99 @@ def cargar_datos():
         skills = SkillFactory.create_batch(20)
         for freelancer in freelancers:
             FreelancerSkillFactory.create(freelancer=freelancer, skill=skills[fake.random_int(0, len(skills) - 1)])
+        FreelancerSkillFactory.create(freelancer=specific_freelancer, skill=skills[0])
+        freelancers.append(specific_freelancer)
+
         print("Habilidades asignadas a freelancers.")
     except Exception as e:
         print(f"Error al asignar habilidades: {str(e)}")
         return
 
     try:
-        business_managers = FemaleUserFactory.create_batch(2, assign_group='Business Manager')
-        for manager in business_managers:
-            # Asignar el rol "Business Manager"
-            uR = UserRoleFactory(user=manager, role=business_manager_group)
-            roles.append(uR)
-        print(f"Business Managers creados y roles asignados.")
+        specific_bm = MaleUserFactory.create(
+            first_name="Raul",
+            last_name="Quigua",
+            email="raul.quigua@example.com",
+            assign_group="Business Manager",
+            profile_picture=choice(profile_images_female),
+            is_active=True
+        )
+        random_bms = FemaleUserFactory.create_batch(2, assign_group='Business Manager')
+        business_managers.extend(random_bms)  
+
+        print("Business Managers específicos y aleatorios creados.")
     except Exception as e:
         print(f"Error al crear Business Managers o asignar roles: {str(e)}")
         return
 
     try:
-        area_admins = MaleUserFactory.create_batch(4, assign_group='Area Admin')
+        for manager in business_managers:
+            # Asignar el rol "Business Manager"
+            uR = UserRoleFactory(user=manager, role=business_manager_group)
+            roles.append(uR)
+        uREsp = UserRoleFactory(user=specific_bm, role=business_manager_group)
+        roles.append(uREsp)
+        print(f"Business Managers roles asignados.")
+    except Exception as e:
+        print(f"Error al crear Business Managers o asignar roles: {str(e)}")
+        return
+
+
+    try:
+        specific_aa = MaleUserFactory.create(
+            first_name="Kevin",
+            last_name="Nieto",
+            email="kevin.nieto@example.com",
+            assign_group="Area Admin",
+            profile_picture=choice(male_profile_images),
+            is_active=True
+        )
+
+        print("Area Admins específicos y aleatorios creados.")
+    except Exception as e:
+        print(f"Error al crear Area Admins o asignar roles: {str(e)}")
+        return
+
+    try:
+        random_aas = MaleUserFactory.create_batch(4, assign_group='Area Admin')
+        area_admins.extend(random_aas)  
+
         for admin in area_admins:
             # Asignar el rol "Area Admin"
             uR = UserRoleFactory(user=admin, role=area_admin_group)
             roles.append(uR)
+        uRE = UserRoleFactory(user=specific_aa, role=area_admin_group)
+        roles.append(uRE)
         print(f"Area Admins creados y roles asignados.")
     except Exception as e:
         print(f"Error al crear Area Admins o asignar roles: {str(e)}")
         return
 
     try:
-        project_managers = FemaleUserFactory.create_batch(4, assign_group='Project Manager')
+        specific_pm = FemaleUserFactory.create(
+            first_name="Sara",
+            last_name="Diaz",
+            email="sara.diaz@example.com",
+            assign_group="Project Manager",
+            profile_picture=choice(profile_images_female),
+            is_active=True
+        )
+
+        print("Project Managers específicos y aleatorios creados.")
+    except Exception as e:
+        print(f"Error al crear Project Managers o asignar roles: {str(e)}")
+        return
+
+    try:
+        random_pms = FemaleUserFactory.create_batch(4, assign_group='Project Manager')
+        project_managers.extend(random_pms)  
+
         for pm in project_managers:
             # Asignar el rol "Project Manager"
             uR = UserRoleFactory(user=pm, role=project_manager_group)
             roles.append(uR)
+        uRE = UserRoleFactory(user=specific_pm, role=project_manager_group)
+        roles.append(uRE)
         print(f"Project Managers creados y roles asignados.")
     except Exception as e:
         print(f"Error al crear Project Managers o asignar roles: {str(e)}")
@@ -538,8 +658,11 @@ def cargar_datos():
             company = CompanyFactory(user=bm)
             companies.append(company)  
             UserCompanyFactory(company=company, user=bm, area=None)
-
             print(f'Compañía creada: {company.name} asignada a {bm.email}')
+
+        especifcCompany = especificCompanyFactory(user=specific_bm)
+        UserCompanyFactory(company=especifcCompany, user=specific_bm, area=None)
+
     except Exception as e:
         print(f"Error al crear compañías: {str(e)}")
         return
@@ -564,6 +687,15 @@ def cargar_datos():
             print(f'Áreas creadas para la compañía: {company.name}')
             if admin_index >= len(area_admins):
                 break
+
+        especificArea = especificAreaFactory(company=especifcCompany,user=specific_aa)
+        areas.append(especificArea)
+        UserCompanyFactory(company=especifcCompany, user=specific_aa, area=especificArea)
+        UserCompanyFactory(company=especifcCompany, user=specific_pm, area=especificArea)
+
+        companies.append(especifcCompany)
+        business_managers.append(specific_bm)
+        area_admins.append(specific_aa)
     except Exception as e:
         print(f"Error al crear áreas: {str(e)}")
         return
@@ -588,6 +720,11 @@ def cargar_datos():
             project_skills = random.sample(skills, 2)  
             for skill in project_skills:
                 ProjectSkillFactory.create(project=project, skill=skill)
+
+        especificProject = especificProjectFactory.create(user=specific_pm)
+        ProjectFreelancerFactory(project=especificProject, freelancer=specific_freelancer)
+        ProjectSkillFactory(project=especificProject, skill=skills[0])
+        project_managers.append(specific_pm)
 
         print("Proyectos creados, freelancers y skills asignados.")
     except Exception as e:

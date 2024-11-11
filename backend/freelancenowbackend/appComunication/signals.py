@@ -13,9 +13,17 @@ def send_project_creation_notification(sender, instance, created, **kwargs):
         channel_layer = get_channel_layer()
 
         for recipient in recipients:
-            user = recipient["user"]
-            message = recipient["message"]
+            user = recipient.get("user")
+            message = recipient.get("message")
 
+            if user is None:
+                print("Error: el destinatario no tiene un usuario asignado.")
+                continue
+            if user.email is None:
+                print(f"Error: el usuario {user} no tiene un email asignado.")
+                continue
+
+            # Enviar correo
             # send_mail(
             #     "Project Creation Request",
             #     message,
@@ -25,6 +33,7 @@ def send_project_creation_notification(sender, instance, created, **kwargs):
             # )
             print(f"Email sent to {user.email}")
 
+            # Enviar notificación por WebSocket
             async_to_sync(channel_layer.group_send)(
                 f'notifications_{user.id}',
                 {
