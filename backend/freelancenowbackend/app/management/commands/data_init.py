@@ -155,13 +155,27 @@ milestone_templates_names = [
     "Evaluación de calidad del módulo {module} en {project}"
 ]
 
-profile_images = [
+male_profile_images = [
     'https://i.pinimg.com/736x/a3/53/66/a3536654d44f08f16044ae301a8be184.jpg',
     'https://i.pinimg.com/564x/9e/47/79/9e47798a74eb85a391204f7f32c509d1.jpg',
     'https://i.pinimg.com/564x/c5/cc/82/c5cc82bec47291eb587de8d9a6c92bb7.jpg',
+    'https://i.pinimg.com/474x/9e/de/24/9ede249a89340652b76658a80b7303ef.jpg',
+    'https://i.pinimg.com/564x/a1/d6/ad/a1d6adb19a43c36d453dbe88339002f7.jpg',
+    'https://i.pinimg.com/474x/d6/9e/cf/d69ecff40c34b89874294d50c318d814.jpg',
+    'https://i.pinimg.com/564x/48/23/d0/4823d04bf550ecc7481edf9e0c2505ad.jpg',
+    'https://i.pinimg.com/474x/ac/0d/4f/ac0d4fe44bb99ca20ca0f22005fa79a9.jpg',
+    'https://i.pinimg.com/564x/79/ac/ad/79acadc6d6e0d5859d24fcf106936064.jpg',
+    'https://i.pinimg.com/474x/24/ca/54/24ca54fc18248baf6ef8a973ec6d7b40.jpg',
+    'https://i.pinimg.com/474x/f4/6e/32/f46e32963058f4ece87423e0d497084d.jpg'
+]
+
+profile_images_female = [
     'https://i.pinimg.com/control/564x/00/62/87/006287d3aa9c240f2ca4fdfe90d67a39.jpg',
     'https://i.pinimg.com/control/564x/b8/2c/5a/b82c5a7a7c122bcdd87dbe495edf7294.jpg',
-    'https://i.pinimg.com/564x/7e/ac/b0/7eacb0cd582fb0d069281511adacdddd.jpg'
+    'https://i.pinimg.com/564x/7e/ac/b0/7eacb0cd582fb0d069281511adacdddd.jpg',
+    'https://i.pinimg.com/564x/60/f1/1e/60f11ed8ad893f6b2b9130351c9ec365.jpg',
+    
+
 ]
 
 
@@ -217,15 +231,15 @@ def create_group_if_not_exists(group_name):
         print(f'Grupo {group_name} ya existe.')
     return group
 
-class UserFactory(DjangoModelFactory):
+class MaleUserFactory(DjangoModelFactory):
     class Meta:
         model = User
 
-    first_name = factory.Faker('first_name', locale='es_CO')
+    first_name = factory.Faker('first_name_male', locale='es_CO')
     last_name = factory.Faker('last_name', locale='es_CO')
     email = factory.LazyAttribute(lambda obj: f'{obj.first_name.lower()}.{obj.last_name.lower()}@example.com')
     phone_number = factory.LazyAttribute(lambda _: fake.phone_number()[:15])
-    profile_picture = factory.LazyAttribute(lambda _: choice(profile_images))  # Imagen aleatoria
+    profile_picture = factory.LazyAttribute(lambda _: choice(male_profile_images))
     is_active = True
 
     @factory.post_generation
@@ -245,6 +259,46 @@ class UserFactory(DjangoModelFactory):
                 self.groups.add(group)
             except Group.DoesNotExist:
                 print(f"Error: El grupo '{extracted}' no existe. No se pudo asignar al usuario.")
+
+
+class FemaleUserFactory(DjangoModelFactory):
+    class Meta:
+        model = User
+
+    first_name = factory.Faker('first_name_female', locale='es_CO')
+    last_name = factory.Faker('last_name', locale='es_CO')
+    email = factory.LazyAttribute(lambda obj: f'{obj.first_name.lower()}.{obj.last_name.lower()}@example.com')
+    phone_number = factory.LazyAttribute(lambda _: fake.phone_number()[:15])
+    profile_picture = factory.LazyAttribute(lambda _: choice(profile_images_female))
+    is_active = True
+
+    @factory.post_generation
+    def set_password(self, create, extracted, **kwargs):
+        password = '123' if not extracted else extracted
+        self.set_password(password)
+        if create:
+            self.save()
+
+    @factory.post_generation
+    def assign_group(self, create, extracted, **kwargs):
+        if not create:
+            return
+        if extracted:
+            try:
+                group = Group.objects.get(name=extracted)
+                self.groups.add(group)
+            except Group.DoesNotExist:
+                print(f"Error: El grupo '{extracted}' no existe. No se pudo asignar al usuario.")
+
+class FreelancerFactory(DjangoModelFactory):
+    class Meta:
+        model = Freelancer
+
+    user = factory.SubFactory(MaleUserFactory, assign_group='Freelancer')  # Solo hombres
+    description = factory.LazyFunction(generate_freelancer_paragraph)  
+    country = factory.Faker('country')
+    city = factory.Faker('city')
+
 
 class CompanyFactory(DjangoModelFactory):
     class Meta:
@@ -266,15 +320,6 @@ class AreaFactory(DjangoModelFactory):
     name = factory.Iterator(AREA_CHOICES, cycle=False) 
     company = factory.SubFactory(CompanyFactory)
     user = factory.LazyAttribute(lambda obj: obj.user)
-
-class FreelancerFactory(DjangoModelFactory):
-    class Meta:
-        model = Freelancer
-
-    user = factory.SubFactory(UserFactory, assign_group='Freelancer')
-    description = factory.LazyFunction(generate_freelancer_paragraph)  
-    country = factory.Faker('country')
-    city = factory.Faker('city')
 
 class SkillFactory(DjangoModelFactory):
     class Meta:
@@ -454,7 +499,7 @@ def cargar_datos():
         return
 
     try:
-        business_managers = UserFactory.create_batch(2, assign_group='Business Manager')
+        business_managers = FemaleUserFactory.create_batch(2, assign_group='Business Manager')
         for manager in business_managers:
             # Asignar el rol "Business Manager"
             uR = UserRoleFactory(user=manager, role=business_manager_group)
@@ -465,7 +510,7 @@ def cargar_datos():
         return
 
     try:
-        area_admins = UserFactory.create_batch(4, assign_group='Area Admin')
+        area_admins = MaleUserFactory.create_batch(4, assign_group='Area Admin')
         for admin in area_admins:
             # Asignar el rol "Area Admin"
             uR = UserRoleFactory(user=admin, role=area_admin_group)
@@ -476,7 +521,7 @@ def cargar_datos():
         return
 
     try:
-        project_managers = UserFactory.create_batch(4, assign_group='Project Manager')
+        project_managers = FemaleUserFactory.create_batch(4, assign_group='Project Manager')
         for pm in project_managers:
             # Asignar el rol "Project Manager"
             uR = UserRoleFactory(user=pm, role=project_manager_group)
