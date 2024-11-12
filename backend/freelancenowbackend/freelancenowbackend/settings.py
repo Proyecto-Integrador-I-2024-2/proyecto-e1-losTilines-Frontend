@@ -67,7 +67,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:29003",  # Development
     "http://localhost:29002",  # Development
     "https://tu-dominio.com",  # Deployed
-    "ws://localhost:29000",     # WebSocket (ajusta si usas un puerto diferente)
+    "ws://localhost:29000",    # WebSocket (ajusta si usas un puerto diferente)
+    "ec2-3-142-50-53.us-east-2.compute.amazonaws.com",
 ]
 
 REST_FRAMEWORK = {
