@@ -69,6 +69,8 @@ CORS_ALLOWED_ORIGINS = [
     "ec2-3-142-50-53.us-east-2.compute.amazonaws.com",
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
