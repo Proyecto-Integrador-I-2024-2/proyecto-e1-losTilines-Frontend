@@ -1,16 +1,16 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: 'http://127.0.0.1:29000/',  
+  baseURL: process.env.REACT_APP_API_BASE_URL,  
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
 apiClient.interceptors.request.use((config) => {
-  const token = sessionStorage.getItem('token');  // Aquí obtenemos el token
+  const token = sessionStorage.getItem('token');
   if (token) {
-    config.headers.Authorization = `Token ${token}`;  // Agregamos el token en las cabeceras
+    config.headers.Authorization = `Token ${token}`;
   }
   return config;
 });
