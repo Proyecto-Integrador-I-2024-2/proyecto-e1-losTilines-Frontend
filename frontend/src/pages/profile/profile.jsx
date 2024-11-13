@@ -25,7 +25,7 @@ import { SkillsSection, GitButton, ExperienceSection } from "@/widgets/custom";
 import { CompanyInterestPopUp, EditExperiencePopup, EditProfilePopUp, EditSkillsPopup } from "@/widgets/popUp";
 import { useCompany, useQueryParams, useUser } from "@/hooks";
 import { userExample, freelancerExample, profile_pic } from "@/data/placeholder";
-import { addFreelancerSkill, deleteFreelancerExperience, deleteFreelancerSkill, editFreelancerExperience, editFreelancerSkill, editWorkerProfile, getCompany, getFreelancer, postCompanyInterest } from "@/services";
+import { addFreelancerExperience, addFreelancerSkill, deleteFreelancerExperience, deleteFreelancerSkill, editFreelancerExperience, editFreelancerSkill, editWorkerProfile, getCompany, getFreelancer, postCompanyInterest } from "@/services";
 import { useQueryClient } from "@tanstack/react-query";
 import ReviewSection from "@/widgets/custom/reviews";
 
@@ -158,6 +158,15 @@ export function Profile() {
     }
 
     // Freelancer Experience Data
+
+    function handleAddExperience(body) {
+        body["freelancer"] = sessionStorage.getItem("id");
+        console.log("Body", body);
+        addFreelancerExperience({ body })
+        queryClient.invalidateQueries(['User']);
+        userRefetch()
+    }
+
     function handleEditExperience(id, body) {
         console.log("ID", id);
         console.log("Body", body);
@@ -449,7 +458,7 @@ export function Profile() {
                         {(isEditable) &&
                             <>
                                 <EditProfilePopUp open={showProfilePopUp} onOpen={setShowProfilePopUp} profile={userToUse} onChange={handleEditWorkerProfile} />
-                                <EditExperiencePopup open={showExperiencePopUp} onOpen={setShowExperiencePopUp} experiences={experience_set || []} editExperience={handleEditExperience} addExperience={{}} deleteExperience={handleDeleteExperience} />
+                                <EditExperiencePopup open={showExperiencePopUp} onOpen={setShowExperiencePopUp} experiences={experience_set || []} editExperience={handleEditExperience} addExperience={handleAddExperience} deleteExperience={handleDeleteExperience} />
                                 <EditSkillsPopup open={showSkillsPopUp} onOpen={setShowSkillsPopUp} skills={skills || []} editSkill={handleEditSkill} addSkill={handleAddSkill} deleteSkill={handleDeleteSkill} />
                             </>
                         }
