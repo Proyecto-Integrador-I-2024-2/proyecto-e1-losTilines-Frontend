@@ -84,9 +84,11 @@ class ExperienceSerializer(serializers.ModelSerializer):
         fields = ['id', 'start_date', 'final_date', 'occupation', 'company', 'description', 'freelancer']
 
     def create(self, validated_data):
-        validated_data['freelancer'] = self.context['request'].user
+        user = self.context['request'].user
+        freelancer = Freelancer.objects.get(user=user)
+        validated_data['freelancer'] = freelancer
         return super().create(validated_data)
-    
+
     def validate(self, attrs):
         start_date = attrs.get('start_date')
         final_date = attrs.get('final_date')
