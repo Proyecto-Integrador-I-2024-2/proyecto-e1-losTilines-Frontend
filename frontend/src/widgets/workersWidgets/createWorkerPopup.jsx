@@ -167,6 +167,7 @@ export function CreateWorkerPopup({ open, setOpen, areas }) {
               Enter the worker's first name:
             </Typography>
             <Input
+              id="firstName"
               value={firstName}
               onChange={(event) => setFirstName(event.target.value)}
               error={!!errors.firstName}
@@ -179,6 +180,7 @@ export function CreateWorkerPopup({ open, setOpen, areas }) {
               Enter the worker's last name:
             </Typography>
             <Input
+              id="lastName"
               value={lastName}
               onChange={(event) => setLastName(event.target.value)}
               error={!!errors.lastName}
@@ -189,6 +191,7 @@ export function CreateWorkerPopup({ open, setOpen, areas }) {
             {/* Email Input */}
             <Typography color="gray">Enter the worker's email:</Typography>
             <Input
+              id="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               error={!!errors.email}
@@ -201,6 +204,7 @@ export function CreateWorkerPopup({ open, setOpen, areas }) {
               Create a password for the worker:
             </Typography>
             <Input
+              id="password"
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
@@ -212,6 +216,7 @@ export function CreateWorkerPopup({ open, setOpen, areas }) {
             {/* Select Area */}
             <Typography color="gray">Select worker's area:</Typography>
             <Select
+              id="selectArea"
               value={selectedArea}
               onChange={(val) => setSelectedArea(val)}
               label="Select Area"
@@ -239,6 +244,7 @@ export function CreateWorkerPopup({ open, setOpen, areas }) {
             {/* Select Role */}
             <Typography color="gray">Select worker's role:</Typography>
             <Select
+              id="selectRole"
               value={selectedRole}
               onChange={(val) => setSelectedRole(val)}
               label="Select Role"

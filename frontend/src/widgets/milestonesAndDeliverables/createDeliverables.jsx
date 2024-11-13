@@ -69,6 +69,7 @@ export function CreateDeliverable(){
                 {/* Name input */}
                 <Typography color="gray">Enter the deliverable's name:</Typography>
                 <Input
+                  id="name"
                   value={newDeliverableName}
                   onChange={(event) => setNewDeliverableName(event.target.value)}
                   placeholder="Enter name"
@@ -82,6 +83,7 @@ export function CreateDeliverable(){
                   Enter the deliverable's description:
                 </Typography>
                 <Input
+                  id="description"
                   value={newDeliverableDescription}
                   onChange={(event) =>
                     setNewDeliverableDescription(event.target.value)

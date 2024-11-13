@@ -41,6 +41,7 @@ export function EditProfilePopUp({ profile, open, onOpen, onChange }) {
                 <div className="grid gap-6">
                     {/* First Name */}
                     <Input
+                        id="first_name"
                         label="First Name"
                         name="first_name"
                         value={formData.first_name}
@@ -51,6 +52,7 @@ export function EditProfilePopUp({ profile, open, onOpen, onChange }) {
 
                     {/* Last Name */}
                     <Input
+                        id="last_name"
                         label="Last Name"
                         name="last_name"
                         value={formData.last_name}
@@ -61,6 +63,7 @@ export function EditProfilePopUp({ profile, open, onOpen, onChange }) {
 
                     {/* Email */}
                     <Input
+                        id="email"
                         label="Email"
                         name="email"
                         type="email"
@@ -72,6 +75,7 @@ export function EditProfilePopUp({ profile, open, onOpen, onChange }) {
 
                     {/* Phone Number */}
                     <Input
+                        id="phone_number"
                         label="Phone Number"
                         name="phone_number"
                         type="tel"
@@ -91,10 +95,10 @@ export function EditProfilePopUp({ profile, open, onOpen, onChange }) {
                 </div>
             </DialogBody>
             <DialogFooter className="justify-end">
-                <Button variant="text" color="red" onClick={handleOpen} className="mr-2">
+                <Button id="cancel" variant="text" color="red" onClick={handleOpen} className="mr-2">
                     Cancel
                 </Button>
-                <Button variant="gradient" color="cyan" onClick={handleSave}>
+                <Button id="save_changes" variant="gradient" color="cyan" onClick={handleSave}>
                     Save Changes
                 </Button>
             </DialogFooter>

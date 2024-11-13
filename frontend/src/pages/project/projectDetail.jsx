@@ -150,7 +150,7 @@ export function ProjectDetail() {
                     </Typography>
                   </div>
                 </div>
-                <Button color="light-blue" onClick={() => setFreelancerInterestPopUp(prev => !prev)}>Apply Now!</Button>
+                <Button id="applyNowButton" color="light-blue" onClick={() => setFreelancerInterestPopUp(prev => !prev)}>Apply Now!</Button>
 
               </div >
             </CardBody>
@@ -186,8 +186,8 @@ export function ProjectDetail() {
                     </IconButton>
                   </MenuHandler>
                   <MenuList>
-                    <MenuItem onClick={() => setShowEditProjectPopUp(prev => !prev)}>Edit project information</MenuItem>
-                    <MenuItem onClick={() => setShowSkillsPopUp(prev => !prev)}>Edit project skills</MenuItem>
+                    <MenuItem id="editProjectButton" onClick={() => setShowEditProjectPopUp(prev => !prev)}>Edit project information</MenuItem>
+                    <MenuItem id="editSkillsButton" onClick={() => setShowSkillsPopUp(prev => !prev)}>Edit project skills</MenuItem>
                   </MenuList>
                 </Menu>
               </CardHeader>

@@ -160,7 +160,7 @@ export function MilestonesDetail() {
 
           <footer className="flex flex-row justify-center items-center w-full h-auto mt-2">
             {/* Button to open the create milestone pop-up */}
-            <Button variant="text" color="cyan"  onClick={handleOpenCreateMilestone}>
+            <Button id="proposeMilestonButton" variant="text" color="cyan"  onClick={handleOpenCreateMilestone}>
               Propose Milestone
             </Button>
           </footer>
@@ -205,6 +205,7 @@ export function MilestonesDetail() {
             {/* Name input */}
             <Typography color="gray">Enter the milestone's name:</Typography>
             <Input
+              ID="nameMilestone"
               value={newMilestoneName}
               onChange={(event) => setNewMilestoneName(event.target.value)}
               error={!!createErrors.name}
@@ -217,6 +218,7 @@ export function MilestonesDetail() {
               Enter the milestone's description:
             </Typography>
             <Input
+              id="descriptionMilestone"
               value={newMilestoneDescription}
               onChange={(event) =>
                 setNewMilestoneDescription(event.target.value)

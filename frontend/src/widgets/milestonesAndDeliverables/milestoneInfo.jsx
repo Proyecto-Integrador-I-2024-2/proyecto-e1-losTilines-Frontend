@@ -48,6 +48,7 @@ export function MilestonesInfo({ milestone, deliverables }) {
                     : "Milestone Name is not available"}
                 </Typography>
                 <button
+                  id="editMilestone"
                   onClick={(event) => {
                     event.stopPropagation();
                     // Open the edit pop-up
@@ -91,7 +92,7 @@ export function MilestonesInfo({ milestone, deliverables }) {
           </CardBody>
           <footer className="flex flex-row justify-center items-center w-full  mt-2">
             {/* Button to open the create deliverable pop-up */}
-            <Button variant="text" color="cyan" onClick={handleOpenCreateDeliverable}>
+            <Button id="createDeliverable" variant="text" color="cyan" onClick={handleOpenCreateDeliverable}>
               Create Deliverable
             </Button>
           </footer>

@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import unittest
-
+#FALTA QUE FUNCIONE EL REGISTER 2 tests
 class RegistrationTests(unittest.TestCase):
 
     BASE_URL = "http://localhost:29002/auth/sign-up"
@@ -24,7 +24,6 @@ class RegistrationTests(unittest.TestCase):
         driver = self.driver
 
         try:
-            # Espera a que el texto "Freelancer" esté visible en la página
             print("Esperando que el texto 'Freelancer' sea visible...")
             WebDriverWait(driver, 10).until(
                 EC.visibility_of_element_located((By.XPATH, "//div[text()='Freelancer']"))
@@ -63,7 +62,6 @@ class RegistrationTests(unittest.TestCase):
             register_button = driver.find_element(By.XPATH, "//button[text()='Register Now']")
             register_button.click()
 
-            # Verifica que estamos en la página esperada después del registro
             print("Esperando redirección a la página de éxito o dashboard...")
             WebDriverWait(driver, 10).until(EC.url_contains("/dashboard"))  # Cambia "/dashboard" según la URL de redirección de éxito
             print("Test de registro completado con éxito")
@@ -72,7 +70,6 @@ class RegistrationTests(unittest.TestCase):
             print(f"Error durante el test de registro: {e}")
             self.fail(f"Error durante el test de registro: {e}")
 
-# Ejecuta todos los tests en este archivo
 if __name__ == "__main__":
     unittest.main()
 

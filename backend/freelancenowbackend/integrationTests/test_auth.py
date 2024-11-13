@@ -4,11 +4,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoAlertPresentException
-
+#LISTO. 8 Tests
 class AuthTests(unittest.TestCase):
     BASE_URL = "http://localhost:29002/auth/sign-in"
-    USERNAME = "admin@example.com"
-    PASSWORD = "admin123"
+    USERNAME = "ricardo.urbina@example.com"
+    PASSWORD = "123"
 
     def setUp(self):
         # Inicializar el navegador
@@ -39,16 +39,16 @@ class AuthTests(unittest.TestCase):
         driver = self.driver
         print("Navegando a la página de inicio de sesión...")
 
-        email_field = driver.find_element(By.XPATH, "//input[@placeholder='name@mail.com']")
+        email_field = driver.find_element(By.ID, "emailSign")
         email_field.send_keys(self.USERNAME)
 
-        password_field = driver.find_element(By.XPATH, "//input[@placeholder='********']")
+        password_field = driver.find_element(By.ID, "passwordSign")
         password_field.send_keys(self.PASSWORD)
 
-        terms_checkbox = driver.find_element(By.XPATH, "//input[@type='checkbox']")
+        terms_checkbox = driver.find_element(By.ID, "termsAndConditions")
         terms_checkbox.click()
 
-        login_button = driver.find_element(By.XPATH, "//button[text()='Entrar']")
+        login_button = driver.find_element(By.ID, "entrar")
         login_button.click()
 
         # Verificar alerta de éxito
@@ -57,62 +57,127 @@ class AuthTests(unittest.TestCase):
         self.assertIn("Login successful!", alert.text)
         alert.accept()
 
-    def test_invalid_credentials(self):
-        # Test con credenciales inválidas
+    # 1. Pruebas de campos vacíos
+    def test_login_with_empty_email(self):
         driver = self.driver
-        email_field = driver.find_element(By.XPATH, "//input[@placeholder='name@mail.com']")
-        email_field.send_keys("usuario@invalido.com")
 
-        password_field = driver.find_element(By.XPATH, "//input[@placeholder='********']")
-        password_field.send_keys("contraseña_incorrecta")
+        email_field = driver.find_element(By.ID, "emailSign")
+        email_field.clear()
 
-        login_button = driver.find_element(By.XPATH, "//button[text()='Entrar']")
-        login_button.click()
+        password_field = driver.find_element(By.ID, "passwordSign")
+        password_field.clear()  # Asegura que el campo esté vacío
+        password_field.send_keys(self.PASSWORD)
 
-        # Verificar ambas alertas de error para credenciales inválidas
-        self.verify_error_alerts()
-
-    def test_empty_fields(self):
-        # Test con campos vacíos
-        driver = self.driver
-        login_button = driver.find_element(By.XPATH, "//button[text()='Entrar']")
-        login_button.click()
-
-        # Verificar ambas alertas de error para campos vacíos
-        self.verify_error_alerts()
-
-    def test_invalid_email_format(self):
-        # Test con formato de correo inválido
-        driver = self.driver
-        email_field = driver.find_element(By.XPATH, "//input[@placeholder='name@mail.com']")
-        email_field.send_keys("usuario-invalido")
-
-        password_field = driver.find_element(By.XPATH, "//input[@placeholder='********']")
-        password_field.send_keys("contraseña")
-
-        terms_checkbox = driver.find_element(By.XPATH, "//input[@type='checkbox']")
+        terms_checkbox = driver.find_element(By.ID, "termsAndConditions")
         terms_checkbox.click()
 
-        login_button = driver.find_element(By.XPATH, "//button[text()='Entrar']")
+        login_button = driver.find_element(By.ID, "entrar")
         login_button.click()
 
-        # Verificar ambas alertas de error para formato de correo inválido
-        self.verify_error_alerts()
+        self.verify_error_alerts
 
-    #def test_terms_and_conditions_unchecked(self):
-    #    # Test con casilla de términos no seleccionada
-    #   driver = self.driver
-    #    email_field = driver.find_element(By.XPATH, "//input[@placeholder='name@mail.com']")
-    #    email_field.send_keys(self.USERNAME)
+    def test_login_with_empty_password(self):
+        driver = self.driver
+        email_field = driver.find_element(By.ID, "emailSign")
+        email_field.clear()  # Asegura que el campo esté vacío
+        email_field.send_keys(self.USERNAME)
 
-    #    password_field = driver.find_element(By.XPATH, "//input[@placeholder='********']")
-    #    password_field.send_keys(self.PASSWORD)
+        password_field = driver.find_element(By.ID, "passwordSign")
+        password_field.clear()  # Asegura que el campo esté vacío
 
-    #    login_button = driver.find_element(By.XPATH, "//button[text()='Entrar']")
-    #    login_button.click()
+        terms_checkbox = driver.find_element(By.ID, "termsAndConditions")
+        terms_checkbox.click()
 
-        # Verificar ambas alertas de error para términos no seleccionados
-    #    self.verify_error_alerts()
+        login_button = driver.find_element(By.ID, "entrar")
+        login_button.click()
+
+        self.verify_error_alerts
+
+    def test_login_with_empty_fields(self):
+        driver = self.driver
+        email_field = driver.find_element(By.ID, "emailSign")
+        email_field.clear()  # Limpia el campo de email
+
+        password_field = driver.find_element(By.ID, "passwordSign")
+        password_field.clear()  # Limpia el campo de contraseña
+
+        login_button = driver.find_element(By.ID, "entrar")
+        login_button.click()
+
+        self.verify_error_alerts
+
+    # 2. Pruebas de credenciales incorrectas
+    def test_login_with_invalid_email(self):
+        driver = self.driver
+        email_field = driver.find_element(By.ID, "emailSign")
+        email_field.send_keys("incorrecto@example.com")
+
+        password_field = driver.find_element(By.ID, "passwordSign")
+        password_field.send_keys(self.PASSWORD)
+
+        terms_checkbox = driver.find_element(By.ID, "termsAndConditions")
+        terms_checkbox.click()
+
+        login_button = driver.find_element(By.ID, "entrar")
+        login_button.click()
+
+        self.capture_alert_text("Login failed! Check your credentials.")
+
+    def test_login_with_invalid_password(self):
+        driver = self.driver
+        email_field = driver.find_element(By.ID, "emailSign")
+        email_field.send_keys(self.USERNAME)
+
+        password_field = driver.find_element(By.ID, "passwordSign")
+        password_field.send_keys("incorrect_password")
+
+        terms_checkbox = driver.find_element(By.ID, "termsAndConditions")
+        terms_checkbox.click()
+
+        login_button = driver.find_element(By.ID, "entrar")
+        login_button.click()
+
+        self.capture_alert_text("Login failed! Check your credentials.")
+
+    def test_login_with_invalid_credentials(self):
+        driver = self.driver
+        email_field = driver.find_element(By.ID, "emailSign")
+        email_field.send_keys("incorrecto@example.com")
+
+        password_field = driver.find_element(By.ID, "passwordSign")
+        password_field.send_keys("incorrect_password")
+
+        terms_checkbox = driver.find_element(By.ID, "termsAndConditions")
+        terms_checkbox.click()
+
+        login_button = driver.find_element(By.ID, "entrar")
+        login_button.click()
+
+        self.capture_alert_text("Login failed! Check your credentials.")
+
+    # 4. Prueba de tiempo de espera de alerta
+    def test_alert_timeout(self):
+        driver = self.driver
+        email_field = driver.find_element(By.ID, "emailSign")
+        email_field.send_keys(self.USERNAME)
+
+        password_field = driver.find_element(By.ID, "passwordSign")
+        password_field.send_keys(self.PASSWORD)
+
+        terms_checkbox = driver.find_element(By.ID, "termsAndConditions")
+        terms_checkbox.click()
+
+        login_button = driver.find_element(By.ID, "entrar")
+        login_button.click()
+
+        # Esperar que la alerta esté presente o lanzar un error si no aparece en 5 segundos
+        try:
+            WebDriverWait(driver, 5).until(EC.alert_is_present())
+            alert = driver.switch_to.alert
+            self.assertIn("Login successful!", alert.text)
+            alert.accept()
+        except TimeoutException:
+            self.fail("Expected alert not displayed within the timeout period.")
 
 if __name__ == "__main__":
     unittest.main()

@@ -64,6 +64,7 @@ export function SignIn() {
               Your email
             </Typography>
             <Input
+              id="emailSign"
               size="lg"
               placeholder="name@mail.com"
               className="!border-t-blue-gray-200 focus:!border-t-gray-900"
@@ -81,6 +82,7 @@ export function SignIn() {
               Password
             </Typography>
             <Input
+              id="passwordSign"
               type="password"
               size="lg"
               placeholder="********"
@@ -93,6 +95,7 @@ export function SignIn() {
             />
           </div>
           <Checkbox
+            id="termsAndConditions"
             label={
               <Typography
                 variant="small"
@@ -108,7 +111,7 @@ export function SignIn() {
             containerProps={{ className: "-ml-2.5" }}
           />
 
-          <Button className="mt-6" fullWidth color="blue" type="submit">
+          <Button id="entrar" className="mt-6" fullWidth color="blue" type="submit">
             {login.isLoading ? "Iniciando..." : "Entrar"}
           </Button>
 

@@ -86,10 +86,10 @@ export function EditSkillsPopup({ open, onOpen, skills, editSkill, addSkill, del
                                 <p>Nivel: {skill.level}%</p>
                             </div>
                             <div className="flex space-x-2">
-                                <IconButton variant="outlined" size="sm" onClick={() => handleEdit(index)}>
+                                <IconButton id="editIconButton" variant="outlined" size="sm" onClick={() => handleEdit(index)}>
                                     <PencilIcon className="h-4 w-4 text-blue-gray-500" />
                                 </IconButton>
-                                <IconButton variant="outlined" size="sm" onClick={() => handleDelete(index)}>
+                                <IconButton id="deleteIconButton" variant="outlined" size="sm" onClick={() => handleDelete(index)}>
                                     <TrashIcon className="h-4 w-4 text-red-500" />
                                 </IconButton>
                             </div>
@@ -100,6 +100,7 @@ export function EditSkillsPopup({ open, onOpen, skills, editSkill, addSkill, del
                     (selectedSkill !== null) && (
                         <div className="mt-6 space-y-4">
                             <Input
+                                id="skillInput"
                                 label={skills[selectedSkill]?.skill_name || skills[selectedSkill]?.skill?.name}
                                 name="level"
                                 type="number"
@@ -128,6 +129,7 @@ export function EditSkillsPopup({ open, onOpen, skills, editSkill, addSkill, del
                     {
                         (skillsData && !((selectedSkill !== null))) && (
                             <Select
+                                id="selectSkill"
                                 label="Selecciona una habilidad para agregar"
                                 value={skillToAdd}
                                 onChange={(value) => setSkillToAdd(value)}
@@ -146,10 +148,10 @@ export function EditSkillsPopup({ open, onOpen, skills, editSkill, addSkill, del
 
             </DialogBody>
             <DialogFooter>
-                <Button variant="text" color="red" onClick={() => onOpen(false)} className="mr-2">
+                <Button id="cancelButton" variant="text" color="red" onClick={() => onOpen(false)} className="mr-2">
                     Cancelar
                 </Button>
-                <Button variant="gradient" color="cyan" onClick={handleSave}>
+                <Button id="saveChangesButton" variant="gradient" color="cyan" onClick={handleSave}>
                     {selectedSkill !== null ? "Save changes" : "Add skill"}
                 </Button>
             </DialogFooter>

@@ -139,36 +139,42 @@ export function SignUp() {
         >
           <div className="mb-1 flex flex-col gap-6">
             <TextInputLabel
+              id="firstName"
               label="First name"
               placeholder="First name"
               value={first_name}
               onValueChange={setFirstName}
             />
             <TextInputLabel
+              id="lastName"
               label="Last name"
               placeholder="Last name"
               value={last_name}
               onValueChange={setLastName}
             />
             <TextInputLabel
+              id="userName"
               label="Username"
               placeholder="Username"
               value={username}
               onValueChange={setUsername}
             />
             <TextInputLabel
+              id="email"
               label="Email"
               placeholder="email@example.com"
               value={email}
               onValueChange={setEmail}
             />
             <TextInputLabel
+              id="phoneNumber"
               label="Phone number"
               placeholder="Phone number"
               value={phone}
               onValueChange={setPhone}
             />
             <TextInputLabel
+              id="password"
               label="Password"
               placeholder="Password"
               value={password}
@@ -178,42 +184,49 @@ export function SignUp() {
             {!isFreelancer && (
               <>
                 <TextInputLabel
+                  id="taxId"
                   label="Company tax id"
                   placeholder="Company tax id"
                   value={companyTaxId}
                   onValueChange={setCompanyTaxId}
                 />
                 <TextInputLabel
+                  id="companyName"
                   label="Company name"
                   placeholder="Company name"
                   value={companyName}
                   onValueChange={setCompanyName}
                 />
                 <TextInputLabel
+                  id="city"
                   label="City"
                   placeholder="City"
                   value={city}
                   onValueChange={setCity}
                 />
                 <TextInputLabel
+                  id="country"
                   label="Country"
                   placeholder="Country"
                   value={country}
                   onValueChange={setCountry}
                 />
                 <TextInputLabel
+                  id="address"
                   label="Address"
                   placeholder="Address"
                   value={address}
                   onValueChange={setAddress}
                 />
                 <TextInputLabel
+                  id="companyTelephone"
                   label="Company telephone"
                   placeholder="Company telephone"
                   value={companyTelephone}
                   onValueChange={setCompanyTelephone}
                 />
                 <TextInputLabel
+                  id="companyEmail"
                   label="Company email"
                   placeholder="Company email"
                   value={companyEmail}
@@ -240,6 +253,7 @@ export function SignUp() {
             containerProps={{ className: "-ml-2.5" }}
           />
           <Button
+            id="registerButton"
             className="mt-6"
             fullWidth
             color="blue"

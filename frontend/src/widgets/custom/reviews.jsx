@@ -65,10 +65,10 @@ export const ReviewSection = ({ id }) => {
                                         </svg>
                                     </IconButton>
                                     <div className="flex gap-2">
-                                        <Button size="sm" color="red" variant="text" className="rounded-md">
+                                        <Button id="cancel" size="sm" color="red" variant="text" className="rounded-md">
                                             Cancel
                                         </Button>
-                                        <Button size="sm" className="rounded-md">
+                                        <Button id="postcomment" size="sm" className="rounded-md">
                                             Post Comment
                                         </Button>
                                     </div>

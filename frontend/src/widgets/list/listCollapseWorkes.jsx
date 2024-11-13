@@ -68,6 +68,7 @@ export function ListCollapseGeneral({
           </div>
 
           <PencilIcon
+            id="pencilWorker1"
             className="  h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
             color="gray"
             onClick={() => {
@@ -84,6 +85,7 @@ export function ListCollapseGeneral({
           <ChipCustom color={colorChip2} value={chipValue2} />
 
           <button
+            id="pencilWorker2"
             onClick={(event) => {
               event.stopPropagation();
               console.log("PencilIcon clicked - Edit Profile");

@@ -63,6 +63,7 @@ export function editMilestone() {
           {/* Change name */}
           <Typography color="gray">Change the milestone's name:</Typography>
           <Input
+            id="nameEdit"
             value={nameEdit}
             onChange={(event) => setNameEdit(event.target.value)}
             placeholder="Enter new name"
@@ -76,6 +77,7 @@ export function editMilestone() {
             Change the milestone's description:
           </Typography>
           <Input
+            id="descriptionEdit"
             value={descriptionEdit}
             onChange={(event) => setDescriptionEdit(event.target.value)}
             placeholder="Enter new description"
@@ -89,6 +91,7 @@ export function editMilestone() {
 
           {/* Icon to delete */}
           <button
+            id="deleteButton"
             onClick={(event) => {
               event.stopPropagation();
               // Open the delete confirmation pop-up

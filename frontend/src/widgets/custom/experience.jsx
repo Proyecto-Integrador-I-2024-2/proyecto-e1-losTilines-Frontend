@@ -15,7 +15,7 @@ export function ExperienceSection({ experiences, editable, onEdit }) {
                     <Typography variant="h6" color="blue-gray" className="">
                         Work Experience
                     </Typography>
-                    {editable && (<EditButton toolTip="Edit Work Experience" onClick={onEdit} />)}
+                    {editable && (<EditButton id="editButton1" toolTip="Edit Work Experience" onClick={onEdit} />)}
                 </div>
                 <Card shadow={true} className="p-6">
                     <Typography variant="h5" className="text-blue-gray-800">
@@ -32,7 +32,7 @@ export function ExperienceSection({ experiences, editable, onEdit }) {
                 <Typography variant="h6" color="blue-gray" className="">
                     Work Experience
                 </Typography>
-                {editable && (<EditButton toolTip="Edit Work Experience" onClick={onEdit} />)}
+                {editable && (<EditButton id="editButton2" toolTip="Edit Work Experience" onClick={onEdit} />)}
             </div>
             <div className="space-y-6 h-full overflow-y-auto no-scrollbar">
                 {experiencesToUse.map((exp, index) => (
@@ -46,7 +46,7 @@ export function ExperienceSection({ experiences, editable, onEdit }) {
                                     {exp.company} &bull; {exp.duration || `${exp.start_date} to ${exp.final_date || "Present"}`}
                                 </Typography>
                             </div>
-                            <IconButton size="sm" className="bg-blue-500">
+                            <IconButton id="iconButton" size="sm" className="bg-blue-500">
                                 <i className="fas fa-briefcase"></i>
                             </IconButton>
                         </div>

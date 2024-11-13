@@ -52,6 +52,7 @@ export function PopUp({
           <div className="flex flex-row space-x-2  ">
 
             <Button
+              id="close"
               variant="text"
               color="gray"
               onClick={handleClose}
@@ -59,7 +60,7 @@ export function PopUp({
             >
               Close
             </Button>
-            <Button variant="gradient" color="cyan" onClick={handleConfirm} disabled={disableSubmit}>
+            <Button id="confirm" variant="gradient" color="cyan" onClick={handleConfirm} disabled={disableSubmit}>
               Confirm
             </Button>
 

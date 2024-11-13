@@ -234,7 +234,7 @@ function Workers() {
             Button to create a new worker.
             Currently, the onClick handler is empty and should be implemented as needed.
           */}
-          <Button variant="text" onClick={() => setCreateWorker(true)}>
+          <Button id="createWorker" variant="text" onClick={() => setCreateWorker(true)}>
             Create Worker
           </Button>
         </SearchBar>

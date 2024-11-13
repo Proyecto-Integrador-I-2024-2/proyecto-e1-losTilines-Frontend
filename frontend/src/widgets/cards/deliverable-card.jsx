@@ -101,6 +101,7 @@ export function DeliverableCard({ deliverable }) {
                 </div>
 
                 <button
+                  id="pencilIconDeliverable"
                   onClick={(event) => {
                     event.stopPropagation();
                     // Open the edit pop-up
@@ -134,6 +135,7 @@ export function DeliverableCard({ deliverable }) {
             {/* Change name */}
             <Typography color="gray">Change the deliverable's name:</Typography>
             <Input
+              id="nameEdit"
               value={nameEdit}
               onChange={(event) => setNameEdit(event.target.value)}
               placeholder="Enter new name"
@@ -147,6 +149,7 @@ export function DeliverableCard({ deliverable }) {
               Change the deliverable's description:
             </Typography>
             <Input
+              id="descriptionEdit"
               value={descriptionEdit}
               onChange={(event) => setDescriptionEdit(event.target.value)}
               placeholder="Enter new description"
@@ -160,6 +163,7 @@ export function DeliverableCard({ deliverable }) {
 
             {/* Icon to delete */}
             <button
+              id="deleteButton"
               onClick={(event) => {
                 event.stopPropagation();
                 // Open the delete confirmation pop-up

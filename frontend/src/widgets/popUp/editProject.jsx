@@ -39,6 +39,7 @@ export function EditProjectPopUp({ open, setOpen, project, handleProjectSave }) 
       <DialogBody divider>
         <div className="grid gap-6">
           <Input
+            id="nameProject"
             label="Name project"
             name="nameproject"
             value={projectName}
@@ -47,6 +48,7 @@ export function EditProjectPopUp({ open, setOpen, project, handleProjectSave }) 
             required
           />
           <Input
+            id="budget"
             label="Budget"
             name="budget"
             value={budget}
@@ -55,6 +57,7 @@ export function EditProjectPopUp({ open, setOpen, project, handleProjectSave }) 
             required
           />
           <Textarea
+            id="description"
             label="Description"
             name="description"
             value={description}
@@ -63,6 +66,7 @@ export function EditProjectPopUp({ open, setOpen, project, handleProjectSave }) 
             required
           />
           <Input
+            id="startDate"
             label="Start date"
             name="start_date"
             type="date"
@@ -73,10 +77,10 @@ export function EditProjectPopUp({ open, setOpen, project, handleProjectSave }) 
         </div>
       </DialogBody>
       <DialogFooter className="justify-end">
-        <Button variant="text" color="red" onClick={() => setOpen(false)} className="mr-2">
+        <Button id="cancelButton" variant="text" color="red" onClick={() => setOpen(false)} className="mr-2">
           Cancel
         </Button>
-        <Button variant="gradient" color="cyan" onClick={handleProjectCreation}>
+        <Button id="saveChangesButton" variant="gradient" color="cyan" onClick={handleProjectCreation}>
           Save Changes
         </Button>
       </DialogFooter>

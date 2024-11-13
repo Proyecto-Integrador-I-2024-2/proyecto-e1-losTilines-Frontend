@@ -19,7 +19,7 @@ export function ProfileInfoCard({ title, description, details, editable, onEdit 
         <Typography variant="h6" color="blue-gray">
           {title}
         </Typography>
-        {editable && <EditButton toolTip="Edit Profile" onClick={onEdit} />}
+        {editable && <EditButton id="editButton" toolTip="Edit Profile" onClick={onEdit} />}
       </CardHeader>
       <CardBody className="p-0">
         {description && (

@@ -247,7 +247,7 @@ export function Profile() {
                                             <Rating value={0} aria-disabled />
                                         </div>
                                     </div>
-                                    <Button onClick={handleCompanyInterestPopUp} color="light-blue">
+                                    <Button id="invite" onClick={handleCompanyInterestPopUp} color="light-blue">
                                         Invite
                                     </Button>
 
@@ -285,15 +285,15 @@ export function Profile() {
                                     <Tabs value="overview">
                                         <TabsHeader>
                                             <Tab value="overview">
-                                                <HomeIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
+                                                <HomeIcon id="overviewIcon" className="-mt-1 mr-2 inline-block h-5 w-5" />
                                                 Overview
                                             </Tab>
                                             <Tab value="contact">
-                                                <ChatBubbleLeftEllipsisIcon className="-mt-0.5 mr-2 inline-block h-5 w-5" />
+                                                <ChatBubbleLeftEllipsisIcon id="contactIcon" className="-mt-0.5 mr-2 inline-block h-5 w-5" />
                                                 Contact
                                             </Tab>
                                             <Tab value="settings">
-                                                <Cog6ToothIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
+                                                <Cog6ToothIcon id="settingsIcon" className="-mt-1 mr-2 inline-block h-5 w-5" />
                                                 Settings
                                             </Tab>
                                         </TabsHeader>

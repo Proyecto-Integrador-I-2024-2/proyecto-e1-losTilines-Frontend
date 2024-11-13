@@ -43,6 +43,7 @@ export function BigProjectCard({ project, isActive, handleNavigate }) {
             </CardBody>
             <CardFooter className="pt-0">
                 <Button
+                    id="details"
                     ripple={false}
                     fullWidth={true}
                     onClick={() => handleNavigate(project.id)} // Usando la función manejadora
