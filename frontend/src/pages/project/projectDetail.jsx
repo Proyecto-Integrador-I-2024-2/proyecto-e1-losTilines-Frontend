@@ -20,7 +20,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { SkillsSection } from "@/widgets/custom";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQueryParams } from "@/hooks";
+import { useQueryParams, useUser } from "@/hooks";
 import { useProject } from "@/hooks";
 import { profile_pic } from "@/data/placeholder";
 import { EditProjectPopUp, EditSkillsPopup, FreelancerInterestPopUp } from "@/widgets/popUp";
@@ -36,11 +36,28 @@ export function ProjectDetail() {
   const [showSkillsPopUp, setShowSkillsPopUp] = useState(false);
   const [showEditProjectPopUp, setShowEditProjectPopUp] = useState(false);
   const [freelancerInterestPopUp, setFreelancerInterestPopUp] = useState(false);
+  const [validInterest, setValidInterest] = useState(true);
+  const role = sessionStorage.getItem("role");
 
   console.log("ID del proyecto:", id); // Para depuración
 
   // Obtener la información del proyecto usando el hook
   const { data: project, isLoading, error, refetch: projectRefetch } = useProject(id);
+  const { data: userData, isLoading: isUserLoading, refetch: userRefetch } = useUser();
+
+  console.log("Datos de usuario:", userData); // Para depuración
+
+  useEffect(() => {
+    if (userData?.projects) {
+      const userProjects = userData.projects;
+      const projectIds = userProjects.map(project => project.id);
+      console.log("IDs de proyectos del usuario:", projectIds);
+      if (projectIds.includes(parseInt(id))) {
+        console.log("El usuario no puede tirar interest este proyecto.");
+        setValidInterest(false);
+      }
+    }
+  }, [userData]);
 
   useEffect(() => {
     const projectIdFromQuery = getParams().get('project');
@@ -150,8 +167,9 @@ export function ProjectDetail() {
                     </Typography>
                   </div>
                 </div>
-                <Button color="light-blue" onClick={() => setFreelancerInterestPopUp(prev => !prev)}>Apply Now!</Button>
-
+                {(role == "Freelancer" && validInterest) &&
+                  <Button color="light-blue" onClick={() => setFreelancerInterestPopUp(prev => !prev)}>Apply Now!</Button>
+                }
               </div >
             </CardBody>
           </Card>
@@ -210,7 +228,7 @@ export function ProjectDetail() {
             </Card>
           </div>
         </div>
-      </div>
+      </div >
       <EditSkillsPopup open={showSkillsPopUp} onOpen={setShowSkillsPopUp} skills={project.skills || []} editSkill={handleEditSkill} addSkill={handleAddSkill} deleteSkill={handleDeleteSkill} />
       <EditProjectPopUp open={showEditProjectPopUp} setOpen={setShowEditProjectPopUp} project={project} handleProjectSave={handleEditProject} />
       <FreelancerInterestPopUp open={freelancerInterestPopUp} onOpen={setFreelancerInterestPopUp} handleInterest={handleFreelancerInterest} project={project} />
