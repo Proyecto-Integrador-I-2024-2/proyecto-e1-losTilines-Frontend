@@ -6,6 +6,7 @@ export const EditExperiencePopup = ({ open, onOpen, experiences, editExperience,
     const [selectedExperience, setSelectedExperience] = useState(null);
     const [newExperience, setNewExperience] = useState({
         occupation: "",
+        company: "",
         start_date: "",
         final_date: "",
         description: "",
@@ -16,6 +17,7 @@ export const EditExperiencePopup = ({ open, onOpen, experiences, editExperience,
             const selectedCurrentExperience = experiences[selectedExperience];
             editExperience(selectedCurrentExperience.id, newExperience);
         } else {
+            console.log("New Experience to ADD: ", newExperience);
             addExperience(newExperience);
         }
         setNewExperience({ occupation: "", start_date: "", final_date: "", description: "" });
@@ -69,6 +71,13 @@ export const EditExperiencePopup = ({ open, onOpen, experiences, editExperience,
                         onChange={handleChange}
                         required
                     />
+                    <Input
+                        label="Company"
+                        name="company"
+                        value={newExperience.company}
+                        onChange={handleChange}
+                        required
+                    />
                     <div className="flex space-x-4">
                         <Input
                             label="Start Date"
@@ -97,7 +106,7 @@ export const EditExperiencePopup = ({ open, onOpen, experiences, editExperience,
                 </div>
             </DialogBody>
             <DialogFooter>
-                <Button variant="text" color="red" onClick={() => onOpen(false)} className="mr-2">
+                <Button variant="text" color="red" onClick={() => { setSelectedExperience(null); onOpen(false) }} className="mr-2">
                     Cancel
                 </Button>
                 <Button variant="gradient" color="cyan" onClick={handleSave}>
