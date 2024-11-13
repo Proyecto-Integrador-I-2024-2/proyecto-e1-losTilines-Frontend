@@ -24,7 +24,7 @@ export function BigProjectCard({ project, isActive, handleNavigate }) {
                 />
             </CardHeader>
             <CardBody>
-                <div className="mb-2 flex items-center justify-between">
+                <div className="mb-2 flex items-center justify-between gap-2">
                     <Typography color="blue-gray" className="font-medium">
                         {project.name}
                     </Typography>
@@ -32,7 +32,12 @@ export function BigProjectCard({ project, isActive, handleNavigate }) {
                         {project.budget}
                     </Typography>
                 </div>
-                <Typography variant="small" color="gray" className="font-normal opacity-75">
+                <Typography variant="small" color="gray" className="font-normal opacity-75 overflow-hidden text-ellipsis" style={{
+                    display: "-webkit-box",
+                    WebkitBoxOrient: "vertical",
+                    WebkitLineClamp: 2,
+                }}
+                >
                     {project.description}
                 </Typography>
             </CardBody>

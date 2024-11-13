@@ -46,7 +46,7 @@ export const ReviewSection = ({ id }) => {
                             </div>
                         ) : (
                             <div className="mt-4">
-                                <Textarea variant="" placeholder="Your Comment" rows={8} />
+                                <Textarea placeholder="Your Comment" rows={8} />
                                 <div className="flex w-full justify-between py-1.5">
                                     <IconButton variant="text" color="blue-gray" size="sm">
                                         <svg

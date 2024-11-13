@@ -16,16 +16,6 @@ class UserRoleSerializer(serializers.ModelSerializer):
         model = UserRole
         fields = ['role_name', 'user']
 
-class NotificationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Notification
-        fields = ['id', 'message', 'created_at']
-
-class UserNotificationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserNotification
-        fields = ['id', 'notification', 'user']
-
 # ---------------------- COMPANIES ---------------------- #
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
@@ -54,38 +44,20 @@ class FreelancerSerializer(serializers.ModelSerializer):
         fields = ['user', 'description', 'country', 'city']
 
 # ---------------------- PROJECTS ---------------------- #
-class StatusSerializer(serializers.ModelSerializer):
-    class Meta: 
-        model = Status
-        fields = ['id', 'name']
-
 class ProjectSerializer(serializers.ModelSerializer):
-    status = StatusSerializer()  
-
     class Meta:
         model = Project
         fields = ['id', 'name', 'description', 'start_date', 'budget', 'status']
 
 # ---------------Freelancer skills-----------------------#
 class SkillSerializer(serializers.ModelSerializer):
-    type = serializers.CharField()
-
     class Meta:
         model = Skill
-        fields = ['id', 'name', 'is_predefined', 'type']
-
-    def create(self, validated_data):
-        skill_type_name = validated_data.pop('type')
-        
-        skill_type, created = SkillType.objects.get_or_create(name=skill_type_name)
-        
-        skill = Skill.objects.create(type=skill_type, **validated_data)
-        return skill
+        fields = ['id', 'name', 'is_predefined']
 
 class FreelancerSkillSerializer(serializers.ModelSerializer):
     skill = serializers.PrimaryKeyRelatedField(queryset=Skill.objects.all(), required=False) 
     skill_name = serializers.CharField(source='skill.name', read_only=True)
-
 
     class Meta:
         model = FreelancerSkill
@@ -126,13 +98,6 @@ class ExperienceSerializer(serializers.ModelSerializer):
 
 class ProjectSkillSerializer(serializers.ModelSerializer):
     skill = SkillSerializer()
-
-    class Meta:
-        model = ProjectSkill
-        fields = ['id', 'project', 'skill', 'level']
-
-class ProjectSkillCreateSerializer(serializers.ModelSerializer):
-    skill = serializers.PrimaryKeyRelatedField(queryset=Skill.objects.all())
 
     class Meta:
         model = ProjectSkill

@@ -7,8 +7,8 @@ from django.db import transaction
 from django.contrib.auth.models import Group
 import random
 from app.models import (
-    User, UserRole, Notification, UserNotification, Company, Area, UserCompany,
-    Freelancer, SkillType, Skill, FreelancerSkill, Status, Project, ProjectFreelancer, ProjectSkill, 
+    User, UserRole, Company, Area, UserCompany,
+    Freelancer, Skill, FreelancerSkill, Status, Project, ProjectFreelancer, ProjectSkill, 
     Experience, Comment, Payment, Deliverable, Milestone, Status
 )
 
@@ -75,9 +75,9 @@ SKILL_CHOICES = ['Python', 'Django', 'JavaScript', 'React', 'Vue.js', 'Angular',
                  'Git', 'Jenkins', 'CI/CD', 'Unit Testing', 'Integration Testing', 'TDD', 'Agile Methodologies', 'Project Management', 'Business Analysis', 'SEO', 'SEM', 
                  'Content Marketing', 'Social Media Marketing', 'Cloud Computing', 'IoT']
 
-SKILL_TYPE_CHOICES = ['Programación', 'Desarrollo Web', 'Desarrollo Móvil', 'DevOps', 'Bases de Datos', 'Seguridad Informática', 'Inteligencia Artificial', 
-                      'Data Science', 'Diseño Gráfico', 'Diseño UI/UX', 'Marketing Digital', 'Gestión de Proyectos', 'Gestión de Equipos', 'Metodologías Ágiles', 
-                      'Cloud Computing', 'Redes y Telecomunicaciones', 'Soporte Técnico', 'Consultoría', 'Automatización', 'Control de Calidad']
+# SKILL_TYPE_CHOICES = ['Programación', 'Desarrollo Web', 'Desarrollo Móvil', 'DevOps', 'Bases de Datos', 'Seguridad Informática', 'Inteligencia Artificial', 
+#                       'Data Science', 'Diseño Gráfico', 'Diseño UI/UX', 'Marketing Digital', 'Gestión de Proyectos', 'Gestión de Equipos', 'Metodologías Ágiles', 
+#                       'Cloud Computing', 'Redes y Telecomunicaciones', 'Soporte Técnico', 'Consultoría', 'Automatización', 'Control de Calidad']
 
 PROJECT_CHOICES = ['Desarrollo Plataforma Web', 'Aplicación Móvil', 'API Backend', 'Sistema de Gestión', 'Sitio Web Corporativo', 'E-commerce', 'Sistema de Gestión de Inventarios', 
                    'Automatización de Procesos', 'CRM (Gestión de Relaciones con Clientes)', 'ERP (Planificación de Recursos Empresariales)', 'Sistema de Facturación', 
@@ -276,19 +276,12 @@ class FreelancerFactory(DjangoModelFactory):
     country = factory.Faker('country')
     city = factory.Faker('city')
 
-class SkillTypeFactory(DjangoModelFactory):
-    class Meta:
-        model = SkillType
-
-    name = factory.Iterator(SKILL_TYPE_CHOICES, cycle=False)  
-
 class SkillFactory(DjangoModelFactory):
     class Meta:
         model = Skill
 
     name = factory.Iterator(SKILL_CHOICES, cycle=False)
     is_predefined = True
-    type = factory.SubFactory(SkillTypeFactory)
 
 class FreelancerSkillFactory(DjangoModelFactory):
     class Meta:
@@ -298,19 +291,19 @@ class FreelancerSkillFactory(DjangoModelFactory):
     skill = factory.SubFactory(SkillFactory)
     level = factory.LazyAttribute(lambda _: fake.random_int(min=50, max=100))
 
-class NotificationFactory(DjangoModelFactory):
-    class Meta:
-        model = Notification
+# class NotificationFactory(DjangoModelFactory):
+#     class Meta:
+#         model = Notification
 
-    message = factory.LazyFunction(lambda: generate_tech_notification())  
-    created_at = factory.LazyFunction(timezone.now)
+#     message = factory.LazyFunction(lambda: generate_tech_notification())  
+#     created_at = factory.LazyFunction(timezone.now)
 
-class UserNotificationFactory(DjangoModelFactory):
-    class Meta:
-        model = UserNotification
+# class UserNotificationFactory(DjangoModelFactory):
+#     class Meta:
+#         model = UserNotification
 
-    notification = factory.SubFactory(NotificationFactory)
-    user = factory.SubFactory(UserFactory)
+#     notification = factory.SubFactory(NotificationFactory)
+#     user = factory.SubFactory(UserFactory)
 
 class ProjectFactory(DjangoModelFactory):
     class Meta:
@@ -366,7 +359,6 @@ class ExperienceFactory(DjangoModelFactory):
 class CommentFactory(DjangoModelFactory):
     class Meta:
         model = Comment
-
     
     description = factory.LazyAttribute(lambda obj: random.choice(
         positive_comment_templates if random.choice([True, False]) else negative_comment_templates
@@ -397,7 +389,6 @@ class MilestoneFactory(DjangoModelFactory):
     due_date = factory.Faker('date_between', start_date='today', end_date='+1y')
     freelancer = factory.LazyAttribute(lambda obj: obj.freelancer)
     project = factory.LazyAttribute(lambda obj: obj.project)
-    status = factory.LazyAttribute(lambda _: random.choice(statuss))
 
 class DeliverableFactory(DjangoModelFactory):
     class Meta:
@@ -428,11 +419,6 @@ class StatusFactory(DjangoModelFactory):
         model = Status
 
     name = factory.LazyAttribute(lambda obj: obj.name)  
-
-stat1 = StatusFactory.create(name="En progreso")
-stat2 = StatusFactory.create(name="Completado")
-stat3 = StatusFactory.create(name="Pendiente")
-statuss = [stat1, stat2, stat3]
 
 def cargar_datos():
 
@@ -563,26 +549,26 @@ def cargar_datos():
         print(f"Error al crear proyectos o asignar freelancers: {str(e)}")
         return
     #Notificaciones
-    try:
-        for project in projects:
+    # try:
+    #     for project in projects:
 
-            notification_1 = NotificationFactory.create(message=f"Actualización importante del proyecto {project.name}")
-            notification_2 = NotificationFactory.create(message=f"Nueva versión disponible para {project.name}")
+    #         notification_1 = NotificationFactory.create(message=f"Actualización importante del proyecto {project.name}")
+    #         notification_2 = NotificationFactory.create(message=f"Nueva versión disponible para {project.name}")
 
-            UserNotificationFactory.create(notification=notification_1, user=project.user)  # Project Manager es el 'user' del proyecto
-            UserNotificationFactory.create(notification=notification_2, user=project.user)
+    #         UserNotificationFactory.create(notification=notification_1, user=project.user)  # Project Manager es el 'user' del proyecto
+    #         UserNotificationFactory.create(notification=notification_2, user=project.user)
 
-            freelancers_in_project = ProjectFreelancer.objects.filter(project=project).select_related('freelancer')
+    #         freelancers_in_project = ProjectFreelancer.objects.filter(project=project).select_related('freelancer')
             
-            for project_freelancer in freelancers_in_project:
-                freelancer_user = project_freelancer.freelancer.user  # Obtener el usuario del freelancer asignado a este proyecto
-                UserNotificationFactory.create(notification=notification_1, user=freelancer_user)
-                UserNotificationFactory.create(notification=notification_2, user=freelancer_user)
+    #         for project_freelancer in freelancers_in_project:
+    #             freelancer_user = project_freelancer.freelancer.user  # Obtener el usuario del freelancer asignado a este proyecto
+    #             UserNotificationFactory.create(notification=notification_1, user=freelancer_user)
+    #             UserNotificationFactory.create(notification=notification_2, user=freelancer_user)
                     
-        print("Notificaciones creadas y asignadas correctamente por proyecto.") 
-    except Exception as e:
-        print(f"Error al crear notificaciones: {str(e)}")
-        return
+    #     print("Notificaciones creadas y asignadas correctamente por proyecto.") 
+    # except Exception as e:
+    #     print(f"Error al crear notificaciones: {str(e)}")
+    #     return
     #Experiencia
     try:
         for freelancer in freelancers:
@@ -611,8 +597,7 @@ def cargar_datos():
             freelancers_in_project = ProjectFreelancer.objects.filter(project=project).select_related('freelancer')
             for freelancer in freelancers_in_project:
                 try:
-                    milestones = MilestoneFactory.create_batch(2, project=project, freelancer=freelancer.freelancer, status=random.choice(statuss))
-                    
+                    milestones = MilestoneFactory.create_batch(2, project=project, freelancer=freelancer.freelancer)
                 except Exception as e:
                     print(f"Error al crear milestones para {project.name} y {freelancer.freelancer.user.first_name}: {str(e)}")
                     continue

@@ -87,6 +87,7 @@ export function ProjectDetail() {
       skill: body.skill.id
     }
     editProjectSkill({ id, body: skillToEditData })
+    console.log("ID de proyecto al editar", id);
     queryClient.invalidateQueries(['project', id]);
     projectRefetch()
   }
@@ -103,6 +104,9 @@ export function ProjectDetail() {
     console.log("Body", body);
     editProject({ id, body })
     queryClient.invalidateQueries(['project', id]);
+    const userId = sessionStorage.getItem("id");
+    queryClient.invalidateQueries(['freelancer_projects', userId]);
+    queryClient.invalidateQueries(['worker_projects', userId]);
     projectRefetch()
   }
 
@@ -125,7 +129,7 @@ export function ProjectDetail() {
         <div className="mx-3 mt-4 mb-4 lg:mx-4">
           <Card className="inline-flex w-full border border-blue-gray-100 mb-2">
             <CardBody className="h-full p-4">
-              <div className=" flex items-center justify-between flex-wrap gap-6 h-auto">
+              <div className="flex items-center justify-between flex-wrap gap-6 h-auto">
                 <div className="flex items-center gap-6">
                   <Avatar
                     src={project.image || profile_pic}

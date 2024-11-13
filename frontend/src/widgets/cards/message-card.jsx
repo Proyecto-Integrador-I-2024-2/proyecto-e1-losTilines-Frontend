@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import { Avatar, Typography } from "@material-tailwind/react";
+import { profile_pic } from "@/data/placeholder";
 
 export function MessageCard({ img, name, message, action }) {
   return (
@@ -8,6 +9,7 @@ export function MessageCard({ img, name, message, action }) {
         <Avatar
           src={img}
           alt={""}
+          onError={(e) => { e.target.onerror = null; e.target.src = profile_pic }}
           variant="rounded"
           className="shadow-lg shadow-blue-gray-500/25"
         />

@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from app.models import Project, Company, ProjectFreelancer, Status, UserCompany, Milestone, Freelancer
-from app.serializers import ProjectSerializer, ProjectSkillCreateSerializer
+from app.serializers import ProjectSerializer, ProjectSkillSerializer
 from .serializers import *
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import *
@@ -31,18 +31,20 @@ class ProjectViewSet(viewsets.ModelViewSet):
         user_company = UserCompany.objects.filter(user=user).first()
         if user_company is None:
             raise PermissionDenied("The user does not belong to any company.")
-        
-        status, _ = Status.objects.get_or_create(name="Pending")
-        serializer.save(user=user, status=status)
+        serializer.save(user=user)
 
     def partial_update(self, request, *args, **kwargs):
         user = request.user
         instance = self.get_object()
 
-        # Verificar permisos de modificación, por ejemplo:
+        # Verificar permisos de modificación
         if user.groups.filter(name='Freelancer').exists():
             raise PermissionDenied("You do not have permission to modify this project.")
-        
+
+        # Verificación adicional para instance
+        if not instance:
+            raise PermissionDenied("Project instance not found.")
+
         # Lógica de actualización adicional si es necesario
         return super().partial_update(request, *args, **kwargs)
 
@@ -106,9 +108,3 @@ class ProjectSkillViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['project', 'skill']
-
-    def get_serializer_class(self):
-        if self.action in ['create', 'update', 'partial_update']:
-            return ProjectSkillCreateSerializer
-        return ProjectSkillSerializer
-    
