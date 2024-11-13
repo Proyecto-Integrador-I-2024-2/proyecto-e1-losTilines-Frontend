@@ -260,172 +260,138 @@ export function Profile() {
     setCompanyInterestPopUp((pop) => !pop);
   }
 
-  return (
-    <div className="w-full h-full">
-      <div className="mx-3 mt-4 mb-2 lg:mx-4 h-2/3">
-        <Card className="h-full border border-blue-gray-100">
-          <CardBody className="h-full p-4">
-            {/* Seccion de identifiacion y tabs de herramientas */}
-            {!externalCompanyData ? (
-              <div className="mb-10 flex items-center justify-between flex-wrap gap-6 h-auto">
-                <div className="flex flex-row items-center gap-6 justify-between">
-                  <Avatar
-                    src={
-                      (isFreelancer && !isUserLoading) || externalFreelancerData
-                        ? profile_picture?.replace(/\s+/g, "") || profile_pic
-                        : profile_picture || profile_pic
-                    }
-                    alt="bruce-mars"
-                    size="xl"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = profile_pic;
-                    }}
-                    variant="circular"
-                    className="rounded-lg shadow-lg shadow-blue-gray-500/40"
-                  />
-                  <div>
-                    <Typography variant="h5" color="blue-gray" className="mb-1">
-                      {isUserLoading ? (
-                        <Spinner />
-                      ) : (
-                        `${first_name} ${last_name}`
-                      )}
-                    </Typography>
-                    <Typography
-                      variant="small"
-                      className="font-normal text-blue-gray-600"
-                    >
-                      {!isUserLoading &&
-                        !externalCompanyData &&
-                        !externalFreelancerData &&
-                        role}
-                    </Typography>
-                    <Rating value={0} />
-                  </div>
+    return (
+        <div className="w-full h-full">
+            <div className="mx-3 mt-4 mb-2 lg:mx-4 h-2/3">
+                <Card className="h-full border border-blue-gray-100">
+                    <CardBody className="h-full p-4">
+                        {/* Seccion de identifiacion y tabs de herramientas */}
+                        {!externalCompanyData ?
+                            <div className="mb-10 flex items-center justify-between flex-wrap gap-6 h-auto">
+                                <div className="flex items-center justify-between flex-row gap-6 h-auto w-full">
+                                    <div className="flex items-center gap-6">
+                                        <Avatar
+                                            src={((isFreelancer && !isUserLoading) || externalFreelancerData) ? (profile_picture?.replace(/\s+/g, '') || profile_pic) : (profile_picture?.replace(/\s+/g, '') || profile_pic)}
+                                            alt="bruce-mars"
+                                            size="xl"
+                                            onError={(e) => { e.target.onerror = null; e.target.src = profile_pic }}
+                                            variant="circular"
+                                            className="rounded-lg shadow-lg shadow-blue-gray-500/40"
+                                        />
+                                        <div>
+                                            <Typography variant="h5" color="blue-gray" className="mb-1">
+                                                {isUserLoading ? <Spinner /> : `${first_name} ${last_name}`}
+                                            </Typography>
+                                            <Typography
+                                                variant="small"
+                                                className="font-normal text-blue-gray-600"
+                                            >
+                                                {!isUserLoading && !externalCompanyData && !externalFreelancerData && role}
+                                            </Typography>
+                                            <Rating value={0} aria-disabled />
+                                        </div>
+                                    </div>
+                                    <Button onClick={handleCompanyInterestPopUp} color="light-blue">
+                                        Invite
+                                    </Button>
 
-                  {isFreelancer && externalFreelancerData && (
-                    <div className="w-full flex flex-row items-end justify-end">
-                      <Button onClick={handleCompanyInterestPopUp}>
-                        Invite
-                      </Button>
-                    </div>
-                  )}
-                </div>
+                                </div>
 
-                {/* Quien soy yo */}
-              </div>
-            ) : (
-              <div className="mb-10 flex items-center justify-between flex-wrap gap-6 h-auto">
-                {/* Avatar e información básica de la empresa */}
-                <div className="flex items-center gap-6">
-                  <Avatar
-                    src={externalCompanyData?.image || profile_pic} // Puedes agregar la imagen o logo de la empresa aquí
-                    alt={externalCompanyData?.name || "Company Logo"}
-                    size="xl"
-                    variant="circular"
-                    className="rounded-lg shadow-lg shadow-blue-gray-500/40"
-                  />
-                  <div>
-                    {/* Nombre de la empresa */}
-                    <Typography variant="h5" color="blue-gray" className="mb-1">
-                      {externalCompanyData?.name || "Company Name"}
-                    </Typography>
-                    <Typography
-                      variant="small"
-                      className="font-normal text-blue-gray-600"
-                    >
-                      {externalCompanyData.industry} Company
-                    </Typography>
-                    <Rating value={5} />
-                  </div>
-                </div>
+                                {/* Quien soy yo */}
+                            </div > :
+                            <div className="mb-10 flex items-center justify-between flex-wrap gap-6 h-auto">
+                                {/* Avatar e información básica de la empresa */}
+                                <div className="flex items-center gap-6">
+                                    <Avatar
+                                        src={externalCompanyData?.image || profile_pic} // Puedes agregar la imagen o logo de la empresa aquí
+                                        alt={externalCompanyData?.name || "Company Logo"}
+                                        size="xl"
+                                        variant="circular"
+                                        className="rounded-lg shadow-lg shadow-blue-gray-500/40"
+                                    />
+                                    <div>
+                                        {/* Nombre de la empresa */}
+                                        <Typography variant="h5" color="blue-gray" className="mb-1">
+                                            {externalCompanyData?.name || "Company Name"}
+                                        </Typography>
+                                        <Typography
+                                            variant="small"
+                                            className="font-normal text-blue-gray-600"
+                                        >
+                                            {externalCompanyData.industry} Company
+                                        </Typography>
+                                        <Rating value={5} />
+                                    </div>
+                                </div>
 
-                {/* Tabs de navegación o acciones */}
-                <div className="w-96">
-                  <Tabs value="overview">
-                    <TabsHeader>
-                      <Tab value="overview">
-                        <HomeIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
-                        Overview
-                      </Tab>
-                      <Tab value="contact">
-                        <ChatBubbleLeftEllipsisIcon className="-mt-0.5 mr-2 inline-block h-5 w-5" />
-                        Contact
-                      </Tab>
-                      <Tab value="settings">
-                        <Cog6ToothIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
-                        Settings
-                      </Tab>
-                    </TabsHeader>
-                  </Tabs>
-                </div>
-              </div>
-            )}
-            {/* Aquí va la fila de cards tipo columna --->*/}
-            <div className="grid-cols-1 mb-12 grid gap-12 px-4 lg:grid-cols-2 xl:grid-cols-3 h-2/3">
-              <div>
-                {!isUserLoading && !externalCompanyData ? (
-                  <ProfileInfoCard
-                    title="Profile Information"
-                    description={
-                      isFreelancer
-                        ? description
-                        : companyData?.at(0)?.description ||
-                          "No description y soy company"
-                    }
-                    details={
-                      isFreelancer
-                        ? {
-                            "first name": first_name,
-                            "last name": last_name,
-                            mobile: phone_number,
-                            email: email,
-                            location: `${city}, ${country}`,
-                            social: (
-                              <div className="flex items-center gap-4">
-                                <i className="fa-brands fa-facebook text-blue-700" />
-                                <i className="fa-brands fa-twitter text-blue-400" />
-                                <i className="fa-brands fa-instagram text-purple-500" />
-                              </div>
-                            ),
-                          }
-                        : {
-                            "first name": first_name,
-                            "last name": last_name,
-                            mobile: phone_number,
-                            email: email,
-                          }
-                    }
-                    editable={isEditable}
-                    onEdit={handleProfilePopup}
-                  />
-                ) : (
-                  <ProfileInfoCard
-                    title="Company Information"
-                    description={
-                      externalCompanyData?.description ||
-                      "No description provided"
-                    }
-                    details={{
-                      name: externalCompanyData?.name || "No name provided",
-                      industry:
-                        externalCompanyData?.industry || "No industry provided",
-                      email: externalCompanyData?.email || "No email provided",
-                    }}
-                    editable={false}
-                    onEdit={{}}
-                  />
-                )}
-                {isFreelancer &&
-                  (isUserLoading ? (
-                    <Spinner />
-                  ) : (
-                    portfolio !== "Not provided" && (
-                      <GitButton url={portfolio} />
-                    )
-                  ))}
-              </div>
+                                {/* Tabs de navegación o acciones */}
+                                <div className="w-96">
+                                    <Tabs value="overview">
+                                        <TabsHeader>
+                                            <Tab value="overview">
+                                                <HomeIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
+                                                Overview
+                                            </Tab>
+                                            <Tab value="contact">
+                                                <ChatBubbleLeftEllipsisIcon className="-mt-0.5 mr-2 inline-block h-5 w-5" />
+                                                Contact
+                                            </Tab>
+                                            <Tab value="settings">
+                                                <Cog6ToothIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
+                                                Settings
+                                            </Tab>
+                                        </TabsHeader>
+                                    </Tabs>
+                                </div>
+                            </div>
+                        }
+                        {/* Aquí va la fila de cards tipo columna --->*/}
+                        <div className="grid-cols-1 mb-12 grid gap-12 px-4 lg:grid-cols-2 xl:grid-cols-3 h-2/3">
+                            <div>
+                                {(!isUserLoading && !externalCompanyData) ? <ProfileInfoCard
+                                    title="Profile Information"
+                                    description={isFreelancer ? description : companyData?.at(0)?.description || "Company Description not provided"}
+                                    details={isFreelancer ? {
+                                        "first name": first_name,
+                                        "last name": last_name,
+                                        mobile: phone_number,
+                                        email: email,
+                                        location: `${city}, ${country}`,
+                                        social: (
+                                            <div className="flex items-center gap-4">
+                                                <i className="fa-brands fa-facebook text-blue-700" />
+                                                <i className="fa-brands fa-twitter text-blue-400" />
+                                                <i className="fa-brands fa-instagram text-purple-500" />
+                                            </div>
+                                        ),
+                                    } :
+                                        {
+                                            "first name": first_name,
+                                            "last name": last_name,
+                                            mobile: phone_number,
+                                            email: email,
+                                        }}
+                                    editable={isEditable}
+                                    onEdit={handleProfilePopup}
+                                /> :
+                                    <ProfileInfoCard
+                                        title="Company Information"
+                                        description={externalCompanyData?.description || "No description provided"}
+                                        details={
+                                            {
+                                                name: externalCompanyData?.name || "No name provided",
+                                                industry: externalCompanyData?.industry || "No industry provided",
+                                                email: externalCompanyData?.email || "No email provided",
+                                            }
+                                        }
+                                        editable={false}
+                                        onEdit={{}}
+                                    />}
+                                {
+                                    isFreelancer && (isUserLoading ? <Spinner /> : (portfolio !== "Not provided" && <GitButton url={portfolio} />))
+                                }
+
+                            </div>
 
               <div className="h-96">
                 {isFreelancer ? (

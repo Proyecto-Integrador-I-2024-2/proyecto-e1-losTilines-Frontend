@@ -45,3 +45,16 @@ export const editProject = async ({ id, body }) => {
     const { data } = await apiClient.patch(url, body);
     return data;
 }
+
+
+// ----------------------------------------------------------------------
+
+export const createProject = async ({ body }) => {
+    const url = "projects/";
+    try {
+        const { data } = await apiClient.post(url, body);
+        return data;
+    } catch (error) {
+        return { error: error.response };
+    }
+};
