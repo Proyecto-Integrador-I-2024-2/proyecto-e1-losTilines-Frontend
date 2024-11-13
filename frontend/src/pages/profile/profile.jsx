@@ -28,7 +28,6 @@ import { userExample, freelancerExample, profile_pic } from "@/data/placeholder"
 import { addFreelancerSkill, deleteFreelancerExperience, deleteFreelancerSkill, editFreelancerExperience, editFreelancerSkill, editWorkerProfile, getCompany, getFreelancer, postCompanyInterest } from "@/services";
 import { useQueryClient } from "@tanstack/react-query";
 import ReviewSection from "@/widgets/custom/reviews";
-import { reviews } from "@/data/reviews-data";
 
 export function Profile() {
     const queryClient = useQueryClient();
@@ -142,10 +141,18 @@ export function Profile() {
 
 
     // ----------------------- API consumption -----------------------
-
+    function quitarTildes(texto) { return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, ""); }
     // Worker/Freelancer User Data
     function handleEditWorkerProfile(body) {
-        editWorkerProfile({ body })
+        console.log("Body a editar worker: ", body);
+        const newBody = {
+            first_name: quitarTildes(body["first_name"]),
+            last_name: quitarTildes(body["last_name"]),
+            email: quitarTildes(body["email"]),
+            phone_number: body["phone_number"]
+        }
+        console.log("New Body", newBody);
+        editWorkerProfile({ body: newBody })
         queryClient.invalidateQueries(['User']);
         userRefetch()
     }
@@ -247,9 +254,12 @@ export function Profile() {
                                             <Rating value={0} aria-disabled />
                                         </div>
                                     </div>
-                                    <Button onClick={handleCompanyInterestPopUp} color="light-blue">
-                                        Invite
-                                    </Button>
+                                    {(role != "Freelancer" && externalFreelancerData) &&
+                                        <Button onClick={handleCompanyInterestPopUp} color="light-blue">
+                                            Invite
+                                        </Button>
+                                    }
+
 
                                 </div>
 
@@ -363,6 +373,10 @@ export function Profile() {
                                             <Typography variant="h6" color="blue-gray" className="mb-4">
                                                 Freelancers that have worked here
                                             </Typography>
+                                            {(companyData?.at(0)?.freelancers?.length == 0 || externalCompanyData?.freelancers?.length == 0) &&
+                                                <Typography variant="h6" color="gray">
+                                                    No freelancers have worked here yet
+                                                </Typography>}
                                             {!externalCompanyData && companyData ? <div className="space-y-6 h-full overflow-y-auto no-scrollbar">
                                                 {companyData?.at(0)?.freelancers.map((freelancer) => (
                                                     <MessageCard
@@ -429,18 +443,19 @@ export function Profile() {
                     }
                 </CardBody>
             </Card>
-            {isUserLoading ? <Spinner /> :
-                <>
-                    {(isEditable) &&
-                        <>
-                            <EditProfilePopUp open={showProfilePopUp} onOpen={setShowProfilePopUp} profile={userToUse} onChange={handleEditWorkerProfile} />
-                            <EditExperiencePopup open={showExperiencePopUp} onOpen={setShowExperiencePopUp} experiences={experience_set || []} editExperience={handleEditExperience} addExperience={{}} deleteExperience={handleDeleteExperience} />
-                            <EditSkillsPopup open={showSkillsPopUp} onOpen={setShowSkillsPopUp} skills={skills || []} editSkill={handleEditSkill} addSkill={handleAddSkill} deleteSkill={handleDeleteSkill} />
-                        </>
-                    }
-                    <ReviewSection reviews={reviews} />
-                    {userData?.company && <CompanyInterestPopUp open={companyInterestPopUp} onOpen={setCompanyInterestPopUp} companyId={userData.company} handleInterest={handleInterest} />}
-                </>
+            {
+                isUserLoading ? <Spinner /> :
+                    <>
+                        {(isEditable) &&
+                            <>
+                                <EditProfilePopUp open={showProfilePopUp} onOpen={setShowProfilePopUp} profile={userToUse} onChange={handleEditWorkerProfile} />
+                                <EditExperiencePopup open={showExperiencePopUp} onOpen={setShowExperiencePopUp} experiences={experience_set || []} editExperience={handleEditExperience} addExperience={{}} deleteExperience={handleDeleteExperience} />
+                                <EditSkillsPopup open={showSkillsPopUp} onOpen={setShowSkillsPopUp} skills={skills || []} editSkill={handleEditSkill} addSkill={handleAddSkill} deleteSkill={handleDeleteSkill} />
+                            </>
+                        }
+                        {(role == "Freelancer" || externalFreelancerData) && <ReviewSection id={externalFreelancerId || userData?.user?.id || userData?.id || -1} />}
+                        {userData?.company && <CompanyInterestPopUp open={companyInterestPopUp} onOpen={setCompanyInterestPopUp} companyId={userData.company} handleInterest={handleInterest} />}
+                    </>
             }
         </div >
     );
