@@ -114,8 +114,14 @@ class SkillViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permissions = [AllowAny]
     filterset_fields = ['freelancer', 'writer']
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            permission_classes = [IsAuthenticated] 
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
 
     def perform_create(self, serializer):
         serializer.save(writer=self.request.user)
