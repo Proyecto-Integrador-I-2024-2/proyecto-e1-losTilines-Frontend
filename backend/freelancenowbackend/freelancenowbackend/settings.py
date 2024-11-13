@@ -73,7 +73,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_FILTER_BACKENDS': 
     [
@@ -145,9 +145,6 @@ AUTHENTICATION_BACKENDS = [
     'appAuth.backends.EmailBackend',  # Asegúrate de que la ruta sea correcta
     'django.contrib.auth.backends.ModelBackend',  # Backend por defecto
 ]
-
-
-
 
 # Asegúrate de que el modelo de usuario personalizado esté correctamente referenciado
 AUTH_USER_MODEL = 'app.User'
