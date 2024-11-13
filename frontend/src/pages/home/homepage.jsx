@@ -95,7 +95,7 @@ const Homepage = () => {
                 </CustomList>
               )}
             </div>
-            <div className="flex flex-col max-h-1/3 my-8">
+            <div className="flex flex-col max-h-1/3 my-8 max-w-full items-center">
               <Typography
                 variant="h2"
                 className="text-4xl font-semibold text-center text-secondary mb-12"
@@ -103,23 +103,21 @@ const Homepage = () => {
                 Incredible projects for you to hop on!
               </Typography>
 
-              <div className="flex flex-col justify-center items-center w-full">
-                {projectsData && (
-                  <CustomList
-                    sectionTitle={""}
-                    sectionSubtitle={""}
-                    isDistributedEvenly={true}
-                  >
-                    {projectsData.map((project) => (
-                      <ProjectCard
-                        key={project.id}
-                        project={project}
-                        onCardClick={handleProjectCardClick}
-                      />
-                    ))}
-                  </CustomList>
-                )}
-              </div>
+              {projectsData && (
+                <CustomList
+                  sectionTitle={""}
+                  sectionSubtitle={""}
+                  isDistributedEvenly={true}
+                >
+                  {projectsData.map((project) => (
+                    <ProjectCard
+                      key={project.id}
+                      project={project}
+                      onCardClick={handleProjectCardClick}
+                    />
+                  ))}
+                </CustomList>
+              )}
             </div>
           </>
         )}
