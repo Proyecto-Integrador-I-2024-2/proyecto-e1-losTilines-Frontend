@@ -9,6 +9,13 @@ export const getFreelancer = async ({ id }) => {
     return data;
 }
 
+export const addFreelancerExperience = async ({ body }) => {
+    var route = "experience";
+    const url = `${route}/`;
+    const { data } = await apiClient.post(url, body);
+    return data;
+}
+
 export const editFreelancerExperience = async ({ id, body }) => {
     var route = "experience";
     const url = `${route}/${id}/`;
