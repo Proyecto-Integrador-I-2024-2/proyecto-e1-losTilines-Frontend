@@ -27,7 +27,6 @@ export function PopUp({
     await submitFunc();
     setSubmit("completed");
 
-    setOpen(!open);
   };
 
   const handleClose = async () => {

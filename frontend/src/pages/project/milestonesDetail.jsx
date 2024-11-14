@@ -1,16 +1,11 @@
 import { getMilestoneDeliverables, getProjectMilestones } from "@/services";
-import { MilestoneCard, DeliverableCard } from "@/widgets/cards";
+import { MilestoneCard,} from "@/widgets/cards";
 import { ProjectTopBar } from "@/widgets/layout";
-import { MilestonesInfo } from "@/widgets/milestonesAndDeliverables";
 import {
-  Card,
-  CardHeader,
-  CardBody,
-  Typography,
-  Avatar,
-  Button,
-  Input,
-} from "@material-tailwind/react";
+  MilestonesCreation,
+  MilestonesInfo,
+} from "@/widgets/milestonesAndDeliverables";
+import { Card, Typography, Button } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -18,7 +13,7 @@ import { PopUp } from "@/widgets/popUp";
 import apiClient from "@/services/apiClient";
 
 export function MilestonesDetail() {
-  const { id } = useParams();
+  const { id } = useParams(); // Use to identify the project
 
   console.log("Milestone project id: ", id);
 
@@ -28,15 +23,12 @@ export function MilestonesDetail() {
 
   // State variables for creating a new milestone
   const [openCreateMilestone, setOpenCreateMilestone] = useState(false);
-  const [newMilestoneName, setNewMilestoneName] = useState("");
-  const [newMilestoneDescription, setNewMilestoneDescription] = useState("");
-  const [createErrors, setCreateErrors] = useState({});
-  const [createSuccessMessage, setCreateSuccessMessage] = useState("");
-  const [createErrorMessage, setCreateErrorMessage] = useState("");
 
   /*----------------------------- useEffects -----------------------------*/
 
   // Fetch milestones
+
+  const role = sessionStorage.getItem("role");
 
   const fetchMilestones = async () => {
     try {
@@ -72,13 +64,6 @@ export function MilestonesDetail() {
     }
   }, [milestoneID]);
 
-  useEffect(() => {
-    console.log("Milestones: ", milestones);
-    if (milestones && milestones.length > 0) {
-      setMilestoneID(milestones[0].id);
-    }
-  }, [milestones]);
-
   /*-----------------------------Handlers-----------------------------*/
 
   function handleMilestoneClick(id) {
@@ -89,97 +74,70 @@ export function MilestonesDetail() {
   const handleOpenCreateMilestone = () =>
     setOpenCreateMilestone(!openCreateMilestone);
 
-  // Handler for creating a new milestone
-  const handleCreateMilestone = async () => {
-    // Clear previous messages
-    setCreateErrors({});
-    setCreateSuccessMessage("");
-    setCreateErrorMessage("");
-
-    // Validate inputs
-    const newErrors = {};
-    if (!newMilestoneName || newMilestoneName.trim() === "") {
-      newErrors.name = "Name is required";
-    }
-    if (!newMilestoneDescription || newMilestoneDescription.trim() === "") {
-      newErrors.description = "Description is required";
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setCreateErrors(newErrors);
-      return;
-    }
-
-    // Submit the create via axios (URL can be adjusted later)
-    try {
-      const response = await apiClient.post(`/milestones/`, {
-        name: newMilestoneName,
-        description: newMilestoneDescription,
-        project_id: id, // Assuming you need to associate the milestone with the project
-      });
-
-      setCreateSuccessMessage("Milestone created successfully");
-      // Optionally update the milestones list
-      fetchMilestones(); // Refresh the milestones list
-      // Close the pop-up after some time or immediately
-      setOpenCreateMilestone(false);
-      // Reset the input fields
-      setNewMilestoneName("");
-      setNewMilestoneDescription("");
-    } catch (error) {
-      setCreateErrorMessage("Failed to create milestone");
-    }
-  };
-
   return (
-    <div className=" w-full h-full max-h-screen min-h-0 pb-4 ">
+    <div className=" w-full h-full overflow-hidden  py-4 ">
       {/* <ProjectTopBar projectId={id} /> */}
-      <div className="flex flex-row w-full h-full min-h-0 space-x-4 ">
+      <div className="flex flex-row w-full h-full space-x-4  ">
         {/* Section 1: Milestones */}
 
-        <Card className="flex flex-col w-1/3 pb-2 px-4">
-          <div className="flex flex-col w-full h-full justify-start overflow-scroll">
-            {milestones.length > 0 ? (
-              milestones.map((milestone) => (
-                <MilestoneCard
-                  key={milestone.id}
-                  milestone={milestone}
-                  onClick={() => handleMilestoneClick(milestone.id)}
-                />
-              ))
-            ) : (
-              <Typography
-                variant="h6"
-                color="gray"
-                className="flex flex-col justify-start items-center mt-4"
-              >
-                There are no milestones available.
-              </Typography>
-            )}
-          </div>
+        <div className="flex flex-col h-full justify-center items-center w-1/3   ">
+          <Card className="flex flex-col items-center ju h-full w-full px-4 pb-2 pt-6    ">
+            <Typography variant="h4" color="blue-gray">
+              Milestones
+            </Typography>
+            <div className="flex flex-col w-full h-full justify-start items-center overflow-scroll">
+              {milestones.length > 0 ? (
+                milestones.map((milestone) => (
+                  <MilestoneCard
+                    key={milestone.id}
+                    milestone={milestone}
+                    onClick={() => handleMilestoneClick(milestone.id)}
+                  />
+                ))
+              ) : (
+                <Typography
+                  variant="h6"
+                  color="gray"
+                  className="flex flex-col justify-start items-center mt-4"
+                >
+                  There are no milestones available.
+                </Typography>
+              )}
+            </div>
 
-          <footer className="flex flex-row justify-center items-center w-full h-auto mt-2">
-            {/* Button to open the create milestone pop-up */}
-            <Button id="proposeMilestonButton" variant="text" color="cyan"  onClick={handleOpenCreateMilestone}>
-              Propose Milestone
-            </Button>
-          </footer>
-        </Card>
+            {role === "Freelanceer" && (
+              <footer className="flex flex-row justify-center items-center w-full  mt-2">
+                {/* Button to open the create milestone pop-up */}
+                <Button
+                  variant="text"
+                  color="cyan"
+                  onClick={handleOpenCreateMilestone}
+                >
+                  Propose Milestone
+                </Button>
+              </footer>
+            )}
+          </Card>
+        </div>
 
         {/* Section 2: Milestone and deliverables info */}
 
-        <main className="flex flex-col w-2/3 h-full ">
+        <main className="flex flex-col justify-start w-2/3 h-full   ">
           {milestones && milestones.length > 0 ? (
-              <MilestonesInfo
-                milestone={milestones.find(
-                  (milestone) => milestone.id === milestoneID
-                )}
-                deliverables={deliverables}
-              />
-      
+            <MilestonesInfo
+              fetchMilestones={fetchMilestones}
+              milestone={milestones.find(
+                (milestone) => milestone.id === milestoneID
+              )}
+              deliverables={deliverables}
+              fetchDeliverables={fetchDeliverables}
+            />
           ) : (
             <Card className="p-4 flex flex-col justify-center items-center h-full">
-              <button className="w-fit h-fit opacity-40 transform transition-transform duration-300 hover:-translate-y-2"  onClick={handleOpenCreateMilestone}>
+              <button
+                className="w-fit h-fit opacity-40 transform transition-transform duration-300 hover:-translate-y-2"
+                onClick={handleOpenCreateMilestone}
+              >
                 <img
                   src="/img/company/add.png"
                   alt="add button"
@@ -190,58 +148,14 @@ export function MilestonesDetail() {
           )}
         </main>
       </div>
-
-      {/* Pop-up for milestone creation */}
-      <PopUp
-        title={"Propose New Milestone"}
-        submitFunc={handleCreateMilestone}
-        open={openCreateMilestone}
-        setOpen={setOpenCreateMilestone}
-        handleOpen={handleOpenCreateMilestone}
-        isFit={true}
-      >
-        <main className="flex flex-col w-full px-6 justify-start items-center md:px-32">
-          <section className="flex flex-col w-full items-center justify-start my-4 space-y-4">
-            {/* Name input */}
-            <Typography color="gray">Enter the milestone's name:</Typography>
-            <Input
-              ID="nameMilestone"
-              value={newMilestoneName}
-              onChange={(event) => setNewMilestoneName(event.target.value)}
-              error={!!createErrors.name}
-              helperText={createErrors.name}
-              label="Name"
-            />
-
-            {/* Description input */}
-            <Typography color="gray">
-              Enter the milestone's description:
-            </Typography>
-            <Input
-              id="descriptionMilestone"
-              value={newMilestoneDescription}
-              onChange={(event) =>
-                setNewMilestoneDescription(event.target.value)
-              }
-              error={!!createErrors.description}
-              helperText={createErrors.description}
-              label="Description"
-            />
-
-            {/* Feedback messages */}
-            {createSuccessMessage && (
-              <Typography color="green" className="mt-2">
-                {createSuccessMessage}
-              </Typography>
-            )}
-            {createErrorMessage && (
-              <Typography color="red" className="mt-2">
-                {createErrorMessage}
-              </Typography>
-            )}
-          </section>
-        </main>
-      </PopUp>
+      {/* Pop-up for creating a new milestone */}
+      <MilestonesCreation
+        openCreateMilestone={openCreateMilestone}
+        handleOpenCreateMilestone={handleOpenCreateMilestone}
+        setOpenCreateMilestone={setOpenCreateMilestone}
+        fetchMilestones={fetchMilestones}
+        projectId={id}
+      />
     </div>
   );
 }
