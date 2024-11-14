@@ -53,10 +53,10 @@ export const EditExperiencePopup = ({ open, onOpen, experiences, editExperience,
                                 <p>{exp.description}</p>
                             </div>
                             <div className="flex space-x-2">
-                                <IconButton id="editIconButton" variant="outlined" size="sm" onClick={() => handleEdit(index)}>
+                                <IconButton variant="outlined" size="sm" onClick={() => handleEdit(index)}>
                                     <PencilIcon className="h-4 w-4 text-blue-gray-500" />
                                 </IconButton>
-                                <IconButton id="trashIconButton" variant="outlined" size="sm" onClick={() => handleDelete(index)}>
+                                <IconButton variant="outlined" size="sm" onClick={() => handleDelete(index)}>
                                     <TrashIcon className="h-4 w-4 text-red-500" />
                                 </IconButton>
                             </div>
@@ -65,7 +65,6 @@ export const EditExperiencePopup = ({ open, onOpen, experiences, editExperience,
                 </div>
                 <div className="mt-6 space-y-4">
                     <Input
-                        id="occupation"
                         label="Occupation"
                         name="occupation"
                         value={newExperience.occupation}
@@ -81,7 +80,6 @@ export const EditExperiencePopup = ({ open, onOpen, experiences, editExperience,
                     />
                     <div className="flex space-x-4">
                         <Input
-                            id="startDate"
                             label="Start Date"
                             name="start_date"
                             type="date"
@@ -90,7 +88,6 @@ export const EditExperiencePopup = ({ open, onOpen, experiences, editExperience,
                             required
                         />
                         <Input
-                            id="finalDate"
                             label="Final Date"
                             name="final_date"
                             type="date"
@@ -100,7 +97,6 @@ export const EditExperiencePopup = ({ open, onOpen, experiences, editExperience,
                         />
                     </div>
                     <Textarea
-                        id="description"
                         label="Description"
                         name="description"
                         value={newExperience.description}
@@ -113,7 +109,7 @@ export const EditExperiencePopup = ({ open, onOpen, experiences, editExperience,
                 <Button variant="text" color="red" onClick={() => { setSelectedExperience(null); onOpen(false) }} className="mr-2">
                     Cancel
                 </Button>
-                <Button id="saveChanges" variant="gradient" color="cyan" onClick={handleSave}>
+                <Button variant="gradient" color="cyan" onClick={handleSave}>
                     {selectedExperience !== null ? "Save Changes" : "Add Experience"}
                 </Button>
             </DialogFooter>
