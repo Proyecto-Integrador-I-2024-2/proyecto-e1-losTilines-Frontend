@@ -105,7 +105,7 @@ export function MilestonesDetail() {
               )}
             </div>
 
-            {role === "Freelanceer" && (
+            {role === "Freelancer" && (
               <footer className="flex flex-row justify-center items-center w-full  mt-2">
                 {/* Button to open the create milestone pop-up */}
                 <Button
