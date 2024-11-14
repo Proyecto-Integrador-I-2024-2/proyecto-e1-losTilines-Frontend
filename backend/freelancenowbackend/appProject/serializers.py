@@ -44,12 +44,12 @@ class MilestoneSerializer(serializers.ModelSerializer):
         return data
     
 class DeliverableSerializer(serializers.ModelSerializer):
-    milestone = MilestoneSerializer(read_only=True)  # Rellenar automáticamente con el milestone actual
-
+    milestone = serializers.PrimaryKeyRelatedField(queryset = Milestone.objects.all())
+    
     class Meta:
         model = Deliverable
         fields = '__all__'
-        read_only_fields = ['name', 'description', 'milestone']
+        read_only_fields = []
     
     # Validar el presupuesto u otras reglas de milestone si es necesario
     def validate(self, data):
