@@ -1,8 +1,9 @@
 import { PopUp } from "../popUp"
-import { Input, Typography } from "@material-tailwind/react"
+import { Input, Textarea, Typography } from "@material-tailwind/react"
 import { useState } from "react";
+import apiClient from "@/services/apiClient";
 
-export function CreateDeliverable(){
+export function CreateDeliverable({openCreateDeliverable, setOpenCreateDeliverable, handleOpenCreateDeliverable, milestone, fetchDeliverables }){
 
     const [newDeliverableName, setNewDeliverableName] = useState("");
     const [newDeliverableDescription, setNewDeliverableDescription] = useState("");
@@ -35,9 +36,11 @@ export function CreateDeliverable(){
       // Submit the create via axios (URL can be adjusted later)
       try {
         const response = await apiClient.post(`/deliverables/`, {
-          name: newDeliverableName,
-          description: newDeliverableDescription,
-          milestone_id: milestone.id, // Associate deliverable with the current milestone
+
+
+          name: newDeliverableName ,
+          description:   newDeliverableDescription ,
+          milestone: milestone.id, // Associate deliverable with the current milestone
         });
   
         setCreateSuccessMessage("Deliverable created successfully");
@@ -47,8 +50,12 @@ export function CreateDeliverable(){
         // Reset the input fields
         setNewDeliverableName("");
         setNewDeliverableDescription("");
+
+        fetchDeliverables();
         // Optionally refresh the deliverables list
       } catch (error) {
+
+        console.error("Failed to create deliverable", error);
         setCreateErrorMessage("Failed to create deliverable");
       }
     };
@@ -64,14 +71,13 @@ export function CreateDeliverable(){
             handleOpen={handleOpenCreateDeliverable}
             isFit={true}
           >
-            <main className="flex flex-col w-full px-6 justify-start items-center md:px-32">
+            <main className="flex flex-col w-full px-6 justify-start items-center md:px-18">
               <section className="flex flex-col w-full items-center justify-start my-4 space-y-4">
                 {/* Name input */}
                 <Typography color="gray">Enter the deliverable's name:</Typography>
                 <Input
                   value={newDeliverableName}
                   onChange={(event) => setNewDeliverableName(event.target.value)}
-                  placeholder="Enter name"
                   error={!!createErrors.name}
                   helperText={createErrors.name}
                   label="Name"
@@ -81,12 +87,11 @@ export function CreateDeliverable(){
                 <Typography color="gray">
                   Enter the deliverable's description:
                 </Typography>
-                <Input
+                <Textarea 
                   value={newDeliverableDescription}
                   onChange={(event) =>
                     setNewDeliverableDescription(event.target.value)
                   }
-                  placeholder="Enter description"
                   error={!!createErrors.description}
                   helperText={createErrors.description}
                   label="Description"
