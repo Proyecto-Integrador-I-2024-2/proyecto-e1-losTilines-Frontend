@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import {
   Navbar,
   Collapse,
@@ -129,15 +129,54 @@ export function NavigationTopBar() {
   const [openNav, setOpenNav] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
-  const token = sessionStorage.getItem("token");
-  console.log("Token: ", token);
   const queryClient = useQueryClient();
+  const socketRef = useRef(null); // Ref to store the WebSocket instance
+  const tokenRef = useRef(sessionStorage.getItem("token")); // Ref to store the token
+  const token = tokenRef.current;
 
   function handleLogOut() {
     queryClient.clear();
     sessionStorage.clear();
     navigate("/");
   }
+
+  // Memoized WebSocket connection function
+  const connectWebSocket = useCallback(() => {
+    // Prevent multiple connections
+    if (socketRef.current) {
+      return;
+    }
+
+    // Establish the WebSocket connection
+    const socket = new WebSocket(
+      `ws://localhost:29000/ws/notifications/?token=${token}`
+    );
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log("WebSocket message received:", data.message);
+      setNotifications((prevNotifications) => [
+        ...prevNotifications,
+        data.message,
+      ]);
+    };
+
+    socket.onopen = () => {
+      console.log("WebSocket connection established");
+    };
+
+    socket.onclose = (event) => {
+      console.log("WebSocket closed:", event);
+      socketRef.current = null; 
+      setTimeout(connectWebSocket, 5000); 
+    };
+
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    socketRef.current = socket; 
+  }, [token]); 
 
   useEffect(() => {
     const handleResize = () => {
@@ -146,38 +185,16 @@ export function NavigationTopBar() {
 
     window.addEventListener("resize", handleResize);
 
-    const connectWebSocket = () => {
-      const socket = new WebSocket(`ws://localhost:29000/ws/notifications/?token=${token}`);
-
-      socket.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        console.log("WebSocket message received:", data.message);
-        setNotifications((prevNotifications) => [...prevNotifications, data.message]);
-      };
-
-      socket.onopen = () => {
-        console.log("WebSocket connection established");
-      };
-
-      socket.onclose = (event) => {
-        console.log("WebSocket closed:", event);
-        setTimeout(connectWebSocket, 5000); // Reconexión automática
-      };
-
-      socket.onerror = (error) => {
-        console.error("WebSocket error:", error);
-      };
-
-      return socket;
-    };
-
-    const socket = connectWebSocket();
+    connectWebSocket(); // Establish the WebSocket connection
 
     return () => {
-      socket.close();
+      // Clean up on component unmount
+      if (socketRef.current) {
+        socketRef.current.close();
+      }
       window.removeEventListener("resize", handleResize);
     };
-  }, [token]);
+  }, [connectWebSocket]); // Dependency array contains connectWebSocket
 
   return (
     <Navbar className="mx-auto max-w-full px-4 py-2">
