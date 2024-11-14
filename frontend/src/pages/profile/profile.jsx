@@ -29,25 +29,10 @@ import {
   EditSkillsPopup,
 } from "@/widgets/popUp";
 import { useCompany, useQueryParams, useUser } from "@/hooks";
-import {
-  userExample,
-  freelancerExample,
-  profile_pic,
-} from "@/data/placeholder";
-import {
-  addFreelancerSkill,
-  deleteFreelancerExperience,
-  deleteFreelancerSkill,
-  editFreelancerExperience,
-  editFreelancerSkill,
-  editWorkerProfile,
-  getCompany,
-  getFreelancer,
-  postCompanyInterest,
-} from "@/services";
+import { userExample, freelancerExample, profile_pic } from "@/data/placeholder";
+import { addFreelancerExperience, addFreelancerSkill, deleteFreelancerExperience, deleteFreelancerSkill, editFreelancerExperience, editFreelancerSkill, editWorkerProfile, getCompany, getFreelancer, postCompanyInterest } from "@/services";
 import { useQueryClient } from "@tanstack/react-query";
 import ReviewSection from "@/widgets/custom/reviews";
-import { reviews } from "@/data/reviews-data";
 
 export function Profile() {
   const queryClient = useQueryClient();
@@ -155,22 +140,98 @@ export function Profile() {
     externalCompanyData,
   ]);
 
-  useEffect(() => {
-    if (isFreelancer) {
-      setProjectsToUse(projects);
-    } else {
-      setProjectsToUse(
-        externalCompanyData?.projects || companyData?.at(0)?.projects || []
-      );
+    useEffect(() => {
+        // Llamadas a las APIs
+        fetchExternalFreelancer();
+        fetchExternalCompany();
+    }, [externalFreelancerId, externalCompanyId]);
+
+
+    const userToUse = (externalFreelancerData?.user || userData?.user || userData || userExample);
+    const { first_name, last_name, email, phone_number, profile_picture } = userToUse;
+    const { description, country, city, portfolio, skills, experience_set, projects } = externalFreelancerData || userData || freelancerExample;
+
+    console.log("User", userData)
+    console.log("Company", companyData)
+    console.log("portfolio", portfolio)
+    console.log("externalFreelancerData", externalFreelancerData)
+    console.log("externalCompanyData", externalCompanyData)
+
+    useEffect(() => {
+        if (userData && !externalFreelancerId) {
+            setIsFreelancer(sessionStorage.getItem("role") === "Freelancer");
+        }
+
+        if (externalFreelancerData) {
+            setIsFreelancer(true);
+        } else if (externalCompanyData) {
+            setIsFreelancer(false);
+        }
+
+    }, [userData, externalFreelancerId, externalFreelancerData, externalCompanyData]);
+
+    useEffect(() => {
+        if (isFreelancer) {
+            setProjectsToUse(projects);
+
+        } else {
+            setProjectsToUse(externalCompanyData?.projects || companyData?.at(0)?.projects || []);
+        }
+    }, [isFreelancer, projects, companyData]);
+
+    useEffect(() => {
+        if (userData && !externalFreelancerId && !externalCompanyId) {
+            setIsEditable((userData?.user?.id == sessionStorage.getItem("id")) || (userData?.id == sessionStorage.getItem("id")));
+        }
+        if (externalFreelancerId) {
+            setIsEditable(false);
+        }
+    }, [userData, externalFreelancerId, externalCompanyId])
+
+    useEffect(() => {
+        if (!externalCompanyId) {
+            setExternalCompanyData(null);
+        }
+        if (!externalFreelancerId) {
+            setExternalFreelancerData(null);
+        }
+    }, [externalFreelancerId, externalCompanyId])
+
+
+    // ----------------------- API consumption -----------------------
+    function quitarTildes(texto) { return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, ""); }
+    // Worker/Freelancer User Data
+    function handleEditWorkerProfile(body) {
+        console.log("Body a editar worker: ", body);
+        const newBody = {
+            first_name: quitarTildes(body["first_name"]),
+            last_name: quitarTildes(body["last_name"]),
+            email: quitarTildes(body["email"]),
+            phone_number: body["phone_number"]
+        }
+        console.log("New Body", newBody);
+        editWorkerProfile({ body: newBody })
+        queryClient.invalidateQueries(['User']);
+        userRefetch()
     }
   }, [isFreelancer, projects, companyData]);
 
-  useEffect(() => {
-    if (userData && !externalFreelancerId && !externalCompanyId) {
-      setIsEditable(
-        userData?.user?.id == sessionStorage.getItem("id") ||
-          userData?.id == sessionStorage.getItem("id")
-      );
+    // Freelancer Experience Data
+
+    function handleAddExperience(body) {
+        body["freelancer"] = sessionStorage.getItem("id");
+        console.log("Body", body);
+        addFreelancerExperience({ body })
+        queryClient.invalidateQueries(['User']);
+        userRefetch()
+    }
+
+    function handleEditExperience(id, body) {
+        console.log("ID", id);
+        console.log("Body", body);
+        editFreelancerExperience({ id, body })
+        queryClient.invalidateQueries(['User']);
+        userRefetch()
     }
     if (externalFreelancerId) {
       setIsEditable(false);
@@ -291,9 +352,12 @@ export function Profile() {
                                             <Rating value={0} aria-disabled />
                                         </div>
                                     </div>
-                                    <Button onClick={handleCompanyInterestPopUp} color="light-blue">
-                                        Invite
-                                    </Button>
+                                    {(role != "Freelancer" && externalFreelancerData) &&
+                                        <Button onClick={handleCompanyInterestPopUp} color="light-blue">
+                                            Invite
+                                        </Button>
+                                    }
+
 
                                 </div>
 
@@ -393,52 +457,54 @@ export function Profile() {
 
                             </div>
 
-              <div className="h-96">
-                {isFreelancer ? (
-                  isUserLoading ? (
-                    <Spinner />
-                  ) : (
-                    <ExperienceSection
-                      experiences={experience_set}
-                      editable={isEditable}
-                      onEdit={handleExperiencePopUp}
-                    />
-                  )
-                ) : isCompanyLoading ? (
-                  <Spinner />
-                ) : (
-                  <div className="h-full">
-                    <Typography variant="h6" color="blue-gray" className="mb-4">
-                      Freelancers that have worked here
-                    </Typography>
-                    {!externalCompanyData && companyData ? (
-                      <div className="space-y-6 h-full overflow-y-auto no-scrollbar">
-                        {companyData?.at(0)?.freelancers.map((freelancer) => (
-                          <MessageCard
-                            key={freelancer.user.name}
-                            img={freelancer.user.img || profile_pic}
-                            name={freelancer.user.name}
-                            message={freelancer.description}
-                            action={<VscAccount />}
-                          />
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="space-y-6 h-full overflow-y-auto no-scrollbar">
-                        {externalCompanyData.freelancers.map((freelancer) => (
-                          <MessageCard
-                            key={freelancer.user.name}
-                            img={freelancer.user.img || profile_pic}
-                            name={freelancer.user.name}
-                            message={freelancer.description}
-                            action={<VscAccount />}
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
+                            <div className="h-96">
+                                {isFreelancer ?
+                                    (isUserLoading ?
+                                        <Spinner />
+                                        :
+                                        <ExperienceSection experiences={experience_set} editable={isEditable} onEdit={handleExperiencePopUp} />)
+                                    :
+                                    (isCompanyLoading ?
+                                        <Spinner />
+                                        :
+                                        <div className="h-full">
+                                            <Typography variant="h6" color="blue-gray" className="mb-4">
+                                                Freelancers that have worked here
+                                            </Typography>
+                                            {(companyData?.at(0)?.freelancers?.length == 0 || externalCompanyData?.freelancers?.length == 0) &&
+                                                <Typography variant="h6" color="gray">
+                                                    No freelancers have worked here yet
+                                                </Typography>}
+                                            {!externalCompanyData && companyData ? <div className="space-y-6 h-full overflow-y-auto no-scrollbar">
+                                                {companyData?.at(0)?.freelancers.map((freelancer) => (
+                                                    <MessageCard
+                                                        key={freelancer.user.name}
+                                                        img={freelancer.user.img || profile_pic}
+                                                        name={freelancer.user.name}
+                                                        message={freelancer.description}
+                                                        action={
+                                                            <VscAccount />
+                                                        }
+                                                    />
+                                                ))}
+                                            </div>
+                                                :
+                                                <div className="space-y-6 h-full overflow-y-auto no-scrollbar">
+                                                    {externalCompanyData.freelancers.map((freelancer) => (
+                                                        <MessageCard
+                                                            key={freelancer.user.name}
+                                                            img={freelancer.user.img || profile_pic}
+                                                            name={freelancer.user.name}
+                                                            message={freelancer.description}
+                                                            action={
+                                                                <VscAccount />
+                                                            }
+                                                        />
+                                                    ))}
+                                                </div>}
+                                        </div>)
+                                }
+                            </div>
 
               <div className="h-96">
                 {isFreelancer ? (
@@ -477,76 +543,40 @@ export function Profile() {
         </Card>
       </div>
 
-      <Card className="mx-3 mt-4 mb-2 lg:mx-4 border border-blue-gray-100">
-        <CardBody>
-          {Array.isArray(projectsToUse) && projectsToUse.length > 0 ? (
-            <CustomList
-              sectionTitle={"Projects"}
-              sectionSubtitle={"Associated Projects"}
-            >
-              {projectsToUse.map((project) => (
-                <CustomListItem
-                  key={project.id}
-                  title={project.name}
-                  tag={`$${project.budget}`}
-                  description={project.description}
-                  img={
-                    "https://images.unsplash.com/photo-1518770660439-4636190af475"
-                  }
-                  route={`/project/detail/${project.id}`}
-                />
-              ))}
-            </CustomList>
-          ) : (
-            <Typography variant="h6" color="blue-gray" className="text-center">
-              No projects added yet
-            </Typography>
-          )}
-        </CardBody>
-      </Card>
-      {isUserLoading ? (
-        <Spinner />
-      ) : (
-        <>
-          {isEditable && (
-            <>
-              <EditProfilePopUp
-                open={showProfilePopUp}
-                onOpen={setShowProfilePopUp}
-                profile={userToUse}
-                onChange={handleEditWorkerProfile}
-              />
-              <EditExperiencePopup
-                open={showExperiencePopUp}
-                onOpen={setShowExperiencePopUp}
-                experiences={experience_set || []}
-                editExperience={handleEditExperience}
-                addExperience={{}}
-                deleteExperience={handleDeleteExperience}
-              />
-              <EditSkillsPopup
-                open={showSkillsPopUp}
-                onOpen={setShowSkillsPopUp}
-                skills={skills || []}
-                editSkill={handleEditSkill}
-                addSkill={handleAddSkill}
-                deleteSkill={handleDeleteSkill}
-              />
-            </>
-          )}
-          <ReviewSection reviews={reviews} />
-          {userData?.company && (
-            <CompanyInterestPopUp
-              open={companyInterestPopUp}
-              onOpen={setCompanyInterestPopUp}
-              companyId={userData.company}
-              handleInterest={handleInterest}
-            />
-          )}
-        </>
-      )}
-    </div>
-  );
+            <Card className="mx-3 mt-4 mb-2 lg:mx-4 border border-blue-gray-100">
+                <CardBody>
+                    {Array.isArray(projectsToUse) && projectsToUse.length > 0 ?
+                        <CustomList
+                            sectionTitle={"Projects"}
+                            sectionSubtitle={"Associated Projects"}
+                        >
+                            {projectsToUse.map((project) => (
+                                <CustomListItem key={project.id} title={project.name} tag={`$${project.budget}`} description={project.description} img={"https://images.unsplash.com/photo-1518770660439-4636190af475"} route={`/project/detail/${project.id}`} />
+                            ))}
+                        </CustomList>
+                        :
+                        <Typography variant="h6" color="blue-gray" className="text-center">
+                            No projects added yet
+                        </Typography>
+                    }
+                </CardBody>
+            </Card>
+            {
+                isUserLoading ? <Spinner /> :
+                    <>
+                        {(isEditable) &&
+                            <>
+                                <EditProfilePopUp open={showProfilePopUp} onOpen={setShowProfilePopUp} profile={userToUse} onChange={handleEditWorkerProfile} />
+                                <EditExperiencePopup open={showExperiencePopUp} onOpen={setShowExperiencePopUp} experiences={experience_set || []} editExperience={handleEditExperience} addExperience={handleAddExperience} deleteExperience={handleDeleteExperience} />
+                                <EditSkillsPopup open={showSkillsPopUp} onOpen={setShowSkillsPopUp} skills={skills || []} editSkill={handleEditSkill} addSkill={handleAddSkill} deleteSkill={handleDeleteSkill} />
+                            </>
+                        }
+                        {(role == "Freelancer" || externalFreelancerData) && <ReviewSection id={externalFreelancerId || userData?.user?.id || userData?.id || -1} />}
+                        {userData?.company && <CompanyInterestPopUp open={companyInterestPopUp} onOpen={setCompanyInterestPopUp} companyId={userData.company} handleInterest={handleInterest} />}
+                    </>
+            }
+        </div >
+    );
 }
 
 export default Profile;
