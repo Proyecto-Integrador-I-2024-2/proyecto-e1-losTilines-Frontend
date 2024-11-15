@@ -12,6 +12,16 @@ services:
 
     environment:
       - DJANGO_SETTINGS_MODULE=freelancenowbackend.settings
+      - POSTGRES_NAME
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_HOST
+      - POSTGRES_PORT
+      - REDIS_HOST
+      - REDIS_PORT
+      - REDIS_PASSWORD
+      - REDIS_URI
+
     ports:
       - 29000:8000
   frontend:

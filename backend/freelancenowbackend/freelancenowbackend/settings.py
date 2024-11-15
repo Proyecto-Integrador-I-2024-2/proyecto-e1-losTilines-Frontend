@@ -115,14 +115,24 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# Configuración de la base de datos
+POSTGRES_NAME = os.getenv("POSTGRES_NAME")
+POSTGRES_USER = os.getenv("POSTGRES_USER")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+POSTGRES_HOST = os.getenv("POSTGRES_HOST")
+POSTGRES_PORT = os.getenv("POSTGRES_PORT")
+
+if not all([POSTGRES_NAME, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_HOST]):
+    raise Exception("Las variables de entorno de la base de datos no están correctamente configuradas.")
+
 DATABASES = {
-       'default': {
-        'ENGINE': 'django.db.backends.postgresql',  
-        'NAME': os.getenv("POSTGRES_NAME"),  
-        'USER': os.getenv("POSTGRES_USER"),  
-        'PASSWORD': os.getenv("POSTGRES_PASSWORD"),  
-        'HOST': os.getenv("POSTGRES_HOST"),  
-        'PORT':  os.getenv("POSTGRES_PORT"),  #
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': POSTGRES_NAME,
+        'USER': POSTGRES_USER,
+        'PASSWORD': POSTGRES_PASSWORD,
+        'HOST': POSTGRES_HOST,
+        'PORT': POSTGRES_PORT,
     }
 }
 
