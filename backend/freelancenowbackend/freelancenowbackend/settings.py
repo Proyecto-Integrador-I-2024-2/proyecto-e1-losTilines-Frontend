@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-9d7rb3gbup5)vm^1h9-ys05hjj)#0^3lg)u8&)y(3(68x%bm($
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', 'ec2-3-142-50-53.us-east-2.compute.amazonaws.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', 'freelancenow.azurewebsites.net']
 
 # Application definition
 
@@ -68,7 +68,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:29002",  # Development
     "https://tu-dominio.com",  # Deployed
     "ws://localhost:29000",    # WebSocket (ajusta si usas un puerto diferente)
-    "http://ec2-3-142-50-53.us-east-2.compute.amazonaws.com:29000",
+    "https://freelancenow.azurewebsites.net",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -121,6 +121,12 @@ POSTGRES_USER = os.getenv("POSTGRES_USER")
 POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
 POSTGRES_HOST = os.getenv("POSTGRES_HOST")
 POSTGRES_PORT = os.getenv("POSTGRES_PORT")
+
+print(POSTGRES_HOST)
+print(POSTGRES_NAME)
+print(POSTGRES_PASSWORD)
+print(POSTGRES_PORT)
+print(POSTGRES_USER)
 
 if not all([POSTGRES_NAME, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_HOST]):
     raise Exception("Las variables de entorno de la base de datos no están correctamente configuradas.")

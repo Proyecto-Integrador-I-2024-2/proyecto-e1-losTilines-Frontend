@@ -1,33 +1,23 @@
 services:
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.dev
-    command: >
-      sh -c "
-      python manage.py flush --no-input &&
-      python manage.py makemigrations &&
-      python manage.py migrate &&
-      daphne -p 8000 -b 0.0.0.0 freelancenowbackend.asgi:application"
+    image: freecontainer.azurecr.io/backend:latest
 
     environment:
       - DJANGO_SETTINGS_MODULE=freelancenowbackend.settings
-      - POSTGRES_NAME
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - POSTGRES_HOST
-      - POSTGRES_PORT
-      - REDIS_HOST
-      - REDIS_PORT
-      - REDIS_PASSWORD
-      - REDIS_URI
+      - POSTGRES_NAME=${POSTGRES_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_URI=${REDIS_URI}
 
     ports:
       - 29000:8000
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.dev
+    image: freecontainer.azurecr.io/frontend:latest
     command: npm run dev  
     ports:
       - "29002:5173"
