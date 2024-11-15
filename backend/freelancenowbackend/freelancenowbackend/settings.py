@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -116,11 +118,11 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DATABASES = {
        'default': {
         'ENGINE': 'django.db.backends.postgresql',  
-        'NAME': 'postgres',  
-        'USER': 'postgres',  
-        'PASSWORD': 'postgres',  
-        'HOST': 'db',  
-        'PORT': '5432',  #
+        'NAME': os.getenv("POSTGRES_NAME"),  
+        'USER': os.getenv("POSTGRES_USER"),  
+        'PASSWORD': os.getenv("POSTGRES_PASSWORD"),  
+        'HOST': os.getenv("POSTGRES_HOST"),  
+        'PORT':  os.getenv("POSTGRES_PORT"),  #
     }
 }
 
@@ -207,12 +209,14 @@ EMAIL_HOST_PASSWORD = 'freelancenow123marketplace'
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+
 # Configuración de canales
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('redis', 6379)],
+            "hosts": [(os.getenv("REDIS_URI")  , os.getenv("REDIS_PORT"))],
+                        
         },
     },
 }
