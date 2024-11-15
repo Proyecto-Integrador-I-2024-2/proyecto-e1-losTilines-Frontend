@@ -166,7 +166,7 @@ AUTHENTICATION_BACKENDS = [
 
 # Asegúrate de que el modelo de usuario personalizado esté correctamente referenciado
 AUTH_USER_MODEL = 'app.User'
-
+print("Hola")
 # Configuración de logging para depuración
 LOGGING = {
     'version': 1,
