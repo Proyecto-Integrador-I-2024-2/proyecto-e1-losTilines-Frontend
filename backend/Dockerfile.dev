@@ -22,6 +22,8 @@ RUN /py/bin/pip install --upgrade pip && \
 
 COPY ./freelancenowbackend /app/
 
+
+
 ENV PATH="/py/bin:$PATH"
 
 
