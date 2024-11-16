@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: 'http://ec2-3-142-50-53.us-east-2.compute.amazonaws.com:29000/',  
+  baseURL: 'https://freelancenow.azurewebsites.net/api/',  
   headers: {
     'Content-Type': 'application/json',
   },

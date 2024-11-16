@@ -24,13 +24,13 @@ from django.conf.urls.static import static
 router = DefaultRouter()
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('auth/', LoginView.as_view(), name='login'),  # Login y autenticación por token
-    path('', include('appAuth.urls')),
-    path('', include('appProfile.urls')),
-    path('', include('appCompany.urls')),
-    path('', include('appProject.urls')),
-    path('', include('appComunication.urls')),
+    path('/admin/', admin.site.urls),
+    path('/auth/', LoginView.as_view(), name='login'),  # Login y autenticación por token
+    path('/', include('appAuth.urls')),
+    path('/', include('appProfile.urls')),
+    path('/', include('appCompany.urls')),
+    path('/', include('appProject.urls')),
+    path('/', include('appComunication.urls')),
 ]
 
 if settings.DEBUG:
