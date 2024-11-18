@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'appCompany',
     'appProject',
     'appComunication.apps.AppComunicationConfig',
+    'appStatistics',
     'corsheaders',
     'django_filters',
     'channels'
