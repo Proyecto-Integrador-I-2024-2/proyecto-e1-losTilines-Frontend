@@ -55,6 +55,10 @@ class ProjectFreelancerViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectFreelancerSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['project', 'freelancer', 'status']
+    
+    def partial_update(self, request, *args, **kwargs):
+        response = super().partial_update(request, *args, **kwargs)
+        
 
     @action(detail=False, methods=['get'])
     def status(self, request):

@@ -4,7 +4,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from app.models import Project
+from app.models import Project, ProjectFreelancer
+import custom_signals as signals
 
 @receiver(post_save, sender=Project)
 def send_project_creation_notification(sender, instance, created, **kwargs):
@@ -12,11 +13,11 @@ def send_project_creation_notification(sender, instance, created, **kwargs):
         recipients = instance.get_notification_recipient()
         channel_layer = get_channel_layer()
 
-        for recipient in recipients:
+        for recipient in recipients:    
             user = recipient["user"]
             message = recipient["message"]
 
-            # send_mail(
+            # send_mail(a
             #     "Project Creation Request",
             #     message,
             #     settings.DEFAULT_FROM_EMAIL,
@@ -33,3 +34,27 @@ def send_project_creation_notification(sender, instance, created, **kwargs):
                 }
             )
             print(f'notifications_{user.id}')
+
+@receiver(signals.project_notification, sender=ProjectFreelancer)
+def handle_project_status_update_notification(message, instance):
+    print(f"Mensaje de la notificacion es {message}")
+    
+    recipients = instance.get_notification_recipient()
+    
+    channel_layer = get_channel_layer()
+    
+    for recipient in recipients:
+        
+        print(f"Message send to ")
+        
+        async_to_sync(channel_layer.group_send)(
+            f'notifications_{recipient.id}',
+            {
+                'type': 'send_notification',
+                'message': message,
+            }   
+        )
+    
+    
+    
+    
