@@ -34,7 +34,7 @@ function NavListMenu() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openNestedMenu, setOpenNestedMenu] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
+  const navigate = useNavigate();
   const renderItems = nestedMenuItems.map(({ title }, key) => (
     <div key={key}>
       <MenuItem>{title}</MenuItem>
@@ -54,15 +54,13 @@ function NavListMenu() {
               Options
               <ChevronDownIcon
                 strokeWidth={2.5}
-                className={`hidden h-3 w-3 transition-transform lg:block ${
-                  isMenuOpen ? "rotate-180" : ""
-                }`}
+                className={`hidden h-3 w-3 transition-transform lg:block ${isMenuOpen ? "rotate-180" : ""
+                  }`}
               />
               <ChevronDownIcon
                 strokeWidth={2.5}
-                className={`block h-3 w-3 transition-transform lg:hidden ${
-                  isMobileMenuOpen ? "rotate-180" : ""
-                }`}
+                className={`block h-3 w-3 transition-transform lg:hidden ${isMobileMenuOpen ? "rotate-180" : ""
+                  }`}
               />
             </ListItem>
           </Typography>
@@ -80,8 +78,8 @@ function NavListMenu() {
             </MenuHandler>
             <MenuList className="rounded-xl">{renderItems}</MenuList>
           </Menu>
-          <MenuItem>React</MenuItem>
-          <MenuItem>Freelance Now</MenuItem>
+          <MenuItem onClick={() => navigate("/approvals")}>Approvals</MenuItem>
+          <MenuItem onClick={() => navigate("/faq")}>FAQ</MenuItem>
         </MenuList>
       </Menu>
       <div className="block lg:hidden">
@@ -167,16 +165,16 @@ export function NavigationTopBar() {
 
     socket.onclose = (event) => {
       console.log("WebSocket closed:", event);
-      socketRef.current = null; 
-      setTimeout(connectWebSocket, 5000); 
+      socketRef.current = null;
+      setTimeout(connectWebSocket, 5000);
     };
 
     socket.onerror = (error) => {
       console.error("WebSocket error:", error);
     };
 
-    socketRef.current = socket; 
-  }, [token]); 
+    socketRef.current = socket;
+  }, [token]);
 
   useEffect(() => {
     const handleResize = () => {
