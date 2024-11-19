@@ -21,6 +21,7 @@ from appAuth.views import LoginView
 from rest_framework.routers import DefaultRouter
 from django.conf import settings
 from django.conf.urls.static import static
+
 router = DefaultRouter()
 
 urlpatterns = [
@@ -31,6 +32,7 @@ urlpatterns = [
     path('', include('appCompany.urls')),
     path('', include('appProject.urls')),
     path('', include('appComunication.urls')),
+    path('', include('appStatistics.urls')),
 ]
 
 if settings.DEBUG:

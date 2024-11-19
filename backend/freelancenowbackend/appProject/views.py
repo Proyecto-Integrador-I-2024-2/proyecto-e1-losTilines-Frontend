@@ -48,7 +48,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
         # Lógica de actualización adicional si es necesario
         return super().partial_update(request, *args, **kwargs)
 
-
 class ProjectFreelancerViewSet(viewsets.ModelViewSet):
     queryset = ProjectFreelancer.objects.all()
     permission_classes = [IsAuthenticated]  
@@ -60,7 +59,7 @@ class ProjectFreelancerViewSet(viewsets.ModelViewSet):
     def status(self, request):
         status_choices = ProjectFreelancer.get_status_choices()
         return Response(status_choices)
-
+    
 #------------------------------------------------------------------------#
 
 class MilestoneViewSet(viewsets.ModelViewSet):

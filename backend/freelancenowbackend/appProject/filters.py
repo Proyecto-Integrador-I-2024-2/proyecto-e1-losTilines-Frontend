@@ -1,32 +1,43 @@
 import django_filters
 from app.models import Project, ProjectFreelancer, Milestone
-from django.db import connection
-
-print(connection.queries)
-
+from django.db.models import Q
+from app.models import Project, ProjectFreelancer, UserCompany, Area
 
 class ProjectFilter(django_filters.FilterSet):
-    #Proyectos de un WORKER
-    worker = django_filters.NumberFilter(field_name='user_id')
+    # Project by owner
+    user = django_filters.NumberFilter(field_name='user_id', label="Owner")
 
-    area = django_filters.NumberFilter(field_name='user_id__usercompany__area_id')
+    # Project by area
+    area_user = django_filters.NumberFilter(method='filter_area_user', label="Area admin")
+    area = django_filters.NumberFilter(field_name='user__usercompany__area_id', label="Area")
 
-    freelancer = django_filters.NumberFilter(field_name='projectfreelancer__freelancer__user_id')
-   
+    # Project by company
+    company_user = django_filters.NumberFilter(method='filter_company_user', label="Business Manager")
+    company = django_filters.NumberFilter(field_name='user__usercompany__company_id', label="Company")
 
     class Meta:
         model = Project
-        fields = ['worker']
+        fields = ['user', 'status', 'area_user', 'company_user', 'area', 'company']
 
-#Filtrar los proyectos relacionados a un freelancer
-class ProjectsFreelancerFilter(django_filters.FilterSet):
-    #Proyectos de un freelancer
-    freelancer = django_filters.NumberFilter(field_name='freelancer_id')
-
-    class Meta:
-        model = ProjectFreelancer
-        fields = ['freelancer']
-
+    def filter_area_user(self, queryset, name, value):
+        user_company = UserCompany.objects.filter(user_id=value).first()
+        if user_company and user_company.area:
+            return queryset.filter(
+                user__usercompany__area=user_company.area
+            )
+        else:
+            return queryset.none()
+        
+    def filter_company_user(self, queryset, name, value):
+        user_company = UserCompany.objects.filter(user_id=value).first()
+        print(user_company)
+        print(user_company.company)
+        if user_company and user_company.company:
+            return queryset.filter(
+                user__usercompany__company=user_company.company
+            )
+        else:
+            return queryset.none()
 
 # class MilestoneFilter(django_filters.FilterSet):
 #     project = django_filters.NumberFilter()
