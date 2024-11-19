@@ -7,6 +7,7 @@ export function ProjectCard({ project, onCardClick }) {
 
   return (
     <Card
+      id="projectCard"
       className="w-48 max-w-xs p-3 shadow-lg rounded-lg transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
       onClick={() => onCardClick(project.id)}
     >

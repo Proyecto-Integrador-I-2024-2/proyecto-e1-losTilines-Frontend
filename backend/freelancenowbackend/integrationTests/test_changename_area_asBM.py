@@ -6,7 +6,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 import unittest
 from time import sleep
 
-#LISTO 2 Test
+#LISTO 2 Test 
 class EditAreaNameTests(unittest.TestCase):
 
     USERNAME = "raul.quigua@example.com"

@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoAlertPresentException
-#LISTO. 8 Tests
+#LISTO. 11 Tests
 class AuthTests(unittest.TestCase):
     BASE_URL = "http://localhost:29002/auth/sign-in"
     USERNAME = "ricardo.urbina@example.com"
@@ -34,13 +34,82 @@ class AuthTests(unittest.TestCase):
         self.capture_alert_text("Login failed! Check your credentials.")
         self.capture_alert_text("Login failed! [object Object]")
 
-    def test_successful_login(self):
+    def test_successful_login_asF(self):
         # Test de inicio de sesión exitoso
         driver = self.driver
         print("Navegando a la página de inicio de sesión...")
 
         email_field = driver.find_element(By.ID, "emailSign")
         email_field.send_keys(self.USERNAME)
+
+        password_field = driver.find_element(By.ID, "passwordSign")
+        password_field.send_keys(self.PASSWORD)
+
+        terms_checkbox = driver.find_element(By.ID, "termsAndConditions")
+        terms_checkbox.click()
+
+        login_button = driver.find_element(By.ID, "entrar")
+        login_button.click()
+
+        # Verificar alerta de éxito
+        WebDriverWait(driver, 10).until(EC.alert_is_present())
+        alert = driver.switch_to.alert
+        self.assertIn("Login successful!", alert.text)
+        alert.accept()
+
+    def test_successful_login_asBM(self):
+
+        driver = self.driver
+        print("Navegando a la página de inicio de sesión...")
+
+        email_field = driver.find_element(By.ID, "emailSign")
+        email_field.send_keys("raul.quigua@example.com")
+
+        password_field = driver.find_element(By.ID, "passwordSign")
+        password_field.send_keys(self.PASSWORD)
+
+        terms_checkbox = driver.find_element(By.ID, "termsAndConditions")
+        terms_checkbox.click()
+
+        login_button = driver.find_element(By.ID, "entrar")
+        login_button.click()
+
+        # Verificar alerta de éxito
+        WebDriverWait(driver, 10).until(EC.alert_is_present())
+        alert = driver.switch_to.alert
+        self.assertIn("Login successful!", alert.text)
+        alert.accept()
+
+    def test_successful_login_asAA(self):
+        # Test de inicio de sesión exitoso
+        driver = self.driver
+        print("Navegando a la página de inicio de sesión...")
+
+        email_field = driver.find_element(By.ID, "emailSign")
+        email_field.send_keys("kevin.nieto@example.com")
+
+        password_field = driver.find_element(By.ID, "passwordSign")
+        password_field.send_keys(self.PASSWORD)
+
+        terms_checkbox = driver.find_element(By.ID, "termsAndConditions")
+        terms_checkbox.click()
+
+        login_button = driver.find_element(By.ID, "entrar")
+        login_button.click()
+
+        # Verificar alerta de éxito
+        WebDriverWait(driver, 10).until(EC.alert_is_present())
+        alert = driver.switch_to.alert
+        self.assertIn("Login successful!", alert.text)
+        alert.accept()
+
+    def test_successful_login_asPM(self):
+        # Test de inicio de sesión exitoso
+        driver = self.driver
+        print("Navegando a la página de inicio de sesión...")
+
+        email_field = driver.find_element(By.ID, "emailSign")
+        email_field.send_keys("sara.diaz@example.com")
 
         password_field = driver.find_element(By.ID, "passwordSign")
         password_field.send_keys(self.PASSWORD)

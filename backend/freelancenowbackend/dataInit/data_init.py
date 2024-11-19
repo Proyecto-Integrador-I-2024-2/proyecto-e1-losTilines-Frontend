@@ -564,7 +564,7 @@ def cargar_datos():
             last_name="Quigua",
             email="raul.quigua@example.com",
             assign_group="Business Manager",
-            profile_picture=choice(profile_images_female),
+            profile_picture=choice(male_profile_images),
             is_active=True
         )
         random_bms = FemaleUserFactory.create_batch(2, assign_group='Business Manager')

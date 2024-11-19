@@ -4,7 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import unittest
 from time import sleep
-#LISTO 2 tests
+#FALLAN LOS 2 tests
 #Esperar boton de Add Experience para terminar el segundo test
 class EditWorkExperienceTests(unittest.TestCase):
 
@@ -80,7 +80,7 @@ class EditWorkExperienceTests(unittest.TestCase):
 
         # Hacer clic en el botón de guardar cambios
         save_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.ID, "saveChanges"))
+            EC.element_to_be_clickable((By.ID, "addOrSave"))
         )
         save_button.click()
         print("Botón 'Save Changes' clicado.")
@@ -147,7 +147,7 @@ class EditWorkExperienceTests(unittest.TestCase):
 
         # Intentar guardar la experiencia
         save_button = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.ID, "saveChanges"))
+            EC.element_to_be_clickable((By.ID, "addOrSave"))
         )
         save_button.click()
         print("Botón 'Add Experience' clicado, pero sin verificar persistencia.")

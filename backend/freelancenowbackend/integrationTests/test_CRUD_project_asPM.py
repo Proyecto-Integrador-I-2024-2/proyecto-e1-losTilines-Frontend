@@ -4,8 +4,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import unittest
 from time import sleep
-
-class ReadProjectsTests(unittest.TestCase):
+#4tests
+class CRUDProjectsTests(unittest.TestCase):
     USERNAME = "sara.diaz@example.com"
     PASSWORD = "123"
 
@@ -189,6 +189,135 @@ class ReadProjectsTests(unittest.TestCase):
         self.navigate_to_projects()
         self.update_skills_project()
         #self.validate_updated_skill_project()
+
+    def create_project(self):
+        driver = self.driver
+
+        # Hacer clic en el botón de crear proyecto
+        create_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[@type='button' and contains(@class, 'rounded-full')]"))
+        )
+        create_button.click()
+
+        # Llenar el formulario del pop-up de creación
+        name_field = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "nameProject"))
+        )
+        name_field.send_keys("Nuevo Proyecto")
+
+        budget_field = driver.find_element(By.ID, "budget")
+        budget_field.send_keys("1000")
+
+        description_field = driver.find_element(By.ID, "description")
+        description_field.send_keys("Este es un proyecto creado durante un test de integración.")
+
+        start_date_field = driver.find_element(By.ID, "startDate")
+        start_date_field.send_keys("5/2/2025")  # Formato MM/DD/YYYY
+
+        # Guardar el nuevo proyecto
+        save_button = driver.find_element(By.ID, "saveChanges")
+        save_button.click()
+        print("Se ha creado un nuevo proyecto.")
+
+    def validate_created_project(self):
+        driver = self.driver
+
+        # Verificar que el proyecto recién creado esté en la pantalla
+        created_project = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//p[text()='Nuevo Proyecto']"))
+        )
+        self.assertIsNotNone(created_project, "El proyecto no se creó correctamente.")
+        print("El proyecto se creó correctamente.")
+
+    def test_create_project(self):
+
+        self.login()
+        self.navigate_to_projects()
+        self.create_project()
+        self.validate_created_project()
+        print("Test de creación de proyecto completado con éxito.")
+
+
+    #def test_create_project_with_long_name(self):
+
+        #driver = self.driver
+
+        #self.login()
+        #self.navigate_to_projects()
+
+        #create_button = WebDriverWait(driver, 10).until(
+        #    EC.element_to_be_clickable((By.XPATH, "//button[@type='button' and contains(@class, 'rounded-full')]"))
+        #)
+        #create_button.click()
+
+        #name_field = WebDriverWait(driver, 10).until(
+        #    EC.presence_of_element_located((By.ID, "nameProject"))
+        #)
+        #name_field.send_keys("A" * 101)  # Nombre con 101 caracteres
+
+        #budget_field = driver.find_element(By.ID, "budget")
+        #budget_field.send_keys("1000")
+
+        #description_field = driver.find_element(By.ID, "description")
+        #description_field.send_keys(""Este proyecto tiene un nombre demasiado largo para ser válido. Esto es solo un test para probar el límite.")
+
+        #start_date_field = driver.find_element(By.ID, "startDate")
+        #start_date_field.send_keys("5/2/2025")
+
+        #save_button = driver.find_element(By.ID, "saveChanges")
+        #save_button.click()
+
+        #error_message = WebDriverWait(driver, 10).until(
+        #    EC.presence_of_element_located((By.XPATH, "//h3[text()='Error creating project']"))
+        #)
+        #self.assertIsNotNone(error_message, "No apareció el mensaje de error para nombre demasiado largo.")
+
+        #close_button = driver.find_element(By.ID, "close")
+        #close_button.click()
+
+        #WebDriverWait(driver, 10).until(EC.invisibility_of_element(error_message))
+        #print("El test de nombre demasiado largo falló correctamente.")
+
+    #def test_create_project_with_invalid_budget(self):
+
+        #driver = self.driver
+
+        #self.login()
+        #self.navigate_to_projects()
+
+        #create_button = WebDriverWait(driver, 10).until(
+        #    EC.element_to_be_clickable((By.XPATH, "//button[@type='button' and contains(@class, 'rounded-full')]"))
+        #)
+        #create_button.click()
+
+        #name_field = WebDriverWait(driver, 10).until(
+        #    EC.presence_of_element_located((By.ID, "nameProject"))
+        #)
+        #name_field.send_keys("Proyecto Presupuesto Inválido")
+
+        #budget_field = driver.find_element(By.ID, "budget")
+        #budget_field.send_keys("1O00")  # Usar una letra en lugar de un número
+
+        #description_field = driver.find_element(By.ID, "description")
+        #description_field.send_keys("El presupuesto contiene un carácter inválido.")
+
+        #start_date_field = driver.find_element(By.ID, "startDate")
+        #start_date_field.send_keys("5/2/2025")
+
+        #save_button = driver.find_element(By.ID, "saveChanges")
+        #save_button.click()
+
+        #error_message = WebDriverWait(driver, 10).until(
+        #    EC.presence_of_element_located((By.XPATH, "//h3[text()='Error creating project']"))
+        #)
+        #self.assertIsNotNone(error_message, "No apareció el mensaje de error para presupuesto inválido.")
+
+        #close_button = driver.find_element(By.ID, "close")
+        #close_button.click()
+
+        #WebDriverWait(driver, 10).until(EC.invisibility_of_element(error_message))
+        #print("El test de presupuesto inválido falló correctamente.")
+
 
     def tearDown(self):
         print("Cerrando el navegador...")

@@ -49,7 +49,7 @@ class EditSkillsTest(unittest.TestCase):
         """Función auxiliar para hacer scrolling hasta un elemento específico."""
         self.driver.execute_script("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", element)
 
-    def test_edit_skill_level(self):
+    def test_create_skill(self):
         """Test para editar el nivel de habilidad de un usuario y confirmar la creación en el perfil."""
         self.login()
         self.navigate_to_profile()
