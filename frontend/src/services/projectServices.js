@@ -1,5 +1,13 @@
 import apiClient from "./apiClient";
 
+
+export const getProject = async ({ id }) => {
+    var userType = "projects";
+    const url = `${userType}/${id}`;
+    const { data } = await apiClient.get(url);
+    return data;
+}
+
 export const getProjectMilestones = async ({ id }) => {
     var userType = "milestones";
     const url = `${userType}?project=${id}`;

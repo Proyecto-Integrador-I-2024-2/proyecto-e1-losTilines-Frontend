@@ -12,21 +12,30 @@ import {
   MenuList,
   MenuItem,
   Avatar,
-  Button
+  Button,
 } from "@material-tailwind/react";
 import {
   EllipsisVerticalIcon,
-  CurrencyDollarIcon
+  CurrencyDollarIcon,
 } from "@heroicons/react/24/solid";
 import { SkillsSection } from "@/widgets/custom";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQueryParams, useUser } from "@/hooks";
 import { useProject } from "@/hooks";
 import { profile_pic } from "@/data/placeholder";
-import { EditProjectPopUp, EditSkillsPopup, FreelancerInterestPopUp } from "@/widgets/popUp";
-import { addSkillToProject, deleteProjectSkill, editProject, editProjectSkill, postFreelancerInterest } from "@/services";
+import {
+  EditProjectPopUp,
+  EditSkillsPopup,
+  FreelancerInterestPopUp,
+} from "@/widgets/popUp";
+import {
+  addSkillToProject,
+  deleteProjectSkill,
+  editProject,
+  editProjectSkill,
+  postFreelancerInterest,
+} from "@/services";
 import { useQueryClient } from "@tanstack/react-query";
-
 
 export function ProjectDetail() {
   const queryClient = useQueryClient();
@@ -42,15 +51,24 @@ export function ProjectDetail() {
   console.log("ID del proyecto:", id); // Para depuración
 
   // Obtener la información del proyecto usando el hook
-  const { data: project, isLoading, error, refetch: projectRefetch } = useProject(id);
-  const { data: userData, isLoading: isUserLoading, refetch: userRefetch } = useUser();
+  const {
+    data: project,
+    isLoading,
+    error,
+    refetch: projectRefetch,
+  } = useProject(id);
+  const {
+    data: userData,
+    isLoading: isUserLoading,
+    refetch: userRefetch,
+  } = useUser();
 
   console.log("Datos de usuario:", userData); // Para depuración
 
   useEffect(() => {
     if (userData?.projects) {
       const userProjects = userData.projects;
-      const projectIds = userProjects.map(project => project.id);
+      const projectIds = userProjects.map((project) => project.id);
       console.log("IDs de proyectos del usuario:", projectIds);
       if (projectIds.includes(parseInt(id))) {
         console.log("El usuario no puede tirar interest este proyecto.");
@@ -60,9 +78,11 @@ export function ProjectDetail() {
   }, [userData]);
 
   useEffect(() => {
-    const projectIdFromQuery = getParams().get('project');
+    const projectIdFromQuery = getParams().get("project");
     if (projectIdFromQuery && projectIdFromQuery !== id) {
-      console.log(`Redirigiendo a la ID del proyecto desde query params: ${projectIdFromQuery}`);
+      console.log(
+        `Redirigiendo a la ID del proyecto desde query params: ${projectIdFromQuery}`
+      );
       navigate(`/project/detail/${projectIdFromQuery}`);
     }
   }, [getParams, navigate, id]);
@@ -71,17 +91,29 @@ export function ProjectDetail() {
 
   // Manejo de estado de carga y error
   if (isLoading) {
-    return <Typography variant="h6" color="gray">Cargando detalles del proyecto...</Typography>;
+    return (
+      <Typography variant="h6" color="gray">
+        Cargando detalles del proyecto...
+      </Typography>
+    );
   }
 
   if (error) {
-    console.error('Error fetching project:', error);
-    return <Typography variant="h6" color="red">Error al cargar el proyecto: {error.message}</Typography>;
+    console.error("Error fetching project:", error);
+    return (
+      <Typography variant="h6" color="red">
+        Error al cargar el proyecto: {error.message}
+      </Typography>
+    );
   }
 
   // Verifica si project existe antes de intentar acceder a sus propiedades
   if (!project) {
-    return <Typography variant="h6" color="red">Proyecto no encontrado.</Typography>;
+    return (
+      <Typography variant="h6" color="red">
+        Proyecto no encontrado.
+      </Typography>
+    );
   }
 
   // Project Skill Data
@@ -90,55 +122,53 @@ export function ProjectDetail() {
     const skillToAddData = {
       project: id,
       skill: body.skill,
-      level: body.level
-    }
-    addSkillToProject({ body: skillToAddData })
-    queryClient.invalidateQueries(['project', id]);
-    projectRefetch()
+      level: body.level,
+    };
+    addSkillToProject({ body: skillToAddData });
+    queryClient.invalidateQueries(["project", id]);
+    projectRefetch();
   }
 
   function handleEditSkill(id, body) {
     const skillToEditData = {
       project: body.project,
       level: body.level,
-      skill: body.skill.id
-    }
-    editProjectSkill({ id, body: skillToEditData })
+      skill: body.skill.id,
+    };
+    editProjectSkill({ id, body: skillToEditData });
     console.log("ID de proyecto al editar", id);
-    queryClient.invalidateQueries(['project', id]);
-    projectRefetch()
+    queryClient.invalidateQueries(["project", id]);
+    projectRefetch();
   }
 
   function handleDeleteSkill(id) {
     console.log("ID", id);
-    deleteProjectSkill({ id })
-    queryClient.invalidateQueries(['project', id]);
-    projectRefetch()
+    deleteProjectSkill({ id });
+    queryClient.invalidateQueries(["project", id]);
+    projectRefetch();
   }
 
   // Project basic Data
   function handleEditProject(body) {
     console.log("Body", body);
-    editProject({ id, body })
-    queryClient.invalidateQueries(['project', id]);
+    editProject({ id, body });
+    queryClient.invalidateQueries(["project", id]);
     const userId = sessionStorage.getItem("id");
-    queryClient.invalidateQueries(['freelancer_projects', userId]);
-    queryClient.invalidateQueries(['worker_projects', userId]);
-    projectRefetch()
+    queryClient.invalidateQueries(["freelancer_projects", userId]);
+    queryClient.invalidateQueries(["worker_projects", userId]);
+    projectRefetch();
   }
 
   // Freelancer Interest
   function handleFreelancerInterest() {
-
     const body = {
       project: id,
       freelancer: 0,
-      status: "freelancer_interested"
-    }
+      status: "freelancer_interested",
+    };
 
-    postFreelancerInterest(body)
+    postFreelancerInterest(body);
   }
-
 
   return (
     <>
@@ -149,7 +179,7 @@ export function ProjectDetail() {
               <div className="flex items-center justify-between flex-wrap gap-6 h-auto">
                 <div className="flex items-center gap-6">
                   <Avatar
-                    src={project.image || profile_pic}
+                    src={project.user.profile_picture || profile_pic}
                     alt="Project Image"
                     size="xl"
                     variant="rounded"
@@ -167,10 +197,15 @@ export function ProjectDetail() {
                     </Typography>
                   </div>
                 </div>
-                {(role == "Freelancer" && validInterest) &&
-                  <Button color="light-blue" onClick={() => setFreelancerInterestPopUp(prev => !prev)}>Apply Now!</Button>
-                }
-              </div >
+                {role == "Freelancer" && validInterest && (
+                  <Button
+                    color="light-blue"
+                    onClick={() => setFreelancerInterestPopUp((prev) => !prev)}
+                  >
+                    Apply Now!
+                  </Button>
+                )}
+              </div>
             </CardBody>
           </Card>
           <div className="mb-4 grid grid-cols-1 gap-6 xl:grid-cols-3">
@@ -189,7 +224,10 @@ export function ProjectDetail() {
                     variant="h6"
                     className="flex items-center gap-1 font-normal text-blue-gray-600"
                   >
-                    <CurrencyDollarIcon strokeWidth={5} className="h-6 w-6 text-light-green-600" />
+                    <CurrencyDollarIcon
+                      strokeWidth={5}
+                      className="h-6 w-6 text-light-green-600"
+                    />
                     <strong>{project.budget}</strong>
                   </Typography>
                 </div>
@@ -204,17 +242,37 @@ export function ProjectDetail() {
                     </IconButton>
                   </MenuHandler>
                   <MenuList>
-                    <MenuItem onClick={() => setShowEditProjectPopUp(prev => !prev)}>Edit project information</MenuItem>
-                    <MenuItem onClick={() => setShowSkillsPopUp(prev => !prev)}>Edit project skills</MenuItem>
+                    <MenuItem
+                      onClick={() => setShowEditProjectPopUp((prev) => !prev)}
+                    >
+                      Edit project information
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => setShowSkillsPopUp((prev) => !prev)}
+                    >
+                      Edit project skills
+                    </MenuItem>
                   </MenuList>
                 </Menu>
               </CardHeader>
               <CardBody className="flex flex-col items-start justify-between">
-                <Typography variant="paragraph" color="black" className="text-lg">
+                <Typography
+                  variant="paragraph"
+                  color="black"
+                  className="text-lg"
+                >
                   {project.description}
                 </Typography>
 
-                <Typography variant="h3" color="light-blue" textGradient className="my-2"> {project.status_name} </Typography>
+                <Typography
+                  variant="h3"
+                  color="light-blue"
+                  textGradient
+                  className="my-2"
+                >
+                  {" "}
+                  {project.status_name}{" "}
+                </Typography>
                 <Typography variant="lead" color="black" className="text-lg">
                   Fecha de inicio: {project.start_date}
                 </Typography>
@@ -222,16 +280,36 @@ export function ProjectDetail() {
             </Card>
             <Card className="border border-blue-gray-100 shadow-sm max-h-full">
               <CardBody className="my-6 h-104 pt-0 pb-10">
-                <Typography variant="h5" color="black"> Skills needed </Typography>
+                <Typography variant="h5" color="black">
+                  {" "}
+                  Skills needed{" "}
+                </Typography>
                 <SkillsSection sectionName={""} skills={project.skills || []} />
               </CardBody>
             </Card>
           </div>
         </div>
-      </div >
-      <EditSkillsPopup open={showSkillsPopUp} onOpen={setShowSkillsPopUp} skills={project.skills || []} editSkill={handleEditSkill} addSkill={handleAddSkill} deleteSkill={handleDeleteSkill} />
-      <EditProjectPopUp open={showEditProjectPopUp} setOpen={setShowEditProjectPopUp} project={project} handleProjectSave={handleEditProject} />
-      <FreelancerInterestPopUp open={freelancerInterestPopUp} onOpen={setFreelancerInterestPopUp} handleInterest={handleFreelancerInterest} project={project} />
+      </div>
+      <EditSkillsPopup
+        open={showSkillsPopUp}
+        onOpen={setShowSkillsPopUp}
+        skills={project.skills || []}
+        editSkill={handleEditSkill}
+        addSkill={handleAddSkill}
+        deleteSkill={handleDeleteSkill}
+      />
+      <EditProjectPopUp
+        open={showEditProjectPopUp}
+        setOpen={setShowEditProjectPopUp}
+        project={project}
+        handleProjectSave={handleEditProject}
+      />
+      <FreelancerInterestPopUp
+        open={freelancerInterestPopUp}
+        onOpen={setFreelancerInterestPopUp}
+        handleInterest={handleFreelancerInterest}
+        project={project}
+      />
     </>
   );
 }

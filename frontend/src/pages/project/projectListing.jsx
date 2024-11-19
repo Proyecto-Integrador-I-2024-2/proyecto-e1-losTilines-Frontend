@@ -104,23 +104,23 @@ export function ProjectListing() {
       )}
 
 
-
-      <div className="fixed bottom-8 right-8">
-        <SpeedDial>
-          <SpeedDialHandler>
-            <IconButton size="lg" className="rounded-full" onClick={handleOpen}>
-              <PlusIcon className="h-5 w-5 transition-transform group-hover:rotate-45" />
-            </IconButton>
-          </SpeedDialHandler>
-        </SpeedDial>
-      </div>
-      {userType !== "Freelancer" && (
+      {userType && userType != "Freelancer" &&
+        <div className="fixed bottom-8 right-8">
+          <SpeedDial>
+            <SpeedDialHandler>
+              <IconButton size="lg" className="rounded-full" onClick={handleOpen}>
+                <PlusIcon className="h-5 w-5 transition-transform group-hover:rotate-45" />
+              </IconButton>
+            </SpeedDialHandler>
+          </SpeedDial>
+        </div>}
+      {userType != "Freelancer" && (
         <AddProject open={dialogOpen} setOpen={setDialogOpen} handleCreateProject={handleCreateProject} size="lg" ripple={true} className="rounded-full shadow-lg" />
       )}
-      <PopUp open={errorDialogOpen} setOpen={setErrorDialogOpen} handleOpen={() => setErrorDialogOpen(prev => !prev)} isFit={true} disableSubmit={false} >
+      <PopUp title={"Project Creation Error"} open={errorDialogOpen} setOpen={setErrorDialogOpen} handleOpen={() => setErrorDialogOpen(prev => !prev)} isFit={true} disableSubmit={true} >
         <div className="flex flex-col items-center justify-center w-full">
           <Typography variant="h3" color="red">Error creating project</Typography>
-          <Typography variant="body1" color="gray">There was an error creating the project. Please try again later.</Typography>
+          <Typography variant="h6" color="gray">There was an error creating the project. Please try again later.</Typography>
         </div>
       </PopUp>
     </div>

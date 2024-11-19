@@ -35,6 +35,7 @@ function NavListMenu() {
   const [openNestedMenu, setOpenNestedMenu] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const role = sessionStorage.getItem("role");
   const renderItems = nestedMenuItems.map(({ title }, key) => (
     <div key={key}>
       <MenuItem>{title}</MenuItem>
@@ -78,7 +79,7 @@ function NavListMenu() {
             </MenuHandler>
             <MenuList className="rounded-xl">{renderItems}</MenuList>
           </Menu>
-          <MenuItem onClick={() => navigate("/approvals")}>Approvals</MenuItem>
+          <MenuItem onClick={() => navigate(`/approvals/${(role === "Freelancer") ? "freelancer" : "project-management"}`)}>Approvals</MenuItem>
           <MenuItem onClick={() => navigate("/faq")}>FAQ</MenuItem>
         </MenuList>
       </Menu>
