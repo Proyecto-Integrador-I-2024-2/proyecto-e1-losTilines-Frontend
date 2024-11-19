@@ -15,7 +15,7 @@ import apiClient from "@/services/apiClient";
 import { SpinnerCustom } from "../layout";
 import { PopUpChangeAreaAdmin } from ".";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-export function ListAreasCollapse({
+export function   ListAreasCollapse({
   title,
   areaId,
   currentAreaAdmin,
@@ -136,8 +136,9 @@ export function ListAreasCollapse({
                 </div>
 
                 <div>
-                  <div className=" flex flex-col ml-2 justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div   className=" flex flex-col ml-2 justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <PencilIcon
+                    
                       className="h-4 w-4"
                       color="gray"
                       onClick={handleOpenPopUp}

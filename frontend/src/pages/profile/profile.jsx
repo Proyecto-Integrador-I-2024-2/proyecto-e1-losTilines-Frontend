@@ -1,20 +1,20 @@
 import {
-    Card,
-    CardBody,
-    Avatar,
-    Rating,
-    Typography,
-    Tabs,
-    TabsHeader,
-    Tab,
-    Spinner,
-    Button,
+  Card,
+  CardBody,
+  Avatar,
+  Rating,
+  Typography,
+  Tabs,
+  TabsHeader,
+  Tab,
+  Spinner,
+  Button,
 } from "@material-tailwind/react";
 
 import {
-    HomeIcon,
-    ChatBubbleLeftEllipsisIcon,
-    Cog6ToothIcon,
+  HomeIcon,
+  ChatBubbleLeftEllipsisIcon,
+  Cog6ToothIcon,
 } from "@heroicons/react/24/solid";
 
 import { VscAccount } from "react-icons/vsc";
@@ -22,65 +22,82 @@ import { useState, useEffect } from "react";
 import { ProfileInfoCard, MessageCard } from "@/widgets/cards";
 import { CustomList, CustomListItem } from "@/widgets/horList";
 import { SkillsSection, GitButton, ExperienceSection } from "@/widgets/custom";
-import { CompanyInterestPopUp, EditExperiencePopup, EditProfilePopUp, EditSkillsPopup } from "@/widgets/popUp";
+import {
+  CompanyInterestPopUp,
+  EditExperiencePopup,
+  EditProfilePopUp,
+  EditSkillsPopup,
+} from "@/widgets/popUp";
 import { useCompany, useQueryParams, useUser } from "@/hooks";
+
 import { userExample, freelancerExample, profile_pic } from "@/data/placeholder";
 import { addFreelancerExperience, addFreelancerSkill, deleteFreelancerExperience, deleteFreelancerSkill, editFreelancerExperience, editFreelancerSkill, editWorkerProfile, getCompany, getFreelancer, postCompanyInterest } from "@/services";
+
 import { useQueryClient } from "@tanstack/react-query";
 import ReviewSection from "@/widgets/custom/reviews";
 
 export function Profile() {
-    const queryClient = useQueryClient();
-    const { data: userData, isLoading: isUserLoading, refetch: userRefetch } = useUser();
-    const { data: companyData, isLoading: isCompanyLoading, refetch: companyRefetch } = useCompany();
-    const [isFreelancer, setIsFreelancer] = useState(true);
-    const [projectsToUse, setProjectsToUse] = useState([]);
-    const [isEditable, setIsEditable] = useState(false);
-    const [showProfilePopUp, setShowProfilePopUp] = useState(false);
-    const [showExperiencePopUp, setShowExperiencePopUp] = useState(false);
-    const [showSkillsPopUp, setShowSkillsPopUp] = useState(false);
-    const [companyInterestPopUp, setCompanyInterestPopUp] = useState(false);
+  const queryClient = useQueryClient();
+  const {
+    data: userData,
+    isLoading: isUserLoading,
+    refetch: userRefetch,
+  } = useUser();
+  const {
+    data: companyData,
+    isLoading: isCompanyLoading,
+    refetch: companyRefetch,
+  } = useCompany();
+  const [isFreelancer, setIsFreelancer] = useState(true);
+  const [projectsToUse, setProjectsToUse] = useState([]);
+  const [isEditable, setIsEditable] = useState(false);
+  const [showProfilePopUp, setShowProfilePopUp] = useState(false);
+  const [showExperiencePopUp, setShowExperiencePopUp] = useState(false);
+  const [showSkillsPopUp, setShowSkillsPopUp] = useState(false);
+  const [companyInterestPopUp, setCompanyInterestPopUp] = useState(false);
 
-    const role = sessionStorage.getItem("role");
+  const role = sessionStorage.getItem("role");
 
-    // ----------------------- User information -----------------------
+  // ----------------------- User information -----------------------
 
-    const externalFreelancerId = useQueryParams().getParams().get("freelancer");
-    const externalCompanyId = useQueryParams().getParams().get("company");
+  const externalFreelancerId = useQueryParams().getParams().get("freelancer");
+  const externalCompanyId = useQueryParams().getParams().get("company");
 
-    // Estados locales para almacenar los datos de freelancer y compañía externos
-    const [externalFreelancerData, setExternalFreelancerData] = useState(null);
-    const [externalCompanyData, setExternalCompanyData] = useState(null);
-    const [isLoadingExternalFreelancer, setIsLoadingExternalFreelancer] = useState(true);
-    const [isLoadingExternalCompany, setIsLoadingExternalCompany] = useState(true);
+  // Estados locales para almacenar los datos de freelancer y compañía externos
+  const [externalFreelancerData, setExternalFreelancerData] = useState(null);
+  const [externalCompanyData, setExternalCompanyData] = useState(null);
+  const [isLoadingExternalFreelancer, setIsLoadingExternalFreelancer] =
+    useState(true);
+  const [isLoadingExternalCompany, setIsLoadingExternalCompany] =
+    useState(true);
 
-    async function fetchExternalFreelancer() {
-        if (externalFreelancerId) {
-            setIsLoadingExternalFreelancer(true);
-            try {
-                const data = await getFreelancer({ id: externalFreelancerId });
-                setExternalFreelancerData(data);
-            } catch (error) {
-                console.error("Error fetching freelancer data:", error);
-            } finally {
-                setIsLoadingExternalFreelancer(false);
-            }
-        }
+  async function fetchExternalFreelancer() {
+    if (externalFreelancerId) {
+      setIsLoadingExternalFreelancer(true);
+      try {
+        const data = await getFreelancer({ id: externalFreelancerId });
+        setExternalFreelancerData(data);
+      } catch (error) {
+        console.error("Error fetching freelancer data:", error);
+      } finally {
+        setIsLoadingExternalFreelancer(false);
+      }
+    }
+  }
+
+  async function fetchExternalCompany() {
+    if (externalCompanyId) {
+      setIsLoadingExternalCompany(true);
+      try {
+        const data = await getCompany({ id: externalCompanyId });
+        setExternalCompanyData(data);
+      } catch (error) {
+        console.error("Error fetching company data:", error);
+      } finally {
+        setIsLoadingExternalCompany(false);
+      }
     }
 
-    async function fetchExternalCompany() {
-        if (externalCompanyId) {
-            setIsLoadingExternalCompany(true);
-            try {
-                const data = await getCompany({ id: externalCompanyId });
-                setExternalCompanyData(data);
-            } catch (error) {
-                console.error("Error fetching company data:", error);
-            } finally {
-                setIsLoadingExternalCompany(false);
-            }
-        }
-    }
 
     useEffect(() => {
         // Llamadas a las APIs
@@ -173,64 +190,119 @@ export function Profile() {
         editFreelancerExperience({ id, body })
         queryClient.invalidateQueries(['User']);
         userRefetch()
-    }
 
-    function handleDeleteExperience(id) {
-        console.log("ID", id);
-        deleteFreelancerExperience({ id })
-        queryClient.invalidateQueries(['User']);
-        userRefetch()
     }
+  }, [
+    userData,
+    externalFreelancerId,
+    externalFreelancerData,
+    externalCompanyData,
+  ]);
 
-    // Freelancer Skill Data
-    function handleAddSkill(body) {
-        console.log("Body", body);
-        addFreelancerSkill({ body })
-        queryClient.invalidateQueries(['User']);
-        userRefetch()
+  useEffect(() => {
+    if (isFreelancer) {
+      setProjectsToUse(projects);
+    } else {
+      setProjectsToUse(
+        externalCompanyData?.projects || companyData?.at(0)?.projects || []
+      );
     }
+  }, [isFreelancer, projects, companyData]);
 
-    function handleEditSkill(id, body) {
-        console.log("ID", id);
-        editFreelancerSkill({ id, body })
-        queryClient.invalidateQueries(['User']);
-        userRefetch()
+  useEffect(() => {
+    if (userData && !externalFreelancerId && !externalCompanyId) {
+      setIsEditable(
+        userData?.user?.id == sessionStorage.getItem("id") ||
+          userData?.id == sessionStorage.getItem("id")
+      );
     }
+    if (externalFreelancerId) {
+      setIsEditable(false);
+    }
+  }, [userData, externalFreelancerId, externalCompanyId]);
 
-    function handleDeleteSkill(id) {
-        console.log("ID", id);
-        deleteFreelancerSkill({ id })
-        queryClient.invalidateQueries(['User']);
-        userRefetch()
+  useEffect(() => {
+    if (!externalCompanyId) {
+      setExternalCompanyData(null);
     }
+    if (!externalFreelancerId) {
+      setExternalFreelancerData(null);
+    }
+  }, [externalFreelancerId, externalCompanyId]);
 
-    // ----------------------- Company interest -----------------------
+  // ----------------------- API consumption -----------------------
 
-    function handleInterest(projectId) {
-        const body = {
-            project: projectId,
-            freelancer: externalFreelancerId,
-            status: "company_interested"
-        }
-        postCompanyInterest(body);
-        fetchExternalFreelancer();
-    }
+  // Worker/Freelancer User Data
+  function handleEditWorkerProfile(body) {
+    editWorkerProfile({ body });
+    queryClient.invalidateQueries(["User"]);
+    userRefetch();
+  }
 
-    // ----------------------- PopUp Handlers -----------------------
+  // Freelancer Experience Data
+  function handleEditExperience(id, body) {
+    console.log("ID", id);
+    console.log("Body", body);
+    editFreelancerExperience({ id, body });
+    queryClient.invalidateQueries(["User"]);
+    userRefetch();
+  }
 
-    function handleProfilePopup() {
-        setShowProfilePopUp(pop => !pop);
-    }
-    function handleExperiencePopUp() {
-        setShowExperiencePopUp(pop => !pop);
-    }
-    function handleSkillsPopUp() {
-        setShowSkillsPopUp(pop => !pop);
-    }
-    function handleCompanyInterestPopUp() {
-        setCompanyInterestPopUp(pop => !pop);
-    }
+  function handleDeleteExperience(id) {
+    console.log("ID", id);
+    deleteFreelancerExperience({ id });
+    queryClient.invalidateQueries(["User"]);
+    userRefetch();
+  }
 
+  // Freelancer Skill Data
+  function handleAddSkill(body) {
+    console.log("Body", body);
+    addFreelancerSkill({ body });
+    queryClient.invalidateQueries(["User"]);
+    userRefetch();
+  }
+
+  function handleEditSkill(id, body) {
+    console.log("ID", id);
+    editFreelancerSkill({ id, body });
+    queryClient.invalidateQueries(["User"]);
+    userRefetch();
+  }
+
+  function handleDeleteSkill(id) {
+    console.log("ID", id);
+    deleteFreelancerSkill({ id });
+    queryClient.invalidateQueries(["User"]);
+    userRefetch();
+  }
+
+  // ----------------------- Company interest -----------------------
+
+  function handleInterest(projectId) {
+    const body = {
+      project: projectId,
+      freelancer: externalFreelancerId,
+      status: "company_interested",
+    };
+    postCompanyInterest(body);
+    fetchExternalFreelancer();
+  }
+
+  // ----------------------- PopUp Handlers -----------------------
+
+  function handleProfilePopup() {
+    setShowProfilePopUp((pop) => !pop);
+  }
+  function handleExperiencePopUp() {
+    setShowExperiencePopUp((pop) => !pop);
+  }
+  function handleSkillsPopUp() {
+    setShowSkillsPopUp((pop) => !pop);
+  }
+  function handleCompanyInterestPopUp() {
+    setCompanyInterestPopUp((pop) => !pop);
+  }
 
     return (
         <div className="w-full h-full">
@@ -295,7 +367,7 @@ export function Profile() {
                                         >
                                             {externalCompanyData.industry} Company
                                         </Typography>
-                                        <Rating value={5} aria-disabled />
+                                        <Rating value={5} />
                                     </div>
                                 </div>
 
@@ -367,6 +439,7 @@ export function Profile() {
                                 }
 
                             </div>
+
 
                             <div className="h-96">
                                 {isFreelancer ?
