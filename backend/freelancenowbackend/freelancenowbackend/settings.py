@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'appCompany',
     'appProject',
     'appComunication.apps.AppComunicationConfig',
+    'appStatistics',
     'corsheaders',
     'django_filters',
     'channels'
@@ -197,9 +198,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'freelancenowmarketplace@gmail.com'
-EMAIL_HOST_PASSWORD = 'freelancenow123marketplace'
+EMAIL_HOST_PASSWORD = 'bnhr ktuj zfbw oakt'
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+SUPPORT_EMAIL = EMAIL_HOST_USER
 
 # Configuración de canales
 CHANNEL_LAYERS = {

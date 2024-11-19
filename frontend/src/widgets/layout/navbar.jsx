@@ -34,7 +34,7 @@ function NavListMenu() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openNestedMenu, setOpenNestedMenu] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
+  const navigate = useNavigate();
   const renderItems = nestedMenuItems.map(({ title }, key) => (
     <div key={key}>
       <MenuItem>{title}</MenuItem>

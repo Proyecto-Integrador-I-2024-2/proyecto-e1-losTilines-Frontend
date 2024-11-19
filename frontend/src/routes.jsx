@@ -7,6 +7,7 @@ import { ProjectDetail, ProjectListing } from "./pages/project";
 import { SignIn, SignUp } from "./pages/auth";
 import { MilestonesDetail } from "./pages/project";
 import { DashboardRenderByrole } from "./pages/dashboard";
+import { FAQPage } from "./pages/faq";
 export const routes = [
   {
     layout: "dashboard",
@@ -56,7 +57,7 @@ export const routes = [
         name: "detail",
         path: "/",
         element: <Profile />,
-      },  
+      },
     ],
   },
 
@@ -90,6 +91,16 @@ export const routes = [
         name: "homepage",
         path: "/",
         element: <Homepage />,
+      },
+    ],
+  },
+  {
+    layout: "faq",
+    pages: [
+      {
+        name: "faq",
+        path: "/",
+        element: <FAQPage />,
       },
     ],
   },

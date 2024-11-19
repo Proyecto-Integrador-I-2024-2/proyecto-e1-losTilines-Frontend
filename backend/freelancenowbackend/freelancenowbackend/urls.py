@@ -31,6 +31,7 @@ urlpatterns = [
     path('', include('appCompany.urls')),
     path('', include('appProject.urls')),
     path('', include('appComunication.urls')),
+    path('', include('appStatistics.urls')),
 ]
 
 if settings.DEBUG:

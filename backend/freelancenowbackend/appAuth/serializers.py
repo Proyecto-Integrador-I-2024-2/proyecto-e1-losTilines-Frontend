@@ -67,3 +67,9 @@ class UserCompanySerializer(serializers.ModelSerializer):
         if value.groups.filter(name="Freelancer").exists():
             raise serializers.ValidationError("Este tipo de usuario no puede estar en una compañía.")
         return value
+
+class SupportRequestSerializer(serializers.Serializer):
+    subject = serializers.CharField(max_length=255)
+    message = serializers.CharField()
+    user_email = serializers.EmailField()
+    request_type = serializers.ChoiceField(choices=["question", "complaint", "suggestion"])
