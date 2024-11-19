@@ -11,7 +11,7 @@ export function ProjectLayout() {
   const id = currentPath.substring(currentPath.lastIndexOf('/') + 1)
   console.log("ID del proyecto en layout:", id);
   return (
-    <div className="flex flex-col h-screen ">
+    <div className="flex flex-col ">
       <NavigationTopBar />
       {(currentPath.includes("/project/detail") || currentPath.includes("/project/milestones")) && <ProjectTopBar projectId={id || ""} />}
       <Routes>
