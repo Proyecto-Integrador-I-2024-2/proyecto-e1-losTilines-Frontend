@@ -1,10 +1,9 @@
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .serializers import UserSerializer, CompanySerializer
+from .serializers import UserSerializer, CompanySerializer, SupportRequestSerializer
 from app.models import User, Group, UserRole, Freelancer, Company
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
-from rest_framework.decorators import action
 from app.models import User, UserRole, Group, UserCompany, Freelancer
 from app.permission import IsBusinessManager, IsBusinessManagerOrReadOnly, IsOwnerOrReadOnly
 from rest_framework.exceptions import PermissionDenied, ValidationError
@@ -13,6 +12,8 @@ from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import FreelancerFilter, WorkerFilter, CompanyFilter
 from app.serializers import UserRoleSerializer
+from django.core.mail import send_mail
+from django.conf import settings
 
 class UserRoleViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = UserRole.objects.all()
@@ -150,3 +151,32 @@ class LoginView(APIView):
             'email': user.email,
             'roles': roles
         }, status=status.HTTP_200_OK)
+    
+# -----------------------------------------------------------------------------------------------------------------#
+class SupportViewSet(viewsets.ViewSet):
+    def create(self, request):
+        # Validar los datos de entrada
+        serializer = SupportRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            subject = serializer.validated_data['subject']
+            message = serializer.validated_data['message']
+            user_email = serializer.validated_data['user_email']
+            request_type = serializer.validated_data['request_type']
+
+            # Construir el contenido del correo
+            email_subject = f"New support: {subject} - {request_type.capitalize()}"
+            email_message = f"Request type: {request_type.capitalize()}\n\Message:\n{message}\n\nFrom: {user_email}"
+
+            try:
+                # Enviar el correo (esto usa la configuración de correo en settings.py)
+                send_mail(
+                    email_subject,
+                    email_message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [settings.SUPPORT_EMAIL], 
+                )
+                return Response({"message": "Your request has been sent successfully."}, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

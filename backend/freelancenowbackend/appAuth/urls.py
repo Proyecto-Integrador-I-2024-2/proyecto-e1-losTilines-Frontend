@@ -9,6 +9,7 @@ router.register(r'project-managers', ProjectManagerViewSet, basename='project-ma
 router.register(r'admin-areas', AdminAreaViewSet, basename='admin-area')
 router.register(r'companies', CompanyViewSet, basename='companies')
 router.register(r'users', UserRoleViewSet, basename='users')
+router.register(r'support', SupportViewSet, basename='support')
 
 urlpatterns = [
     path('', include(router.urls)),
