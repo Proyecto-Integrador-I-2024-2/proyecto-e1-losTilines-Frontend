@@ -722,33 +722,13 @@ def cargar_datos():
         ProjectFreelancerFactory(project=especificProject, freelancer=specific_freelancer)
         ProjectSkillFactory(project=especificProject, skill=skills[0])
         project_managers.append(specific_pm)
+        projects.append(especificProject)
 
         print("Proyectos creados, freelancers y skills asignados.")
     except Exception as e:
         print(f"Error al crear proyectos o asignar freelancers: {str(e)}")
         return
-    #Notificaciones
-    # try:
-    #     for project in projects:
 
-    #         notification_1 = NotificationFactory.create(message=f"Actualización importante del proyecto {project.name}")
-    #         notification_2 = NotificationFactory.create(message=f"Nueva versión disponible para {project.name}")
-
-    #         UserNotificationFactory.create(notification=notification_1, user=project.user)  # Project Manager es el 'user' del proyecto
-    #         UserNotificationFactory.create(notification=notification_2, user=project.user)
-
-    #         freelancers_in_project = ProjectFreelancer.objects.filter(project=project).select_related('freelancer')
-            
-    #         for project_freelancer in freelancers_in_project:
-    #             freelancer_user = project_freelancer.freelancer.user  # Obtener el usuario del freelancer asignado a este proyecto
-    #             UserNotificationFactory.create(notification=notification_1, user=freelancer_user)
-    #             UserNotificationFactory.create(notification=notification_2, user=freelancer_user)
-                    
-    #     print("Notificaciones creadas y asignadas correctamente por proyecto.") 
-    # except Exception as e:
-    #     print(f"Error al crear notificaciones: {str(e)}")
-    #     return
-    #Experiencia
     try:
         for freelancer in freelancers:
             ExperienceFactory.create_batch(2, freelancer=freelancer)
