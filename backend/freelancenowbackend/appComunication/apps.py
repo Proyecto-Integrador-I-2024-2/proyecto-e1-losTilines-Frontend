@@ -4,4 +4,4 @@ class AppComunicationConfig(AppConfig):
     name = 'appComunication'
 
     def ready(self):
-        import appComunication.signals
+        import appComunication.receivers
