@@ -1,20 +1,20 @@
 import {
-    Card,
-    CardBody,
-    Avatar,
-    Rating,
-    Typography,
-    Tabs,
-    TabsHeader,
-    Tab,
-    Spinner,
-    Button,
+      Card,
+      CardBody,
+      Avatar,
+      Rating,
+      Typography,
+      Tabs,
+      TabsHeader,
+      Tab,
+      Spinner,
+      Button,
 } from "@material-tailwind/react";
 
 import {
-    HomeIcon,
-    ChatBubbleLeftEllipsisIcon,
-    Cog6ToothIcon,
+      HomeIcon,
+      ChatBubbleLeftEllipsisIcon,
+      Cog6ToothIcon,
 } from "@heroicons/react/24/solid";
 
 import { VscAccount } from "react-icons/vsc";

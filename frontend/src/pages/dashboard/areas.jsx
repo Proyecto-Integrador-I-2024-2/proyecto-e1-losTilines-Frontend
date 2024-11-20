@@ -118,11 +118,12 @@ function Areas() {
       md:w-8/12 md:mx-auto md:my-4"
       >
         <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm}>
-          <Button variant="text" className="p-1" onClick={toggleSortOrder}>
+          <Button id="sort" variant="text" className="p-1" onClick={toggleSortOrder}>
             Sort by area name
           </Button>
 
           <Button
+            id="createArea"
             variant="text"
             onClick={() => setOpenCreateArea(!openCreateaArea)}
           >

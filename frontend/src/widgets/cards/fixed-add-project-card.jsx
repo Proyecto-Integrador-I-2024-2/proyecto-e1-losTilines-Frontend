@@ -29,11 +29,11 @@ export function FixedAddProjectCard({ userType, dialogOpen, setDialogOpen, handl
                             : "Si tienes una idea innovadora, no dudes en agregarla a nuestra lista de proyectos."}
                     </Typography>
                     {userType === "Freelancer" ? (
-                        <Button variant="gradient" onClick={handleNavigate}>
+                        <Button id="buscarProyecto" variant="gradient" onClick={handleNavigate}>
                             Buscar Proyectos
                         </Button>
                     ) : (
-                        <Button onClick={handleOpen} variant="gradient">
+                        <Button id="crearProyecto" onClick={handleOpen} variant="gradient">
                             Crear Proyecto
                         </Button>
                     )}

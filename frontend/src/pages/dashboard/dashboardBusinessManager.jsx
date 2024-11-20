@@ -186,6 +186,7 @@ export function DashboardBusinessManager() {
             hasSeeAll={() => navigateTo("areas/")}
             addContent={
               <Button
+                id="newArea"
                 onClick={() => setOpenCreateArea(!openCreateaArea)}
                 variant="gradient"
               >
@@ -313,6 +314,7 @@ export function DashboardBusinessManager() {
             </div>
             <Link to="stats/">
               <Button
+                id="seeAllStats"
                 color="gray"
                 size="sm"
                 variant="outlined"

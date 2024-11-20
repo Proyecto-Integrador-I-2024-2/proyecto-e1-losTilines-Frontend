@@ -219,7 +219,7 @@ const handleSelectedFreelancer = (item) => {
             />
           </div>
           <Link to="stats/">
-            <Button color="gray" size="sm" variant="outlined" className="w-32">
+            <Button id="seeAll" color="gray" size="sm" variant="outlined" className="w-32">
               See all
             </Button>
           </Link>

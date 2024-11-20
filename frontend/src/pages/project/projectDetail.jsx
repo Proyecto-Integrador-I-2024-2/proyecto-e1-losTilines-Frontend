@@ -260,8 +260,9 @@ export function ProjectDetail() {
                 </div>
                 <Menu placement="left-start">
                   <MenuHandler>
-                    <IconButton size="sm" variant="text" color="blue-gray">
+                    <IconButton  size="sm" variant="text" color="blue-gray">
                       <EllipsisVerticalIcon
+                        id="3puntos"
                         strokeWidth={3}
                         fill="currenColor"
                         className="h-6 w-6"

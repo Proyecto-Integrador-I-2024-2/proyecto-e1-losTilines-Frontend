@@ -146,6 +146,7 @@ export function DeliverableEdit({
             {/* Cambiar nombre */}
             <Typography color="gray">Change the deliverable's name:</Typography>
             <Textarea
+              id="newNameDeliverable"
               value={nameEdit}
               onChange={(event) => setNameEdit(event.target.value)}
               placeholder="Enter new name"
@@ -159,6 +160,7 @@ export function DeliverableEdit({
               Change the deliverable's description:
             </Typography>
             <Textarea
+              id="newDescriptionDeliverable"
               value={descriptionEdit}
               onChange={(event) => setDescriptionEdit(event.target.value)}
               placeholder="Enter new description"
@@ -181,6 +183,7 @@ export function DeliverableEdit({
 
             {/* Icono para eliminar */}
             <button
+              id="trashButton"
               onClick={(event) => {
                 event.stopPropagation();
                 // Abrir el pop-up de confirmación de eliminación

@@ -93,11 +93,13 @@ export function   ListAreasCollapse({
                 {areNameChange ? (
                   <div className="flex flex-row items-center w-full space-x-4">
                     <Input
+                      id="areaname"
                       placeholder={areaName}
                       variant="Static"
                       onChange={(e) => setAreaName(e.target.value)}
                     />
                     <CheckIcon
+                      id="checkIconButton"
                       color="gray"
                       className="h-6 w-6  "
                       onClick={handleDoneChangeArea}
@@ -109,8 +111,9 @@ export function   ListAreasCollapse({
                       {areaName}
                     </Typography>
 
-                    <div className="flex flex-col ml-2 justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="flex flex-col ml-2 justify-center transition-opacity duration-300">
                       <PencilIcon
+                        id= "Pencil1"
                         className="h-4 w-4"
                         color="gray"
                         onClick={() => setAreaNameChange(true)}

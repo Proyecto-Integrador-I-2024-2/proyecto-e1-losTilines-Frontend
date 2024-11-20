@@ -136,6 +136,7 @@ export function DashboardFreelancer() {
             </div>
             <Link to="stats/">
               <Button
+                id="seeAll"
                 color="gray"
                 size="sm"
                 variant="outlined"

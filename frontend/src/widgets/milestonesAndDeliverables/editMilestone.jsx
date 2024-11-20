@@ -111,6 +111,7 @@ export function EditMilestone({
             {/* Cambiar nombre */}
             <Typography color="gray">Change the milestone's name:</Typography>
             <Textarea
+              id="newNameMilestone"
               value={nameEdit}
               onChange={(event) => setNameEdit(event.target.value)}
               placeholder="Enter new name"
@@ -124,6 +125,7 @@ export function EditMilestone({
               Change the milestone's description:
             </Typography>
             <Textarea
+              id="newDescriptionMilestone"
               value={descriptionEdit}
               onChange={(event) => setDescriptionEdit(event.target.value)}
               placeholder="Enter new description"
@@ -144,6 +146,7 @@ export function EditMilestone({
 
             {/* Icono para eliminar */}
             <button
+              id="trasButton"
               onClick={(event) => {
                 event.stopPropagation();
                 // Abrir el pop-up de confirmación de eliminación

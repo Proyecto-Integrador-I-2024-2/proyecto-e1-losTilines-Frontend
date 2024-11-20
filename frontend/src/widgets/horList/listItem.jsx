@@ -49,7 +49,7 @@ export function CustomListItem({ img, title, tag, description, members, route })
             </CardBody>
             <CardFooter className="mt-6 flex items-center justify-between py-0 px-1">
                 <Link to={route}>
-                    <Button variant="outlined" size="sm">
+                    <Button id="viewDetails" variant="outlined" size="sm">
                         View details
                     </Button>
                 </Link>

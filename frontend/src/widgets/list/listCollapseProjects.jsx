@@ -25,6 +25,7 @@ export function ListProjectCollapse({
   return (
     <div>
       <ListItem
+        id="listItem"
         onClick={toggleOpen}
         className="flex flex-col items-start md:flex-row md:justify-between md:items-center"
       >
