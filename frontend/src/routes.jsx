@@ -9,6 +9,7 @@ import { MilestonesDetail } from "./pages/project";
 import { DashboardRenderByrole } from "./pages/dashboard";
 import { FAQPage } from "./pages/faq";
 import { CompanyInterestManagement, RequestProjectManagement } from "./pages/approvals";
+import { SearchPage } from "./pages/home";
 export const routes = [
   {
     layout: "dashboard",
@@ -92,6 +93,11 @@ export const routes = [
         name: "homepage",
         path: "/",
         element: <Homepage />,
+      },
+      {
+        name: "searchpage",
+        path: "/search",
+        element: <SearchPage />,
       },
     ],
   },

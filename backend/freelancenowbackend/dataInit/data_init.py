@@ -379,6 +379,7 @@ class ProjectFactory(DjangoModelFactory):
     name = factory.LazyAttribute(lambda _: choice(PROJECT_CHOICES))
     description = factory.LazyFunction(generate_project_paragraph)  
     start_date = factory.LazyFunction(timezone.now)
+    status = "open_to_apply"
     user = factory.LazyAttribute(lambda obj: obj.user)
     budget = factory.LazyAttribute(lambda _: fake.random_int(min=35000, max=125000))
 
