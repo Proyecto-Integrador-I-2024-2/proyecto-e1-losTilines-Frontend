@@ -4,6 +4,7 @@ import {
   Typography,
   Chip,
 } from "@material-tailwind/react";
+import { getStatusColor } from "@/services/colorBaseOnStatus";
 
 export function ListRowStructure({
   rowName,
@@ -26,6 +27,7 @@ export function ListRowStructure({
             className="flex items-center justify-center"
             size="lg"
             value={chipValue}
+            color={`${getStatusColor(chipValue)}`}
           />
         )}
 

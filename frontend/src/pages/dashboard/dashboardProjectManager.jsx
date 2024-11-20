@@ -109,9 +109,22 @@ const handleSelectedFreelancer = (item) => {
 
     console.log("Freelancer selected:", item);
     navigateTo(`/profile?freelancer=${item}`); 
+  }
 
-}
   
+  const [totalBudget, setTotalBudget] = useState(0);
+
+  useEffect(() => {
+    if (projects) {
+      let total = 0;
+
+      projects.forEach((project) => {
+        total += parseFloat(project.budget);
+      });
+
+      setTotalBudget(total);
+    }
+  }, [projects]);
 
 
   /*-----------------------------------------------*/
@@ -200,7 +213,7 @@ const handleSelectedFreelancer = (item) => {
             <ListCard title={"Finance"} hasAdd={false} hasSeeAll={() => {}}>
               <NumberInfo
                 description={"Total investment in projects"}
-                number={"$2.500.000"}
+                number={`$${totalBudget}`}
               />
             </ListCard>
           </section>
