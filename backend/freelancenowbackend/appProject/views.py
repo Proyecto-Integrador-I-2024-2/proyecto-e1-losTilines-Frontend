@@ -3,12 +3,12 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from app.models import Project, Company, ProjectFreelancer, Status, UserCompany, Milestone, Freelancer
+from app.models import Project, Company, ProjectFreelancer, Status, UserCompany, Milestone, Freelancer, User
 from app.serializers import ProjectSerializer, ProjectSkillSerializer
 from .serializers import *
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import *
-from appComunication.custom_signals import project_notification
+from appComunication.custom_signals import project_notification, project_interest_notification, project_update
 # Crear proyecto
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
@@ -34,6 +34,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
         serializer.save(user=user)
 
     def partial_update(self, request, *args, **kwargs):
+        
+    
         user = request.user
         instance = self.get_object()
 
@@ -46,7 +48,52 @@ class ProjectViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("Project instance not found.")
 
         # Lógica de actualización adicional si es necesario
-        return super().partial_update(request, *args, **kwargs)
+        
+        response = super().partial_update(request, *args, **kwargs) 
+        
+        non_null_fields = {
+            field: value for field, value in request.data.items() if value is not None
+        }
+        
+        print("Non null fields", non_null_fields)
+        
+        if non_null_fields: 
+            changes_summary = ", ".join(
+                [f"{field}: {value}" if field == "status" and value != None else field for field, value in non_null_fields.items()]
+            )
+            message = f"Project {instance.name} updated on {changes_summary}"
+        else:
+            message = f"Project {instance.name} general change."
+            
+            
+        user_company = UserCompany.objects.filter(user=self.request.user).first()
+        if not user_company:
+            return []
+        
+        company = user_company.company
+        area = user_company.area
+
+        # Business Manager
+        business_manager = User.objects.filter(
+            usercompany__company=company,
+            groups__name='Business Manager'
+        ).first()
+
+        # Area Admin
+        admin_area = User.objects.filter(
+            usercompany__area=area,
+            groups__name='Area Admin'
+        ).exclude(pk=business_manager.pk if business_manager else None).first()
+
+        project_manager = instance.user
+            
+        project_update.send(    
+            sender=Project,
+            message=message,
+            users= [business_manager, admin_area, project_manager]
+        )
+          
+        return response
 
 class ProjectFreelancerViewSet(viewsets.ModelViewSet):
     queryset = ProjectFreelancer.objects.all()
@@ -56,27 +103,25 @@ class ProjectFreelancerViewSet(viewsets.ModelViewSet):
     filterset_fields = ['project', 'freelancer', 'status']
     
     def partial_update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        
-        original_data = {field: getattr(instance, field) for field in request.data.keys()}
+        instance = self.get_object()  
         
         response = super().partial_update(request, *args, **kwargs)
+
+        print("On partial update")
         
-        updated_data = {field: getattr(instance, field) for field in request.data.keys()}
-        changes = {
-            field: {"old": original_data[field], "new": updated_data[field]}
-            for field in request.data.keys()
-            if original_data[field] != updated_data[field]
+        
+        non_null_fields = {
+            field: value for field, value in request.data.items() if value is not None
         }
         
-        # Construir el mensaje con los cambios
-        if changes:
+        print("Instance is ", instance)
+        if non_null_fields: 
             changes_summary = ", ".join(
-                [f"{field}: '{change['old']}' -> '{change['new']}'" for field, change in changes.items()]
+                [f"{field}: {value}" for field, value in non_null_fields.items()]
             )
-            message = f"Project updated with changes: {changes_summary}"
+            message = f"Project {instance.project.name} updated on {changes_summary}"
         else:
-            message = "No changes detected."
+            message = f"Project {instance.project.name} general change."
 
         project_notification.send(
             sender=ProjectFreelancer,
@@ -85,8 +130,25 @@ class ProjectFreelancerViewSet(viewsets.ModelViewSet):
         )
     
         return response
+    
+    def perform_create(self, serializer):
         
-
+        print("On perform create project freelancer")
+        
+        response = super().perform_create(serializer)
+        
+        instance = serializer.instance
+        
+        message = f"Notice Project interest on {instance.project.name} by freelancer {instance.freelancer.user.email}."
+        
+        project_interest_notification.send(
+            sender=ProjectFreelancer,
+            instance=instance,
+            message=message  
+        )
+    
+        return response 
+    
     @action(detail=False, methods=['get'])
     def status(self, request):
         status_choices = ProjectFreelancer.get_status_choices()

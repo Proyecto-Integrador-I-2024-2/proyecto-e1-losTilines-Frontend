@@ -266,10 +266,16 @@ class ProjectFreelancer(models.Model):
             usercompany__area=area,
             groups__name='Area Admin'
         ).exclude(pk=business_manager.pk if business_manager else None).first()
+        
+        # Get the freelancer
+        
+        freelancer = self.freelancer
+        
+        print("Freelancer: ", freelancer)
 
         #To do: must validate if users are different
         
-        recipients = [project_manager, business_manager, admin_area]
+        recipients = [business_manager, admin_area, project_manager, freelancer]
         return recipients
     
     @classmethod

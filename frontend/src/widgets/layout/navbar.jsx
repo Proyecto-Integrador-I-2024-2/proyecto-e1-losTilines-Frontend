@@ -132,9 +132,8 @@ export function NavigationTopBar() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const socketRef = useRef(null); // Ref to store the WebSocket instance
-  const tokenRef = useRef(sessionStorage.getItem("token")); // Ref to store the token
-  const token = tokenRef.current;
-
+  const [token, setToken] = useState(sessionStorage.getItem("token"));   // Establish token if it has changed
+  
   // State to handle drawer opening function
 
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -152,14 +151,47 @@ export function NavigationTopBar() {
     navigate("/");
   }
 
-  // Memoized WebSocket connection function
+
+
+  //------------------Manage token based on session storage changes------------------//
+
+  useEffect(() => {
+    console.log("Check WS connection: ", socketRef.current);
+  })
+
+  useEffect(() => {
+    const tokenChangeHandler = () => {
+      const newToken = sessionStorage.getItem("token");
+      console.log("Token updated:", newToken);
+      setToken(newToken);
+    };
+
+    window.addEventListener("storage", tokenChangeHandler); 
+
+    return () => {
+      window.removeEventListener("storage", tokenChangeHandler);
+    };
+  }, []);
+
+
+  //------------------Connect to WebSocket------------------//
+
   const connectWebSocket = useCallback(() => {
-    // Prevent multiple connections
-    if (socketRef.current) {
+    if (!token) {
+
+      socketRef.current?.close();
+      console.log("No token available, skipping WebSocket connection");
       return;
     }
 
-    // Establish the WebSocket connection
+    // Evitar múltiples conexiones
+    if (socketRef.current) {
+      console.log("WebSocket already connected");
+      return;
+    }
+
+    console.log("Connecting to WebSocket...");
+
     const socket = new WebSocket(
       `ws://localhost:29000/ws/notifications/?token=${token}`
     );
@@ -180,63 +212,27 @@ export function NavigationTopBar() {
     socket.onclose = (event) => {
       console.log("WebSocket closed:", event);
       socketRef.current = null;
-      setTimeout(connectWebSocket, 5000);
+      setTimeout(connectWebSocket, 5000); // Reintentar conexión
     };
 
     socket.onerror = (error) => {
       console.error("WebSocket error:", error);
+      socketRef.current = null;
+      setTimeout(connectWebSocket, 5000); // Reintentar conexión
     };
 
     socketRef.current = socket;
   }, [token]);
 
+
+  //------------------Connect to ws on Callback change by token------------------//
+
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 960) setOpenNav(false);
-    };
+    connectWebSocket();
+  }, [connectWebSocket]);
 
-    window.addEventListener("resize", handleResize);
 
-    const connectWebSocket = () => {
-      const socket = new WebSocket(
-        `ws://localhost:29000/ws/notifications/?token=${token}`
-      );
-
-      socket.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        console.log("WebSocket message received:", data.message);
-        setNotifications((prevNotifications) => [
-          ...prevNotifications,
-          data.message,
-        ]);
-      };
-
-      socket.onopen = () => {
-        console.log("WebSocket connection established");
-      };
-
-      socket.onclose = (event) => {
-        console.log("WebSocket closed:", event);
-        setTimeout(connectWebSocket, 5000); // Reconexión automática
-      };
-
-      socket.onerror = (error) => {
-        console.error("WebSocket error:", error);
-      };
-
-      return socket;
-    };
-
-    const socket = connectWebSocket();
-
-    return () => {
-      // Clean up on component unmount
-      if (socketRef.current) {
-        socketRef.current.close();
-      }
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [connectWebSocket]); // Dependency array contains connectWebSocket
+  //------------------Show notifications------------------//
 
   useEffect(() => {
 
