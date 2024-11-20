@@ -89,6 +89,7 @@ export function MilestonesDetail() {
               {milestones.length > 0 ? (
                 milestones.map((milestone) => (
                   <MilestoneCard
+                    id="milestoneCard"
                     key={milestone.id}
                     milestone={milestone}
                     onClick={() => handleMilestoneClick(milestone.id)}
@@ -136,7 +137,6 @@ export function MilestonesDetail() {
           ) : (
             <Card className="p-4 flex flex-col justify-center items-center h-full">
               <button
-                id="milestoneCard"
                 className="w-fit h-fit opacity-40 transform transition-transform duration-300 hover:-translate-y-2"
                 onClick={handleOpenCreateMilestone}
               >
@@ -163,3 +163,4 @@ export function MilestonesDetail() {
 }
 
 export default MilestonesDetail;
+

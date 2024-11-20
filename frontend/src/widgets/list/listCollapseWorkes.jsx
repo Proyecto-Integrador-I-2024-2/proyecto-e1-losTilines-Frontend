@@ -96,7 +96,7 @@ export function ListCollapseGeneral({
             aria-label="Edit Worker Profile"
           >
             <PencilIcon
-              className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+              className="h-4 w-4 cursor-pointer"
               color="gray"
             />
           </button>

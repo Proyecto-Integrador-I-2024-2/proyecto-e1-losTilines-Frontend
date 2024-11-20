@@ -76,7 +76,7 @@ export function CreateDeliverable({openCreateDeliverable, setOpenCreateDeliverab
                 {/* Name input */}
                 <Typography color="gray">Enter the deliverable's name:</Typography>
                 <Input
-                  id="name"
+                  id="nameDeliverable"
                   value={newDeliverableName}
                   onChange={(event) => setNewDeliverableName(event.target.value)}
                   error={!!createErrors.name}
@@ -89,6 +89,7 @@ export function CreateDeliverable({openCreateDeliverable, setOpenCreateDeliverab
                   Enter the deliverable's description:
                 </Typography>
                 <Textarea 
+                  id="descriptionDeliverable"
                   value={newDeliverableDescription}
                   onChange={(event) =>
                     setNewDeliverableDescription(event.target.value)
@@ -100,7 +101,7 @@ export function CreateDeliverable({openCreateDeliverable, setOpenCreateDeliverab
 
                 {/* Feedback messages */}
                 {createSuccessMessage && (
-                  <Typography color="green" className="mt-2">
+                  <Typography id="successMesage" color="green" className="mt-2">
                     {createSuccessMessage}
                   </Typography>
                 )}

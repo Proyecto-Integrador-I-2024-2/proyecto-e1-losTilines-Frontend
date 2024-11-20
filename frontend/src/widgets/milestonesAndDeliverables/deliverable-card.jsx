@@ -56,6 +56,7 @@ export function DeliverableCard({ deliverable, fetchDeliverables }) {
 
               {role && (
                 <button
+                  id="editDeliverable"
                   onClick={(event) => {
                     event.stopPropagation();
                     // Open the edit pop-up
@@ -64,7 +65,7 @@ export function DeliverableCard({ deliverable, fetchDeliverables }) {
                   className="p-0 m-0 focus:outline absolute right-0 top-0"
                 >
                   <PencilIcon
-                    className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+                    className="h-4 w-4 cursor-pointer"
                     color="gray"
                   />
                 </button>
