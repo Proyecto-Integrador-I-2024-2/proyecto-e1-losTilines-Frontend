@@ -103,6 +103,13 @@ class CompanyViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = CompanyFilter
 
+    def get_permissions(self):
+        if self.action in ['update', 'partial_update', 'destroy']:
+            permission_classes = [IsAuthenticated, IsBusinessManagerOrReadOnly] 
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
+
     def get_queryset(self):
         user = self.request.user
         if user.groups.filter(name='Business Manager').exists():
@@ -111,7 +118,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         company = serializer.save()
-        UserCompany.objects.create(user=self.request.user, company=company)
+        UserCompany.objects.create(user=company.user, company=company)
 
     def perform_update(self, serializer):
         user_company_instance = UserCompany.objects.filter(user=self.request.user).first()

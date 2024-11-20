@@ -19,7 +19,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = '__all__'
-        read_only_fields = ['user', 'company', 'freelancers', 'status', 'skills']  # Se definen como de solo lectura
+        read_only_fields = ['user', 'company', 'freelancers', 'skills']  # Se definen como de solo lectura
 
     def get_skills(self, obj):
         skills = ProjectSkill.objects.filter(project=obj)

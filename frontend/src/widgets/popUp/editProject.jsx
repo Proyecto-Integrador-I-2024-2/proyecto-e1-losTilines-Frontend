@@ -30,8 +30,6 @@ export function EditProjectPopUp({ open, setOpen, project, handleProjectSave, on
   };
 
 
-  console.log("Project in pop up: ", project);
-
   const handleProjectCreation = async () => {
     const projectData = {
       name: projectName,

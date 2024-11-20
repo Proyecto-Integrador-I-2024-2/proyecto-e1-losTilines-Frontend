@@ -12,17 +12,13 @@ import { Link, useNavigate, } from "react-router-dom";
 import { TextInputLabel } from "@/widgets/textInputs";
 import { GoogleButton } from "@/widgets/buttons";
 import { useState } from "react";
-import { useRegister, useLogin } from "@/hooks";
+import apiClient from "@/services/apiClient";
 
 
 export function SignUp() {
 
   //React hoooks
   const navigate = useNavigate();
-
-  //Custom hook
-  const registerMutation = useRegister();
-  const login = useLogin();
 
 
   //Info status
@@ -33,7 +29,7 @@ export function SignUp() {
   const [isFreelancer, setIsFreelancer] = useState(true);
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
-  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
 
@@ -44,47 +40,81 @@ export function SignUp() {
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
   const [companyTelephone, setCompanyTelephone] = useState("");
-  const [password, setPassword] = useState("");
   const [country, setCountry] = useState("");
   const [companyEmail, setCompnayEmail] = useState("");
+
+
+  //API call
+  const [isLoading, setIsLoading] = useState(false);
+
+
+
+  async function postUser() {
+
+    var url = ""
+    if (isFreelancer) {
+      url = "freelancers"
+    } else {
+      url = "business-managers"
+    }
+
+    const body = {
+      "email": email,
+      "password": password,
+      "first_name": first_name,
+      "last_name": last_name,
+      "phone_number": phone
+    }
+    try {
+      const { data, status } = await apiClient.post(`/${url}/`, body)
+
+      if (status === 201) {
+        console.log("User created successfully");
+        if (!isFreelancer) {
+          postCompany(data.id)
+        } else {
+          setIsLoading(false);
+          navigate("/auth/sign-in")
+        }
+      }
+
+    } catch (error) {
+      console.error("Error creating user: ", error);
+    }
+
+  }
+
+
+  async function postCompany(userId) {
+
+    const body = {
+      "tax_id": companyTaxId,
+      "name": companyName,
+      "address": address,
+      "telephone": companyTelephone,
+      "email": companyEmail,
+      "user": userId
+    }
+
+    try {
+      const { data, status } = await apiClient.post("/companies/", body)
+      if (status === 201) {
+        console.log("Company created successfully");
+        setIsLoading(false);
+        navigate("/auth/sign-in");
+      }
+
+    } catch (error) {
+      console.error("Error creating company: ", error);
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Datos básicos de usuario
-    const userData = {
-      first_name,
-      last_name,
-      username,
-      email,
-      phone_number: phone,
-      password,
-      role: isFreelancer ? "freelancer" : "client",
-    };
-
-
-    const companyData = {
-      tax_id: companyTaxId,
-      name: companyName,
-      country: country,
-      city: city,
-      address: address,
-      telephobe: companyTelephone,
-      email: companyEmail,
-    };
-
-
     try {
-      await registerMutation.mutateAsync(
-        isFreelancer ? userData : { ...userData, companyData }
-      );
-
-
-      await login.mutateAsync({ email, password });
-
-      // Just navigate if register and login is correct
-
-      navigate("/profile");
+      setIsLoading(true);
+      await postUser();
 
     } catch (err) {
       console.error(
@@ -152,13 +182,6 @@ export function SignUp() {
               placeholder="Last name"
               value={last_name}
               onValueChange={setLastName}
-            />
-            <TextInputLabel
-              id="userName"
-              label="Username"
-              placeholder="Username"
-              value={username}
-              onValueChange={setUsername}
             />
             <TextInputLabel
               id="email"
@@ -261,9 +284,9 @@ export function SignUp() {
             fullWidth
             color="blue"
             type="submit"
-            disabled={registerMutation.isLoading || !checked}
+            disabled={isLoading || !checked}
           >
-            {registerMutation.isLoading ? "Registering..." : "Register Now"}
+            {isLoading ? "Registering..." : "Register Now"}
           </Button>
           {error && (
             <Typography variant="small" color="red" className="mt-2">
