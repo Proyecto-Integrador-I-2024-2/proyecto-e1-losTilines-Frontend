@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+console.log(import.meta.env.VITE_API_BASE_URL); // Verifica si la variable está disponible
+
 const apiClient = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL,  
+  baseURL: import.meta.env.VITE_API_BASE_URL, // Usar `import.meta.env` en lugar de `process.env`
   headers: {
     'Content-Type': 'application/json',
   },

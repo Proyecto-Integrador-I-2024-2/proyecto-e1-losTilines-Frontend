@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +27,7 @@ SECRET_KEY = 'django-insecure-9d7rb3gbup5)vm^1h9-ys05hjj)#0^3lg)u8&)y(3(68x%bm($
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', 'freelancenow.azurewebsites.net/api', 'freelancenow.azurewebsites.net']
 
 # Application definition
 
@@ -44,7 +46,6 @@ INSTALLED_APPS = [
     'appCompany',
     'appProject',
     'appComunication.apps.AppComunicationConfig',
-    'appStatistics',
     'corsheaders',
     'django_filters',
     'channels'
@@ -63,20 +64,21 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Development
     "http://localhost:29003",  # Development
     "http://localhost:29002",  # Development
     "https://tu-dominio.com",  # Deployed
     "ws://localhost:29000",    # WebSocket (ajusta si usas un puerto diferente)
-    "ec2-3-142-50-53.us-east-2.compute.amazonaws.com",
+    "https://freelancenow.azurewebsites.net",
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_FILTER_BACKENDS': 
     [
@@ -113,14 +115,30 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# Configuración de la base de datos
+POSTGRES_NAME = os.getenv("POSTGRES_NAME")
+POSTGRES_USER = os.getenv("POSTGRES_USER")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+POSTGRES_HOST = os.getenv("POSTGRES_HOST")
+POSTGRES_PORT = os.getenv("POSTGRES_PORT")
+
+print(POSTGRES_HOST)
+print(POSTGRES_NAME)
+print(POSTGRES_PASSWORD)
+print(POSTGRES_PORT)
+print(POSTGRES_USER)
+
+if not all([POSTGRES_NAME, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_HOST]):
+    raise Exception("Las variables de entorno de la base de datos no están correctamente configuradas.")
+
 DATABASES = {
-       'default': {
-        'ENGINE': 'django.db.backends.postgresql',  
-        'NAME': 'postgres',  
-        'USER': 'postgres',  
-        'PASSWORD': 'postgres',  
-        'HOST': 'db',  
-        'PORT': '5432',  #
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': POSTGRES_NAME,
+        'USER': POSTGRES_USER,
+        'PASSWORD': POSTGRES_PASSWORD,
+        'HOST': POSTGRES_HOST,
+        'PORT': POSTGRES_PORT,
     }
 }
 
@@ -149,9 +167,12 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # Backend por defecto
 ]
 
+
+
+
 # Asegúrate de que el modelo de usuario personalizado esté correctamente referenciado
 AUTH_USER_MODEL = 'app.User'
-
+print("Hola")
 # Configuración de logging para depuración
 LOGGING = {
     'version': 1,
@@ -200,17 +221,18 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'freelancenowmarketplace@gmail.com'
-EMAIL_HOST_PASSWORD = 'bnhr ktuj zfbw oakt'
+EMAIL_HOST_PASSWORD = 'freelancenow123marketplace'
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-SUPPORT_EMAIL = EMAIL_HOST_USER
+
 
 # Configuración de canales
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('redis', 6379)],
+            "hosts": [(os.getenv("REDIS_URI")  , os.getenv("REDIS_PORT"))],
+                        
         },
     },
 }

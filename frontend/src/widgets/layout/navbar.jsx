@@ -159,7 +159,7 @@ export function NavigationTopBar() {
 
     // Establish the WebSocket connection
     const socket = new WebSocket(
-      `ws://localhost:29000/ws/notifications/?token=${token}`
+      `wss://https://freelancenow.azurewebsites.net/ws/notifications/?token=${token}`
     );
 
     socket.onmessage = (event) => {
