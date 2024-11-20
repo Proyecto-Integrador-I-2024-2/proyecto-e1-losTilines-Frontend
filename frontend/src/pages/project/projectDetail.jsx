@@ -91,7 +91,6 @@ export function ProjectDetail() {
     }
   }, [getParams, navigate, id]);
 
-  console.log("Proyecto:", project); // Para depuración
 
   // Manejo de estado de carga y error
   if (isLoading) {
@@ -103,7 +102,6 @@ export function ProjectDetail() {
   }
 
   if (error) {
-    console.error("Error fetching project:", error);
     return (
       <Typography variant="h6" color="red">
         Error al cargar el proyecto: {error.message}
@@ -122,7 +120,7 @@ export function ProjectDetail() {
 
   // Project Skill Data
   function handleAddSkill(body) {
-    console.log("Body", body);
+
     const skillToAddData = {
       project: id,
       skill: body.skill,
@@ -151,14 +149,27 @@ export function ProjectDetail() {
   }
 
   // Project basic Data
-  function handleEditProject(body) {
-    console.log("Body", body);
-    editProject({ id, body });
-    queryClient.invalidateQueries(["project", id]);
-    const userId = sessionStorage.getItem("id");
-    queryClient.invalidateQueries(["freelancer_projects", userId]);
-    queryClient.invalidateQueries(["worker_projects", userId]);
-    projectRefetch();
+  async function handleEditProject(body) {
+    const { data, status } = await editProject({ id, body });
+    if (status > 199) {
+      setSubmitted(true);
+      queryClient.invalidateQueries(["project", id]);
+      const userId = sessionStorage.getItem("id");
+      queryClient.invalidateQueries(["freelancer_projects", userId]);
+      queryClient.invalidateQueries(["worker_projects", userId]);
+      projectRefetch();
+      setTimeout(() => {
+        setSubmitted(false);
+      }, 3000)
+    } else {
+      setDeleteError("Hubo un error al eliminar el proyecto de codigo");
+      console.error("Error deleting project:", status);
+      setTimeout(() => {
+        setDeleteError(null);
+      }, 3000)
+
+    }
+
   }
 
   function handleDeleteProject() {
@@ -258,30 +269,36 @@ export function ProjectDetail() {
                     <strong>{project.budget}</strong>
                   </Typography>
                 </div>
-                <Menu placement="left-start">
-                  <MenuHandler>
-                    <IconButton  size="sm" variant="text" color="blue-gray">
-                      <EllipsisVerticalIcon
-                        id="3puntos"
-                        strokeWidth={3}
-                        fill="currenColor"
-                        className="h-6 w-6"
-                      />
-                    </IconButton>
-                  </MenuHandler>
-                  <MenuList>
-                    <MenuItem
-                      onClick={() => setShowEditProjectPopUp((prev) => !prev)}
-                    >
-                      Edit project information
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => setShowSkillsPopUp((prev) => !prev)}
-                    >
-                      Edit project skills
-                    </MenuItem>
-                  </MenuList>
-                </Menu>
+
+                {
+                  role && role != "Freelancer" && (
+
+                    <Menu placement="left-start">
+                      <MenuHandler>
+                        <IconButton size="sm" variant="text" color="blue-gray">
+                          <EllipsisVerticalIcon
+                            id="3puntos"
+                            strokeWidth={3}
+                            fill="currenColor"
+                            className="h-6 w-6"
+                          />
+                        </IconButton>
+                      </MenuHandler>
+                      <MenuList>
+                        <MenuItem
+                          onClick={() => setShowEditProjectPopUp((prev) => !prev)}
+                        >
+                          Edit project information
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => setShowSkillsPopUp((prev) => !prev)}
+                        >
+                          Edit project skills
+                        </MenuItem>
+                      </MenuList>
+                    </Menu>
+                  )
+                }
               </CardHeader>
               <CardBody className="flex flex-col items-start justify-between">
                 <Typography
@@ -301,9 +318,14 @@ export function ProjectDetail() {
                   {" "}
                   {project.status_name}{" "}
                 </Typography>
-                <Typography variant="lead" color="black" className="text-lg">
-                  Fecha de inicio: {project.start_date}
-                </Typography>
+                <div className="flex flex-row w-full justify-between">
+                  <Typography variant="lead" color="black" className="text-lg">
+                    Fecha de inicio: {project.start_date}
+                  </Typography>
+                  <Typography variant="h5" color="blue">
+                    {project.status.replace(/_/g, " ")}
+                  </Typography>
+                </div>
               </CardBody>
             </Card>
             <Card className="border border-blue-gray-100 shadow-sm max-h-full">
@@ -326,7 +348,7 @@ export function ProjectDetail() {
               <CheckCircleIcon className="h-6 w-6" />
             }
           >
-            Proyecto eliminado exitosamente.
+            Proyecto modificado exitosamente.
           </Alert>
         )}
         {deleteError && (
