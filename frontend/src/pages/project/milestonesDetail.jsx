@@ -109,6 +109,7 @@ export function MilestonesDetail() {
               <footer className="flex flex-row justify-center items-center w-full  mt-2">
                 {/* Button to open the create milestone pop-up */}
                 <Button
+                  id="proposeMilestone"
                   variant="text"
                   color="cyan"
                   onClick={handleOpenCreateMilestone}
@@ -135,6 +136,7 @@ export function MilestonesDetail() {
           ) : (
             <Card className="p-4 flex flex-col justify-center items-center h-full">
               <button
+                id="milestoneCard"
                 className="w-fit h-fit opacity-40 transform transition-transform duration-300 hover:-translate-y-2"
                 onClick={handleOpenCreateMilestone}
               >
