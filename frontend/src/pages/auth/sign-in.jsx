@@ -8,6 +8,7 @@ export function SignIn() {
   const login = useLogin();
   const navigate = useNavigate();
 
+  const [checked, setChecked] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   console.log("elpepe");
@@ -95,7 +96,8 @@ export function SignIn() {
             />
           </div>
           <Checkbox
-            id="termsAndConditions"
+            value={checked}
+            onClick={() => { setChecked(check => !check); }}
             label={
               <Typography
                 variant="small"
@@ -111,7 +113,7 @@ export function SignIn() {
             containerProps={{ className: "-ml-2.5" }}
           />
 
-          <Button id="entrar" className="mt-6" fullWidth color="blue" type="submit">
+          <Button className="mt-6" fullWidth color="blue" type="submit" disabled={!checked}>
             {login.isLoading ? "Iniciando..." : "Entrar"}
           </Button>
 

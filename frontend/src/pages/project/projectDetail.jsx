@@ -13,6 +13,7 @@ import {
   MenuItem,
   Avatar,
   Button,
+  Alert,
 } from "@material-tailwind/react";
 import {
   EllipsisVerticalIcon,
@@ -36,6 +37,8 @@ import {
   postFreelancerInterest,
 } from "@/services";
 import { useQueryClient } from "@tanstack/react-query";
+import apiClient from "@/services/apiClient";
+import { CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
 
 export function ProjectDetail() {
   const queryClient = useQueryClient();
@@ -47,7 +50,8 @@ export function ProjectDetail() {
   const [freelancerInterestPopUp, setFreelancerInterestPopUp] = useState(false);
   const [validInterest, setValidInterest] = useState(true);
   const role = sessionStorage.getItem("role");
-
+  const [submitted, setSubmitted] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
   console.log("ID del proyecto:", id); // Para depuración
 
   // Obtener la información del proyecto usando el hook
@@ -131,9 +135,7 @@ export function ProjectDetail() {
 
   function handleEditSkill(id, body) {
     const skillToEditData = {
-      project: body.project,
-      level: body.level,
-      skill: body.skill.id,
+      level: Number(body.level),
     };
     editProjectSkill({ id, body: skillToEditData });
     console.log("ID de proyecto al editar", id);
@@ -157,6 +159,31 @@ export function ProjectDetail() {
     queryClient.invalidateQueries(["freelancer_projects", userId]);
     queryClient.invalidateQueries(["worker_projects", userId]);
     projectRefetch();
+  }
+
+  function handleDeleteProject() {
+    try {
+      const { status } = apiClient.delete(`/projects/${id}`);
+      if (status === 204) {
+        setSubmitted(true);
+        queryClient.invalidateQueries(["project", id]);
+        queryClient.invalidateQueries(["projects"]);
+        setTimeout(() => {
+          setSubmitted(false);
+          navigate("/");
+        }, 3000)
+      }
+      throw new Error("Code error: " + status);
+    } catch (error) {
+      setDeleteError("Hubo un error al eliminar el proyecto de codigo");
+      console.error("Error deleting project:", error);
+      setTimeout(() => {
+        setDeleteError(null);
+      }, 3000)
+    }
+
+
+
   }
 
   // Freelancer Interest
@@ -290,6 +317,30 @@ export function ProjectDetail() {
             </Card>
           </div>
         </div>
+        {submitted && (
+          <Alert
+            variant="gradient"
+            color="green"
+            className="mt-4"
+            icon={
+              <CheckCircleIcon className="h-6 w-6" />
+            }
+          >
+            Proyecto eliminado exitosamente.
+          </Alert>
+        )}
+        {deleteError && (
+          <Alert
+            variant="gradient"
+            color="red"
+            className="mt-4"
+            icon={
+              <ExclamationCircleIcon className="h-6 w-6" />
+            }
+          >
+            Hubo un error al eliminar tu proyecto. Por favor, inténtalo de nuevo.
+          </Alert>
+        )}
       </div>
       <EditSkillsPopup
         open={showSkillsPopUp}
@@ -304,6 +355,7 @@ export function ProjectDetail() {
         setOpen={setShowEditProjectPopUp}
         project={project}
         handleProjectSave={handleEditProject}
+        onDelete={handleDeleteProject}
       />
       <FreelancerInterestPopUp
         open={freelancerInterestPopUp}

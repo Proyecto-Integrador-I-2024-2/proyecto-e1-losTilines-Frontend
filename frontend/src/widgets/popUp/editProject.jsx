@@ -6,15 +6,28 @@ import {
   Input,
   Textarea,
   Button,
+  Select,
+  Option,
 } from "@material-tailwind/react";
 import { useState } from "react";
 
-export function EditProjectPopUp({ open, setOpen, project, handleProjectSave }) {
+export function EditProjectPopUp({ open, setOpen, project, handleProjectSave, onDelete }) {
 
   const [projectName, setProjectName] = useState(project.name);
   const [budget, setBudget] = useState(project.budget);
   const [description, setDescription] = useState(project.description);
   const [start_date, setDate] = useState(project.start_date);
+  const [status, setStatus] = useState(project.status);
+
+  const STATUS_CHOICES = {
+    pending: 'Pending',
+    open_to_apply: 'Open to apply',
+    in_progress: 'In Progress',
+    in_progress_and_open_to_apply: 'In Progress and open to apply',
+    finished: 'Finished',
+    rejected: 'Rejected',
+    canceled: 'Canceled'
+  };
 
 
   console.log("Project in pop up: ", project);
@@ -25,9 +38,15 @@ export function EditProjectPopUp({ open, setOpen, project, handleProjectSave }) 
       budget: budget,
       description: description,
       start_date: start_date,
+      status: status
     }
 
     handleProjectSave(projectData);
+    setOpen(prev => !prev)
+  }
+
+  const handleProjectDelete = async () => {
+    onDelete();
     setOpen(prev => !prev)
   }
 
@@ -56,6 +75,22 @@ export function EditProjectPopUp({ open, setOpen, project, handleProjectSave }) 
             size="lg"
             required
           />
+
+          <Select
+            label="Status"
+            name="status"
+            value={status}
+            onChange={(value) => setStatus(value)}
+            size="lg"
+            required
+          >
+            {Object.keys(STATUS_CHOICES).map((key) => (
+              <Option key={key} value={key}>
+                {STATUS_CHOICES[key]}
+              </Option>
+            ))}
+          </Select>
+
           <Textarea
             id="description"
             label="Description"
@@ -77,7 +112,10 @@ export function EditProjectPopUp({ open, setOpen, project, handleProjectSave }) 
         </div>
       </DialogBody>
       <DialogFooter className="justify-end">
-        <Button id="cancelButton" variant="text" color="red" onClick={() => setOpen(false)} className="mr-2">
+        <Button variant="gradient" color="red" onClick={handleProjectDelete} className="mr-2">
+          Delete project
+        </Button>
+        <Button variant="text" color="red" onClick={() => setOpen(false)} className="mr-2">
           Cancel
         </Button>
         <Button id="saveChangesButton" variant="gradient" color="cyan" onClick={handleProjectCreation}>
