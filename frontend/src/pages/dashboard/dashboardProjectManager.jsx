@@ -113,7 +113,6 @@ const handleSelectedFreelancer = (item) => {
 }
   
 
-  console.log("Freelancers Hired post useEffect:", freelancersHired);
 
   /*-----------------------------------------------*/
 

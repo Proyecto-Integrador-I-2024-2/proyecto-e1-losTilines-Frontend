@@ -35,14 +35,14 @@ export function MilestonesInfo({
     setOpenCreateDeliverable(!openCreateDeliverable);
 
   return (
-    <div className="flex flex-col justify-center w-full h-full pt-6   ">
+    <div className="flex flex-col justify-center w-full h-full bg-black    ">
       {milestone && (
-        <Card className="w-  h-full flex flex-col justify-start pb-2 relative ">
+        <Card className="w-  h-full flex flex-col justify-start pb-2 relative  ">
           <Chip
             variant="ghost"
             color={`${getStatusColor(milestone.status)}`}
             value={milestone.status}
-            className=" w-fit absolute -top-6 right-6  "
+            className=" w-fit absolute -top-2 right-6  "
           />
 
           <CardBody className="  h-full overflow-y-auto  flex flex-col justify-start items-start space-y-8 py-0">
