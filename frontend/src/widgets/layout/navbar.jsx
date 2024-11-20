@@ -110,14 +110,17 @@ function NavList() {
 
   return (
     <List className="mb-6 mt-4 p-0 lg:mb-0 lg:mt-0 lg:flex-row lg:p-1">
-      <Typography as="a" variant="small" color="blue-gray" className="font-medium cursor-pointer" onClick={() => navigate("/profile")}>
+      <Typography variant="small" color="blue-gray" className="font-medium cursor-pointer" onClick={() => navigate("/profile")}>
         <ListItem className="flex items-center gap-2 py-2 pr-4">Profile</ListItem>
       </Typography>
-      <Typography as="a" variant="small" color="blue-gray" className="font-medium cursor-pointer" onClick={() => navigate("/dashboard")}>
+      <Typography variant="small" color="blue-gray" className="font-medium cursor-pointer" onClick={() => navigate("/dashboard")}>
         <ListItem className="flex items-center gap-2 py-2 pr-4">Dashboard</ListItem>
       </Typography>
-      <Typography as="a" variant="small" color="blue-gray" className="font-medium cursor-pointer" onClick={() => navigate("/project/")}>
+      <Typography variant="small" color="blue-gray" className="font-medium cursor-pointer" onClick={() => navigate("/project/")}>
         <ListItem className="flex items-center gap-2 py-2 pr-4">Projects</ListItem>
+      </Typography>
+      <Typography variant="small" color="blue-gray" className="font-medium cursor-pointer" onClick={() => navigate("/search/")}>
+        <ListItem className="flex items-center gap-2 py-2 pr-4">Search</ListItem>
       </Typography>
       <NavListMenu />
     </List>
