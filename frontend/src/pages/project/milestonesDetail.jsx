@@ -124,7 +124,7 @@ export function MilestonesDetail() {
 
         {/* Section 2: Milestone and deliverables info */}
 
-        <main className="flex flex-col justify-start w-2/3 h-full   ">
+        <main className="flex flex-col justify-start w-2/3    ">
           {milestones && milestones.length > 0 ? (
             <MilestonesInfo
               fetchMilestones={fetchMilestones}
