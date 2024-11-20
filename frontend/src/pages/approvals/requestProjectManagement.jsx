@@ -11,6 +11,7 @@ import { CheckCircleIcon, ClockIcon, XCircleIcon } from '@heroicons/react/24/out
 import { getFreelancer, getFreelancerInterest, getProject, patchProjectFreelancerInterest } from '@/services';
 import { useUser } from '@/hooks';
 import { useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 
 export const RequestProjectManagement = () => {
     const [requests, setRequests] = useState([]);
@@ -27,6 +28,11 @@ export const RequestProjectManagement = () => {
     const projectIds = userData?.related_projects?.map(project => project.id) || [];
 
     const role = sessionStorage.getItem('role');
+    const navigate = useNavigate();
+
+    if (!role || role == "Freelancer") {
+        navigate('/');
+    }
 
     const fetchRequestDetails = async (request) => {
         try {
