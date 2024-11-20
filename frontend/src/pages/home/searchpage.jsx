@@ -177,12 +177,13 @@ export const SearchPage = () => {
                 <Tabs value={activeTab} className="mb-8">
                     <TabsHeader>
                         <Tab
+                            id="freelancersTab"
                             value="freelancers"
                             onClick={() => setActiveTab("freelancers")}
                         >
                             Freelancers
                         </Tab>
-                        <Tab value="projects" onClick={() => setActiveTab("projects")}>
+                        <Tab id="projectsTab" value="projects" onClick={() => setActiveTab("projects")}>
                             Projects
                         </Tab>
                     </TabsHeader>
@@ -191,6 +192,7 @@ export const SearchPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                     <div className="col-span-1">
                         <Input
+                            id="searchInput"
                             label="Search"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -200,6 +202,7 @@ export const SearchPage = () => {
 
                     <div className="col-span-1">
                         <Select
+                            id="filterBySkill"
                             label="Filter by Skill"
                             value={selectedSkill}
                             onChange={(value) => {
@@ -217,6 +220,7 @@ export const SearchPage = () => {
 
                     <div className="col-span-1">
                         <Select
+                            id="sortButton"
                             label="Sort by"
                             value={`${sortBy}-${sortOrder}`}
                             onChange={(value) => {
