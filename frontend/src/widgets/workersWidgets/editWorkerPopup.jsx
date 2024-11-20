@@ -253,6 +253,7 @@ export function EditWorkerPopup({ open, setOpen, currentWorker, areas }) {
               Change the worker's first name:
             </Typography>
             <Input
+              id="firstNameEdit"
               value={firstNameEdit}
               onChange={(event) => setFirstNameEdit(event.target.value)}
               placeholder="Enter new first name"
@@ -264,6 +265,7 @@ export function EditWorkerPopup({ open, setOpen, currentWorker, areas }) {
             {/* Change last name */}
             <Typography color="gray">Change the worker's last name:</Typography>
             <Input
+              id="lastNameEdit"
               value={lastNameEdit}
               onChange={(event) => setLastNameEdit(event.target.value)}
               placeholder="Enter new last name"
@@ -275,6 +277,7 @@ export function EditWorkerPopup({ open, setOpen, currentWorker, areas }) {
             {/* Change email */}
             <Typography color="gray">Change worker email:</Typography>
             <Input
+              id="emailEdit"
               value={emailEdit}
               onChange={(event) => setEmailEdit(event.target.value)}
               placeholder="Enter new email"
@@ -286,6 +289,7 @@ export function EditWorkerPopup({ open, setOpen, currentWorker, areas }) {
             {/* Select area */}
             <Typography color="gray">Select worker's area:</Typography>
             <Select
+              id="selectArea"
               value={selectedArea}
               onChange={(val) => setSelectedArea(val)}
               label="Select Area"
@@ -313,6 +317,7 @@ export function EditWorkerPopup({ open, setOpen, currentWorker, areas }) {
             {/* Select role */}
             <Typography color="gray">Select worker's role:</Typography>
             <Select
+              id="selectRole"
               value={selectedRole}
               onChange={(val) => setSelectedRole(val)}
               label="Select Role"
@@ -335,11 +340,13 @@ export function EditWorkerPopup({ open, setOpen, currentWorker, areas }) {
 
             {/* Icon to delete */}
             <button
+
               onClick={(event) => {
                 event.stopPropagation();
                 console.log("TrashIcon clicked");
                 setOpenConfirmDelete(true);
               }}
+              id="trashIcon"
               className="p-0 m-0 focus:outline-none"
               aria-label="Delete Worker"
             >

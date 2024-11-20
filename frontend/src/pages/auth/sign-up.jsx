@@ -12,17 +12,13 @@ import { Link, useNavigate, } from "react-router-dom";
 import { TextInputLabel } from "@/widgets/textInputs";
 import { GoogleButton } from "@/widgets/buttons";
 import { useState } from "react";
-import { useRegister, useLogin } from "@/hooks";
+import apiClient from "@/services/apiClient";
 
 
 export function SignUp() {
 
   //React hoooks
   const navigate = useNavigate();
-
-  //Custom hook
-  const registerMutation = useRegister();
-  const login = useLogin();
 
 
   //Info status
@@ -33,7 +29,7 @@ export function SignUp() {
   const [isFreelancer, setIsFreelancer] = useState(true);
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
-  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
 
@@ -44,47 +40,81 @@ export function SignUp() {
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
   const [companyTelephone, setCompanyTelephone] = useState("");
-  const [password, setPassword] = useState("");
   const [country, setCountry] = useState("");
   const [companyEmail, setCompnayEmail] = useState("");
+
+
+  //API call
+  const [isLoading, setIsLoading] = useState(false);
+
+
+
+  async function postUser() {
+
+    var url = ""
+    if (isFreelancer) {
+      url = "freelancers"
+    } else {
+      url = "business-managers"
+    }
+
+    const body = {
+      "email": email,
+      "password": password,
+      "first_name": first_name,
+      "last_name": last_name,
+      "phone_number": phone
+    }
+    try {
+      const { data, status } = await apiClient.post(`/${url}/`, body)
+
+      if (status === 201) {
+        console.log("User created successfully");
+        if (!isFreelancer) {
+          postCompany(data.id)
+        } else {
+          setIsLoading(false);
+          navigate("/auth/sign-in")
+        }
+      }
+
+    } catch (error) {
+      console.error("Error creating user: ", error);
+    }
+
+  }
+
+
+  async function postCompany(userId) {
+
+    const body = {
+      "tax_id": companyTaxId,
+      "name": companyName,
+      "address": address,
+      "telephone": companyTelephone,
+      "email": companyEmail,
+      "user": userId
+    }
+
+    try {
+      const { data, status } = await apiClient.post("/companies/", body)
+      if (status === 201) {
+        console.log("Company created successfully");
+        setIsLoading(false);
+        navigate("/auth/sign-in");
+      }
+
+    } catch (error) {
+      console.error("Error creating company: ", error);
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Datos básicos de usuario
-    const userData = {
-      first_name,
-      last_name,
-      username,
-      email,
-      phone_number: phone,
-      password,
-      role: isFreelancer ? "freelancer" : "client",
-    };
-
-
-    const companyData = {
-      tax_id: companyTaxId,
-      name: companyName,
-      country: country,
-      city: city,
-      address: address,
-      telephobe: companyTelephone,
-      email: companyEmail,
-    };
-
-
     try {
-      await registerMutation.mutateAsync(
-        isFreelancer ? userData : { ...userData, companyData }
-      );
-
-
-      await login.mutateAsync({ email, password });
-
-      // Just navigate if register and login is correct
-
-      navigate("/profile");
+      setIsLoading(true);
+      await postUser();
 
     } catch (err) {
       console.error(
@@ -140,36 +170,35 @@ export function SignUp() {
         >
           <div className="mb-1 flex flex-col gap-6">
             <TextInputLabel
+              id="firstName"
               label="First name"
               placeholder="First name"
               value={first_name}
               onValueChange={setFirstName}
             />
             <TextInputLabel
+              id="lastName"
               label="Last name"
               placeholder="Last name"
               value={last_name}
               onValueChange={setLastName}
             />
             <TextInputLabel
-              label="Username"
-              placeholder="Username"
-              value={username}
-              onValueChange={setUsername}
-            />
-            <TextInputLabel
+              id="email"
               label="Email"
               placeholder="email@example.com"
               value={email}
               onValueChange={setEmail}
             />
             <TextInputLabel
+              id="phoneNumber"
               label="Phone number"
               placeholder="Phone number"
               value={phone}
               onValueChange={setPhone}
             />
             <TextInputLabel
+              id="password"
               label="Password"
               placeholder="Password"
               value={password}
@@ -179,42 +208,49 @@ export function SignUp() {
             {!isFreelancer && (
               <>
                 <TextInputLabel
+                  id="taxId"
                   label="Company tax id"
                   placeholder="Company tax id"
                   value={companyTaxId}
                   onValueChange={setCompanyTaxId}
                 />
                 <TextInputLabel
+                  id="companyName"
                   label="Company name"
                   placeholder="Company name"
                   value={companyName}
                   onValueChange={setCompanyName}
                 />
                 <TextInputLabel
+                  id="city"
                   label="City"
                   placeholder="City"
                   value={city}
                   onValueChange={setCity}
                 />
                 <TextInputLabel
+                  id="country"
                   label="Country"
                   placeholder="Country"
                   value={country}
                   onValueChange={setCountry}
                 />
                 <TextInputLabel
+                  id="address"
                   label="Address"
                   placeholder="Address"
                   value={address}
                   onValueChange={setAddress}
                 />
                 <TextInputLabel
+                  id="companyTelephone"
                   label="Company telephone"
                   placeholder="Company telephone"
                   value={companyTelephone}
                   onValueChange={setCompanyTelephone}
                 />
                 <TextInputLabel
+                  id="companyEmail"
                   label="Company email"
                   placeholder="Company email"
                   value={companyEmail}
@@ -243,13 +279,14 @@ export function SignUp() {
             containerProps={{ className: "-ml-2.5" }}
           />
           <Button
+            id="registerButton"
             className="mt-6"
             fullWidth
             color="blue"
             type="submit"
-            disabled={registerMutation.isLoading || !checked}
+            disabled={isLoading || !checked}
           >
-            {registerMutation.isLoading ? "Registering..." : "Register Now"}
+            {isLoading ? "Registering..." : "Register Now"}
           </Button>
           {error && (
             <Typography variant="small" color="red" className="mt-2">

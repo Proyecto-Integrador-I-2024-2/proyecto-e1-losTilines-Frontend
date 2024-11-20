@@ -29,6 +29,7 @@ export function LandingPage({ children }) {
                         Find the best talent, manage your projects effortlessly, and scale your business with our freelancer marketplace.
                     </Typography>
                     <Button
+                        id="getStarted"
                         variant='text'
                         className='text-white py-3 px-6 rounded-lg text-lg shadow-lg hover:bg-cyan-500 transition'
                         onClick={handleGetStarted}
@@ -103,6 +104,7 @@ export function LandingPage({ children }) {
                         Ready to transform your projects with the best talent?
                     </h2>
                     <Button
+                        id="joinNow"
                         color='blue-gray'
                         className='text-white py-3 px-6 rounded-lg text-lg shadow-lg hover:bg-cyan-500 transition animate-bounce'
                         onClick={handleGetStarted}

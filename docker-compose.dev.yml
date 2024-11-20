@@ -18,7 +18,7 @@ services:
       python manage.py create_superuser_if_not_exists &&
       echo 'Django admin created' &&  
       echo 'Turn on server process:' &&
-      python manage.py shell -c 'from app.management.commands.data_init import cargar_datos; cargar_datos()' &&
+      python manage.py cargar_datos &&
       daphne -p 8000 -b 0.0.0.0 freelancenowbackend.asgi:application"
     depends_on:
       - db

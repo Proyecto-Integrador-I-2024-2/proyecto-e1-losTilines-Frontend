@@ -63,6 +63,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Development
     "http://localhost:29003",  # Development
     "http://localhost:29002",  # Development
     "https://tu-dominio.com",  # Deployed

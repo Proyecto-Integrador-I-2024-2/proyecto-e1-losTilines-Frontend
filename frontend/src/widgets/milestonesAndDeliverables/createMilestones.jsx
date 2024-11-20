@@ -74,6 +74,7 @@ export function MilestonesCreation({
           {/* Name input */}
           <Typography color="gray">Enter the milestone's name:</Typography>
           <Input
+            id="newMilestoneName"
             value={newMilestoneName}
             onChange={(event) => setNewMilestoneName(event.target.value)}
             error={!!createErrors.name}
@@ -86,6 +87,7 @@ export function MilestonesCreation({
             Enter the milestone's description:
           </Typography>
           <Input
+            id="newMilestoneDescription"
             value={newMilestoneDescription}
             onChange={(event) => setNewMilestoneDescription(event.target.value)}
             error={!!createErrors.description}

@@ -89,6 +89,7 @@ export function MilestonesDetail() {
               {milestones.length > 0 ? (
                 milestones.map((milestone) => (
                   <MilestoneCard
+                    id="milestoneCard"
                     key={milestone.id}
                     milestone={milestone}
                     onClick={() => handleMilestoneClick(milestone.id)}
@@ -109,6 +110,7 @@ export function MilestonesDetail() {
               <footer className="flex flex-row justify-center items-center w-full  mt-2">
                 {/* Button to open the create milestone pop-up */}
                 <Button
+                  id="proposeMilestone"
                   variant="text"
                   color="cyan"
                   onClick={handleOpenCreateMilestone}
@@ -161,3 +163,4 @@ export function MilestonesDetail() {
 }
 
 export default MilestonesDetail;
+

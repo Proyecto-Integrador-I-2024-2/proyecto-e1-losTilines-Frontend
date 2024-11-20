@@ -6,9 +6,10 @@ import Homepage from "./pages/home/homepage";
 import { ProjectDetail, ProjectListing } from "./pages/project";
 import { SignIn, SignUp } from "./pages/auth";
 import { MilestonesDetail } from "./pages/project";
-import { DashboardRenderByrole } from "./pages/dashboard";
+import { DashboardRenderByrole, StatsPage } from "./pages/dashboard";
 import { FAQPage } from "./pages/faq";
 import { CompanyInterestManagement, RequestProjectManagement } from "./pages/approvals";
+import { SearchPage } from "./pages/home";
 export const routes = [
   {
     layout: "dashboard",
@@ -33,6 +34,11 @@ export const routes = [
         name: "projects",
         path: "/projects",
         element: <Projects />,
+      },
+      {
+        name: "stats",
+        path: "/stats",
+        element: <StatsPage />,
       },
     ],
   },
@@ -92,6 +98,11 @@ export const routes = [
         name: "homepage",
         path: "/",
         element: <Homepage />,
+      },
+      {
+        name: "searchpage",
+        path: "/search",
+        element: <SearchPage />,
       },
     ],
   },

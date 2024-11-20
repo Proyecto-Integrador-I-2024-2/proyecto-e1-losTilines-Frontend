@@ -53,10 +53,10 @@ export function CompanyInterestPopUp({ open, onOpen, companyId, handleInterest }
                 </div>
             </DialogBody>
             <DialogFooter>
-                <Button variant="text" color="red" onClick={() => onOpen(false)} className="mr-2">
+                <Button id="cancel" variant="text" color="red" onClick={() => onOpen(false)} className="mr-2">
                     Cancel
                 </Button>
-                <Button variant="gradient" color="cyan" onClick={handleSave}>
+                <Button id="invite" variant="gradient" color="cyan" onClick={handleSave}>
                     Invite
                 </Button>
             </DialogFooter>

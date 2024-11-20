@@ -60,6 +60,7 @@ export function MilestonesInfo({
 
                 {role !== "Freelancer" && role !== undefined && (
                   <button
+                    id="milestonEditButton"
                     onClick={(event) => {
                       event.stopPropagation();
                       // Open the edit pop-up
@@ -69,7 +70,7 @@ export function MilestonesInfo({
                     aria-label="Edit Milestone"
                   >
                     <PencilIcon
-                      className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+                      className="h-4 w-4 cursor-pointer"
                       color="gray"
                     />
                   </button>

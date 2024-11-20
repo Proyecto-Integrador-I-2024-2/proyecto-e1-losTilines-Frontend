@@ -28,11 +28,11 @@ export function ProjectTopBar({ projectId }) {
         <CardBody className="p-2"> {/* Reducir padding interno */}
           <Tabs value="details">
             <TabsHeader>
-              <Tab value="details" onClick={() => navigate(`/project/detail/${projectId}`)}>
+              <Tab id="porjectDetails" value="details" onClick={() => navigate(`/project/detail/${projectId}`)}>
                 <HomeIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
                 Project Detail
               </Tab>
-              <Tab value="milestones" onClick={() => navigate(`/project/milestones/${projectId}`)}>
+              <Tab id="milestones" value="milestones" onClick={() => navigate(`/project/milestones/${projectId}`)}>
                 <ChatBubbleLeftEllipsisIcon className="-mt-0.5 mr-2 inline-block h-5 w-5" />
                 Milestones
               </Tab>

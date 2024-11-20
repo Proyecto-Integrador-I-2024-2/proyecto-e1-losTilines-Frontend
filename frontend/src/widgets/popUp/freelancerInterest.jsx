@@ -28,10 +28,10 @@ export function FreelancerInterestPopUp({ open, onOpen, handleInterest, project 
                 </div>
             </DialogBody>
             <DialogFooter className="bg-gray-100 p-4">
-                <Button variant="text" color="red" onClick={() => onOpen(false)} className="mr-2">
+                <Button id="cancelButton" variant="text" color="red" onClick={() => onOpen(false)} className="mr-2">
                     Cancel
                 </Button>
-                <Button variant="gradient" color="cyan" onClick={handleSave}>
+                <Button id="imInterestedButton" variant="gradient" color="cyan" onClick={handleSave}>
                     I'm interested
                 </Button>
             </DialogFooter>

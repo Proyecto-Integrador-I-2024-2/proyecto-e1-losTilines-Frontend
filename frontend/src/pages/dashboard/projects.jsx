@@ -29,7 +29,7 @@ function Projects() {
     >
       <header className="flex flex-col w-full h-auto   md:flex-row md:justify-start md:items-center  ">
         <section className="w-full md:w-3/4 md:mr-4">
-          <Input label="search" />
+          <Input id="search" label="search" />
         </section>
 
         <section className="flex flex-row justify-between h-10 w-full md:w-auto md:h-full">

@@ -28,7 +28,7 @@ export function ListCard({
 
       <div className="flex flex-row justify-center space-x-4 my-4">
         {hasSeeAll && (
-          <Button color="gray" size="sm" variant="outlined" onClick={hasSeeAll}>
+          <Button id="seeAll" color="gray" size="sm" variant="outlined" onClick={hasSeeAll}>
             See all
           </Button>
         )}

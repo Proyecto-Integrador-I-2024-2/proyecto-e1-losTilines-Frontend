@@ -48,6 +48,7 @@ import {
 } from "@/services";
 import { useQueryClient } from "@tanstack/react-query";
 import ReviewSection from "@/widgets/custom/reviews";
+import { useNavigate } from "react-router-dom";
 
 export function Profile() {
     const queryClient = useQueryClient();
@@ -83,6 +84,12 @@ export function Profile() {
         useState(true);
     const [isLoadingExternalCompany, setIsLoadingExternalCompany] =
         useState(true);
+
+    const navigate = useNavigate();
+
+    if (!role || !sessionStorage.getItem("token")) {
+        navigate("/");
+    }
 
     async function fetchExternalFreelancer() {
         if (externalFreelancerId) {

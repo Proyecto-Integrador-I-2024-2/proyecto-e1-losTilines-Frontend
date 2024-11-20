@@ -207,6 +207,7 @@ export function DashboardAreaAdmin() {
             </div>
             <Link to="stats/">
               <Button
+                id="seeAllStats"
                 color="gray"
                 size="sm"
                 variant="outlined"

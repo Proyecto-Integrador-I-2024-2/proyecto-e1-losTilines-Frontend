@@ -65,7 +65,7 @@ export function SkillsSection({ sectionName, skills, editable, onEdit }) {
                 <Typography variant="h6" color="blue-gray" className="">
                     {sectionName}
                 </Typography>
-                {editable && (<EditButton toolTip="Edit Skills" onClick={onEdit} />)}
+                {editable && (<EditButton id="editButton" toolTip="Edit Skills" onClick={onEdit} />)}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 h-full overflow-y-auto p-2 no-scrollbar">
                 {isThereSkills ? (skillsToUse.map((skill, index) => (

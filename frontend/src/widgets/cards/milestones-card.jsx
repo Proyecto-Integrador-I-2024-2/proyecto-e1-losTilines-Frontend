@@ -13,7 +13,7 @@ export function MilestoneCard({ milestone, onClick }) {
 
 
   return (
-    <Card color="transparent" shadow={true} className="w-full transform transition-transform duration-300 hover:scale-95" onClick={() => onClick(milestone.id)}>
+    <Card id="milestoneCard" color="transparent" shadow={true} className="w-full transform transition-transform duration-300 hover:scale-95" onClick={() => onClick(milestone.id)}>
       <CardHeader
         color="transparent"
         floated={false}

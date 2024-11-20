@@ -30,8 +30,6 @@ export function EditProjectPopUp({ open, setOpen, project, handleProjectSave, on
   };
 
 
-  console.log("Project in pop up: ", project);
-
   const handleProjectCreation = async () => {
     const projectData = {
       name: projectName,
@@ -58,6 +56,7 @@ export function EditProjectPopUp({ open, setOpen, project, handleProjectSave, on
       <DialogBody divider>
         <div className="grid gap-6">
           <Input
+            id="nameProject"
             label="Name project"
             name="nameproject"
             value={projectName}
@@ -66,6 +65,7 @@ export function EditProjectPopUp({ open, setOpen, project, handleProjectSave, on
             required
           />
           <Input
+            id="budget"
             label="Budget"
             name="budget"
             value={budget}
@@ -90,6 +90,7 @@ export function EditProjectPopUp({ open, setOpen, project, handleProjectSave, on
           </Select>
 
           <Textarea
+            id="description"
             label="Description"
             name="description"
             value={description}
@@ -98,6 +99,7 @@ export function EditProjectPopUp({ open, setOpen, project, handleProjectSave, on
             required
           />
           <Input
+            id="startDate"
             label="Start date"
             name="start_date"
             type="date"
@@ -114,7 +116,7 @@ export function EditProjectPopUp({ open, setOpen, project, handleProjectSave, on
         <Button variant="text" color="red" onClick={() => setOpen(false)} className="mr-2">
           Cancel
         </Button>
-        <Button variant="gradient" color="cyan" onClick={handleProjectCreation}>
+        <Button id="saveChangesButton" variant="gradient" color="cyan" onClick={handleProjectCreation}>
           Save Changes
         </Button>
       </DialogFooter>

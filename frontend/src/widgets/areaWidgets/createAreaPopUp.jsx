@@ -121,6 +121,7 @@ export function CreateAreaPopUp({ open, setOpen, handleOpen }) {
 
         <div className="flex flex-row justify-center items-center w-full md:w-full ">
           <Input
+            id="area-name-input"  // Aquí añadimos el ID
             onChange={handleAreaNameChange}
             label="Area name"
             value={areaName}

@@ -49,10 +49,14 @@ export const deleteProjectSkill = async ({ id }) => {
 // ----------------------------------------------------------------------
 
 export const editProject = async ({ id, body }) => {
+    console.log("body para editar", body);
+    console.log("id para editar", id);
     var userType = "projects";
     const url = `${userType}/${id}/`;
-    const { data } = await apiClient.patch(url, body);
-    return data;
+    const { data, status } = await apiClient.patch(url, body);
+    console.log("data", data);
+    console.log("status en patch", status);
+    return { data, status };
 }
 
 

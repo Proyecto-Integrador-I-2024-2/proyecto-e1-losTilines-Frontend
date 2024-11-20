@@ -65,6 +65,7 @@ export const EditExperiencePopup = ({ open, onOpen, experiences, editExperience,
                 </div>
                 <div className="mt-6 space-y-4">
                     <Input
+                        id="occupation"
                         label="Occupation"
                         name="occupation"
                         value={newExperience.occupation}
@@ -80,6 +81,7 @@ export const EditExperiencePopup = ({ open, onOpen, experiences, editExperience,
                     />
                     <div className="flex space-x-4">
                         <Input
+                            id="startDate"
                             label="Start Date"
                             name="start_date"
                             type="date"
@@ -88,6 +90,7 @@ export const EditExperiencePopup = ({ open, onOpen, experiences, editExperience,
                             required
                         />
                         <Input
+                            id="finalDate"
                             label="Final Date"
                             name="final_date"
                             type="date"
@@ -97,6 +100,7 @@ export const EditExperiencePopup = ({ open, onOpen, experiences, editExperience,
                         />
                     </div>
                     <Textarea
+                        id="description"
                         label="Description"
                         name="description"
                         value={newExperience.description}
@@ -106,10 +110,10 @@ export const EditExperiencePopup = ({ open, onOpen, experiences, editExperience,
                 </div>
             </DialogBody>
             <DialogFooter>
-                <Button variant="text" color="red" onClick={() => { setSelectedExperience(null); onOpen(false) }} className="mr-2">
+                <Button id="cancel" variant="text" color="red" onClick={() => { setSelectedExperience(null); onOpen(false) }} className="mr-2">
                     Cancel
                 </Button>
-                <Button variant="gradient" color="cyan" onClick={handleSave}>
+                <Button id="addOrSave" variant="gradient" color="cyan" onClick={handleSave}>
                     {selectedExperience !== null ? "Save Changes" : "Add Experience"}
                 </Button>
             </DialogFooter>
