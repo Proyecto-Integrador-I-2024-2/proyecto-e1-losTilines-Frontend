@@ -96,6 +96,7 @@ export function SignIn() {
             />
           </div>
           <Checkbox
+            id="termsAndConditions"
             value={checked}
             onClick={() => { setChecked(check => !check); }}
             label={
@@ -113,7 +114,7 @@ export function SignIn() {
             containerProps={{ className: "-ml-2.5" }}
           />
 
-          <Button className="mt-6" fullWidth color="blue" type="submit" disabled={!checked}>
+          <Button id="entrar" className="mt-6" fullWidth color="blue" type="submit" disabled={!checked}>
             {login.isLoading ? "Iniciando..." : "Entrar"}
           </Button>
 

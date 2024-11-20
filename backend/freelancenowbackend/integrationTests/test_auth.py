@@ -171,9 +171,7 @@ class AuthTests(unittest.TestCase):
         password_field.clear()  # Limpia el campo de contraseña
 
         login_button = driver.find_element(By.ID, "entrar")
-        login_button.click()
-
-        self.verify_error_alerts
+        self.assertTrue(login_button.get_attribute("disabled") == "true", "El botón no está en estado disabled.")
 
     # 2. Pruebas de credenciales incorrectas
     def test_login_with_invalid_email(self):
