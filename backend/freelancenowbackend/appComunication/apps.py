@@ -4,4 +4,4 @@ class AppComunicationConfig(AppConfig):
     name = 'appComunication'
 
     def ready(self):
-        import backend.freelancenowbackend.appComunication.receivers
+        import appComunication.receivers

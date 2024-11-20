@@ -5,7 +5,7 @@ from django.conf import settings
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from app.models import Project, ProjectFreelancer
-import custom_signals as signals
+from .custom_signals import project_notification
 
 @receiver(post_save, sender=Project)
 def send_project_creation_notification(sender, instance, created, **kwargs):
@@ -35,8 +35,8 @@ def send_project_creation_notification(sender, instance, created, **kwargs):
             )
             print(f'notifications_{user.id}')
 
-@receiver(signals.project_notification, sender=ProjectFreelancer)
-def handle_project_status_update_notification(message, instance):
+@receiver(project_notification, sender=ProjectFreelancer)
+def handle_project_status_update_notification(message, instance, **kwargs):
     print(f"Mensaje de la notificacion es {message}")
     
     recipients = instance.get_notification_recipient()
@@ -55,6 +55,6 @@ def handle_project_status_update_notification(message, instance):
             }   
         )
     
-    
+
     
     

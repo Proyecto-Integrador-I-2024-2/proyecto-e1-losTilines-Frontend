@@ -8,7 +8,7 @@ from app.serializers import ProjectSerializer, ProjectSkillSerializer
 from .serializers import *
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import *
-
+from appComunication.custom_signals import project_notification
 # Crear proyecto
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
@@ -57,7 +57,35 @@ class ProjectFreelancerViewSet(viewsets.ModelViewSet):
     filterset_fields = ['project', 'freelancer', 'status']
     
     def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        
+        original_data = {field: getattr(instance, field) for field in request.data.keys()}
+        
         response = super().partial_update(request, *args, **kwargs)
+        
+        updated_data = {field: getattr(instance, field) for field in request.data.keys()}
+        changes = {
+            field: {"old": original_data[field], "new": updated_data[field]}
+            for field in request.data.keys()
+            if original_data[field] != updated_data[field]
+        }
+        
+        # Construir el mensaje con los cambios
+        if changes:
+            changes_summary = ", ".join(
+                [f"{field}: '{change['old']}' -> '{change['new']}'" for field, change in changes.items()]
+            )
+            message = f"Project updated with changes: {changes_summary}"
+        else:
+            message = "No changes detected."
+
+        project_notification.send(
+            sender=ProjectFreelancer,
+            instance=instance,
+            message=message  
+        )
+    
+        return response
         
 
     @action(detail=False, methods=['get'])
