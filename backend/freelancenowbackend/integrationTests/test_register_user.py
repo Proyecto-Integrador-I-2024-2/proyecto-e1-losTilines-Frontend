@@ -41,11 +41,9 @@ class RegistrationTests(unittest.TestCase):
             print("Rellenando el formulario de registro...")
             driver.find_element(By.XPATH, "//input[@placeholder='First name']").send_keys("Juan")
             print("Nombre completado.")
-            driver.find_element(By.XPATH, "//input[@placeholder='Last name']").send_keys("Pérez")
+            driver.find_element(By.XPATH, "//input[@placeholder='Last name']").send_keys("Péreza")
             print("Apellido completado.")
-            driver.find_element(By.XPATH, "//input[@placeholder='Username']").send_keys("juanperez123")
-            print("Nombre de usuario completado.")
-            driver.find_element(By.XPATH, "//input[@placeholder='email@example.com']").send_keys("juanperez@example.com")
+            driver.find_element(By.XPATH, "//input[@placeholder='email@example.com']").send_keys("juan.pereza@example.com")
             print("Correo electrónico completado.")
             driver.find_element(By.XPATH, "//input[@placeholder='Phone number']").send_keys("3001234567")
             print("Número de teléfono completado.")
@@ -63,7 +61,7 @@ class RegistrationTests(unittest.TestCase):
             register_button.click()
 
             print("Esperando redirección a la página de éxito o dashboard...")
-            WebDriverWait(driver, 10).until(EC.url_contains("/dashboard"))  # Cambia "/dashboard" según la URL de redirección de éxito
+            WebDriverWait(driver, 10).until(EC.url_contains("auth/sign-in"))  # Cambia "/dashboard" según la URL de redirección de éxito
             print("Test de registro completado con éxito")
 
         except Exception as e:
