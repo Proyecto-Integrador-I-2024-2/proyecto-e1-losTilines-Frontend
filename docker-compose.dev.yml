@@ -1,44 +1,69 @@
 services:
   backend:
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile.dev
-    command: python manage.py runserver 0.0.0.0:8000
+    command: >
+      sh -c "
+      echo 'Waiting DB...' &&
+      while ! nc -z db 5432; do sleep 1; done &&
+      while ! nc -z redis 6379; do sleep 1; done &&
+      echo 'Database available!' &&
+      python manage.py flush --no-input &&
+      python manage.py makemigrations &&
+      python manage.py migrate &&
+      echo 'Testing process' &&
+      python manage.py test &&
+      echo 'Creating django admin...' &&
+      python manage.py create_superuser_if_not_exists &&
+      echo 'Django admin created' &&  
+      echo 'Turn on server process:' &&
+      python manage.py cargar_datos &&
+      daphne -p 8000 -b 0.0.0.0 freelancenowbackend.asgi:application"
     depends_on:
       - db
+      - redis
     volumes:
       - ./backend/freelancenowbackend:/app
-
+    environment:
+      - DJANGO_SUPERUSER_EMAIL=admin@example.com
+      - DJANGO_SUPERUSER_PASSWORD=admin123
+      - DJANGO_SUPERUSER_FIRST_NAME=Admin
+      - DJANGO_SUPERUSER_LAST_NAME=User
+      - DJANGO_SETTINGS_MODULE=freelancenowbackend.settings
     ports:
-      - 8000:8000
+      - 29000:8000
 
   frontend:
     build:
-      context: ./frontend  
-      dockerfile: Dockerfile.dev  
+      context: ./frontend
+      dockerfile: Dockerfile.dev
     command: npm run dev
     volumes:
-      - ./frontend:/usr/src/app  
-      - /usr/src/app/node_modules  
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
     ports:
-      - "5173:5173"
+      - "29002:5173"
+      - "29003:5173"
+
     environment:
-      - NODE_ENV=development  
-    stdin_open: true  
+      - NODE_ENV=development
+    stdin_open: true
 
   db:
     image: postgres:16
     container_name: postgres_dev
     restart: always
     environment:
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: postgres
-        POSTGRES_DB: postgres
-        PGDATA: /var/lib/postgresql/data
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      PGDATA: /var/lib/postgresql/data
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - '8083:5432'
+      - "29004:5432"
+      - "29005:5432"
 
   pgadmin4:
     image: elestio/pgadmin:latest
@@ -48,18 +73,18 @@ services:
       PGADMIN_DEFAULT_PASSWORD: dev
       PGADMIN_LISTEN_PORT: 8080
     ports:
-      - '8094:8080'
-
+      - "29006:8080"
+      - "29007:8080"
 
     volumes:
       - ./servers.json:/pgadmin4/servers.json
     depends_on:
       - db
+
+  redis:
+    image: "redis:alpine"
+    container_name: redis_dev
+    ports:
+      - "6379:6379"
 volumes:
   postgres_data:
-
-
-
-
-
-    

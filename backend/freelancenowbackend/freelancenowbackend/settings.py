@@ -25,8 +25,7 @@ SECRET_KEY = 'django-insecure-9d7rb3gbup5)vm^1h9-ys05hjj)#0^3lg)u8&)y(3(68x%bm($
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0']
 
 # Application definition
 
@@ -38,6 +37,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
+    'app',
+    'appAuth',
+    'appProfile',
+    'appCompany',
+    'appProject',
+    'appComunication.apps.AppComunicationConfig',
+    'appStatistics',
+    'corsheaders',
+    'django_filters',
+    'channels'
 ]
 
 MIDDLEWARE = [
@@ -48,7 +58,29 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:29003",  # Development
+    "http://localhost:29002",  # Development
+    "https://tu-dominio.com",  # Deployed
+    "ws://localhost:29000",     # WebSocket (ajusta si usas un puerto diferente)
+]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+    'DEFAULT_FILTER_BACKENDS': 
+    [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ],
+}
 
 ROOT_URLCONF = 'freelancenowbackend.urls'
 
@@ -69,6 +101,11 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'freelancenowbackend.wsgi.application'
+ASGI_APPLICATION = 'freelancenowbackend.asgi.application'
+
+# Carpeta donde se almacenarán los archivos de medios
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # Database
@@ -104,6 +141,35 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Añade el backend personalizado
+AUTHENTICATION_BACKENDS = [
+    'appAuth.backends.EmailBackend',  # Asegúrate de que la ruta sea correcta
+    'django.contrib.auth.backends.ModelBackend',  # Backend por defecto
+]
+
+# Asegúrate de que el modelo de usuario personalizado esté correctamente referenciado
+AUTH_USER_MODEL = 'app.User'
+
+# Configuración de logging para depuración
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'appAuth': {  # Ajusta esto al nombre de tu app
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'django.mail': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -126,3 +192,23 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Configuración de envío de correos electrónicos
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'freelancenowmarketplace@gmail.com'
+EMAIL_HOST_PASSWORD = 'bnhr ktuj zfbw oakt'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+SUPPORT_EMAIL = EMAIL_HOST_USER
+
+# Configuración de canales
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('redis', 6379)],
+        },
+    },
+}
