@@ -111,22 +111,22 @@ function NavList() {
   return (
     <List className="mb-6 mt-4 p-0 lg:mb-0 lg:mt-0 lg:flex-row lg:p-1">
       <ListItem className="flex items-center gap-2 py-2 pr-4" ripple={false} selected={false} onClick={() => navigate("/profile")}>
-        <Typography variant="small" color="blue-gray" className="font-medium cursor-pointer" >
+        <Typography id="profileNavbar" variant="small" color="blue-gray" className="font-medium cursor-pointer" >
           Profile
         </Typography>
       </ListItem>
       <ListItem className="flex items-center gap-2 py-2 pr-4" ripple={false} selected={false} onClick={() => navigate("/dashboard")}>
-        <Typography variant="small" color="blue-gray" className="font-medium cursor-pointer" >
+        <Typography id="dashboardNavbar" variant="small" color="blue-gray" className="font-medium cursor-pointer" >
           Dashboard
         </Typography>
       </ListItem>
       <ListItem className="flex items-center gap-2 py-2 pr-4" ripple={false} selected={false} onClick={() => navigate("/project/")}>
-        <Typography variant="small" color="blue-gray" className="font-medium cursor-pointer" >
+        <Typography id="projectsNavbar" variant="small" color="blue-gray" className="font-medium cursor-pointer" >
           Projects
         </Typography>
       </ListItem>
       <ListItem className="flex items-center gap-2 py-2 pr-4" ripple={false} selected={false} onClick={() => navigate("/search/")}>
-        <Typography variant="small" color="blue-gray" className="font-medium cursor-pointer" >
+        <Typography id="searchNavbar" variant="small" color="blue-gray" className="font-medium cursor-pointer" >
           Search
         </Typography>
       </ListItem>
@@ -227,7 +227,7 @@ export function NavigationTopBar() {
             <BellIcon className="h-6 w-6" strokeWidth={2} />
           </IconButton>
         </div>
-        <Button variant="outlined" size="sm" onClick={token ? handleLogOut : () => navigate("/auth/sign-in")}>
+        <Button id="logInOutButton" variant="outlined" size="sm" onClick={token ? handleLogOut : () => navigate("/auth/sign-in")}>
           Log {token ? "out" : "in"}
         </Button>
         <IconButton variant="text" className="lg:hidden" onClick={() => setOpenNav(!openNav)}>

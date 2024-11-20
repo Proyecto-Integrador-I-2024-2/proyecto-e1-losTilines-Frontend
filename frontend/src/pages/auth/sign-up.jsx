@@ -144,6 +144,7 @@ export function SignUp() {
         <Tabs value="Freelancer">
           <TabsHeader>
             <Tab
+              id="freelancerTab"
               key={"Freelancer"}
               value={"Freelancer"}
               onClick={() => setIsFreelancer(true)}
@@ -151,6 +152,7 @@ export function SignUp() {
               Freelancer
             </Tab>
             <Tab
+              id="clientTab"
               key={"Client"}
               value={"Client"}
               onClick={() => setIsFreelancer(false)}
@@ -260,6 +262,7 @@ export function SignUp() {
             )}
           </div>
           <Checkbox
+            id="checkbox"
             value={checked}
             onClick={() => { setChecked(check => !check); }}
             label={

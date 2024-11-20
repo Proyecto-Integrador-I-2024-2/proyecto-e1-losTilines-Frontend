@@ -4,7 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import unittest
 
-
+#1
 class MilestoneCRUDTest(unittest.TestCase):
 
     def setUp(self):
@@ -37,7 +37,7 @@ class MilestoneCRUDTest(unittest.TestCase):
         print("Inicio de sesión exitoso.")
 
     def navigate_to_project_details(self):
-        """Navega al último proyecto y entra a 'Details'."""
+        """Navega al proyecto 'Freelance Aplication' y entra a 'Details'."""
         driver = self.driver
 
         # Navegar a la pantalla de Projects
@@ -46,12 +46,13 @@ class MilestoneCRUDTest(unittest.TestCase):
         )
         projects_button.click()
 
-        # Localizar la última card de proyecto (suponiendo que siempre tiene el mismo nombre)
-        project_details_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[@id='details']"))
+        # Localizar el botón Details correspondiente al proyecto 'Freelance Aplication'
+        project_card = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//p[text()='Freelance Aplication']/ancestor::div[contains(@class, 'relative')]//button[@id='details']"))
         )
-        project_details_button.click()
-        print("Navegando al último proyecto.")
+        project_card.click()
+        print("Navegando al proyecto 'Freelance Aplication'.")
+
 
     def navigate_to_milestones(self):
         """Navega a la pestaña 'Milestones'."""
