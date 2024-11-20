@@ -43,7 +43,7 @@ export function DashboardProjectManager() {
     data: projects,
     isLoading: isLoadingProjects,
     error: projectsError,
-  } = useProjects({ worker: user.id }); // Fetch projects by worker
+  } = useProjects({ user: user.id }); // Fetch projects by worker
 
 
   /*-----------------------------------------------*/
