@@ -205,9 +205,7 @@ export const SearchPage = () => {
                             id="filterBySkill"
                             label="Filter by Skill"
                             value={selectedSkill}
-                            onChange={(value) => {
-                                setSelectedSkill(value);
-                            }}
+                            onChange={setSelectedSkill}
                         >
                             <Option value="">All Skills</Option>
                             {getAllSkills().map((skill) => (

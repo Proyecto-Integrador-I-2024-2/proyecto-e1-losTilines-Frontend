@@ -172,9 +172,9 @@ export function ProjectDetail() {
 
   }
 
-  function handleDeleteProject() {
+  async function handleDeleteProject() {
     try {
-      const { status } = apiClient.delete(`/projects/${id}`);
+      const { status } = await apiClient.delete(`/projects/${id}/`);
       if (status === 204) {
         setSubmitted(true);
         queryClient.invalidateQueries(["project", id]);
@@ -183,8 +183,9 @@ export function ProjectDetail() {
           setSubmitted(false);
           navigate("/");
         }, 3000)
+      } else {
+        throw new Error("Code error: " + status);
       }
-      throw new Error("Code error: " + status);
     } catch (error) {
       setDeleteError("Hubo un error al eliminar el proyecto de codigo");
       console.error("Error deleting project:", error);
