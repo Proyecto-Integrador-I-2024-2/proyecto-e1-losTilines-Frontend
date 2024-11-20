@@ -32,6 +32,7 @@ export const addSkillToProject = async ({ body }) => {
 }
 
 export const editProjectSkill = async ({ id, body }) => {
+    console.log("body para editar", body);
     var userType = "projectskills";
     const url = `${userType}/${id}/`;
     const { data } = await apiClient.patch(url, body);

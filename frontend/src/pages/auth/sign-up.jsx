@@ -27,6 +27,7 @@ export function SignUp() {
 
   //Info status
   const [error, setError] = useState(null);
+  const [checked, setChecked] = useState(false);
 
   // User States
   const [isFreelancer, setIsFreelancer] = useState(true);
@@ -223,6 +224,8 @@ export function SignUp() {
             )}
           </div>
           <Checkbox
+            value={checked}
+            onClick={() => { setChecked(check => !check); }}
             label={
               <Typography
                 variant="small"
@@ -244,7 +247,7 @@ export function SignUp() {
             fullWidth
             color="blue"
             type="submit"
-            disabled={registerMutation.isLoading}
+            disabled={registerMutation.isLoading || !checked}
           >
             {registerMutation.isLoading ? "Registering..." : "Register Now"}
           </Button>
@@ -266,7 +269,7 @@ export function SignUp() {
             </Link>
           </Typography>
         </form>
-        </div>
+      </div>
     </section>
   );
 }
