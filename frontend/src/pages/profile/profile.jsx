@@ -87,7 +87,7 @@ export function Profile() {
 
     const navigate = useNavigate();
 
-    if (!role || !sessionStorage.getItem("token")) {
+    if (!sessionStorage.getItem("token") && (!externalFreelancerId && !externalCompanyId)) {
         navigate("/");
     }
 
