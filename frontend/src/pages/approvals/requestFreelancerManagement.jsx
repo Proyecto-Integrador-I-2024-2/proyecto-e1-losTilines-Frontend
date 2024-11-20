@@ -9,17 +9,22 @@ import {
 
 import { CheckCircleIcon, ClockIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { getCompanyInterest, getFreelancer, getFreelancerInterest, getProject, patchProjectFreelancerInterest } from '@/services';
+import { useNavigate } from 'react-router-dom';
 
 export const CompanyInterestManagement = () => {
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
-
+    const navigate = useNavigate();
     const role = sessionStorage.getItem('role');
     const freelancerIds = [sessionStorage.getItem('id')];
     console.log('Role:', role);
     console.log("requests:", requests);
+
+    if (!role || role != "Freelancer") {
+        navigate('/');
+    }
 
 
     const fetchRequestDetails = async (request) => {

@@ -245,6 +245,39 @@ class ProjectFreelancer(models.Model):
     def __str__(self):
         return f'{self.freelancer} working on {self.project}'
     
+    
+    def get_notification_recipient(self):
+        project_manager = self.project.user
+        user_company = UserCompany.objects.filter(user=project_manager).first()
+        if not user_company:
+            return []
+        
+        company = user_company.company
+        area = user_company.area
+
+        # Business Manager
+        business_manager = User.objects.filter(
+            usercompany__company=company,
+            groups__name='Business Manager'
+        ).first()
+
+        # Area Admin
+        admin_area = User.objects.filter(
+            usercompany__area=area,
+            groups__name='Area Admin'
+        ).exclude(pk=business_manager.pk if business_manager else None).first()
+        
+        # Get the freelancer
+        
+        freelancer = self.freelancer
+        
+        print("Freelancer: ", freelancer)
+
+        #To do: must validate if users are different
+        
+        recipients = [business_manager, admin_area, project_manager, freelancer]
+        return recipients
+    
     @classmethod
     def get_status_choices(cls):
         return cls.STATUS_CHOICES

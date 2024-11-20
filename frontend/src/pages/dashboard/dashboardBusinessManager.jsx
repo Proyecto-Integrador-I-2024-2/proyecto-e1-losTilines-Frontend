@@ -59,6 +59,17 @@ export function DashboardBusinessManager() {
     company: user.company,
   }); // Fetch areas
 
+  useEffect(()=> {
+
+    if(user){
+      setQueryParams({ company: user.company });
+      setParams({ company: user.company });
+    }
+
+
+ },[])
+
+
   //fetch workers based on query params from url.
 
   useEffect(() => {
@@ -144,6 +155,30 @@ export function DashboardBusinessManager() {
 
 
    },[user])
+
+   const [totalBudget, setTotalBudget] = useState(0);
+
+
+   useEffect(() => {
+    if (areas) {
+      let total = 0;
+
+      areas.forEach((area) => {
+        console.log("Area budget:", area.company.projects.budget);
+
+        area.company.projects.forEach((project) => {
+
+          total += parseFloat(project.budget);
+        
+        })
+
+      });
+
+      setTotalBudget(total);
+    }
+  }, [areas]);
+
+
 
 
   /*-----------------------------------------------*/
@@ -291,8 +326,8 @@ export function DashboardBusinessManager() {
               </div>
               <ListCard title={"Finance"} hasAdd={false} hasSeeAll={() => {}}>
                 <NumberInfo
-                  description={"Total investment in projects"}
-                  number={"$2.500.000"}
+                  description={"Total investment in projects of all areas"}
+                  number={`$${totalBudget}`}
                 />
               </ListCard>
             </section>

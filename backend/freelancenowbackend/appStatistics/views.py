@@ -9,19 +9,12 @@ class StatisticsView(ViewSet):
     permission_classes = [AllowAny]
 
     def list(self, request):
-        user = request.query_params.get('user')
+        user_id = request.query_params.get('user')  # Usar user_id como parámetro
         area = request.query_params.get('area')
         company = request.query_params.get('company')
 
-        if user:
-            if user.groups.filter(name="Project Manager").exists():
-                return self.get_project_manager_stats(user)
-            elif user.groups.filter(name="Area Admin").exists():
-                return self.get_area_admin_stats(area)
-            elif user.groups.filter(name="Business Manager").exists():
-                return self.get_business_manager_stats(company)
-            else: 
-                raise PermissionDenied("Statistics not available.")
+        if user_id:
+            return self.get_project_manager_stats(user_id)
         elif area:
             return self.get_area_admin_stats(area)
         elif company:

@@ -81,7 +81,7 @@ export function MilestonesDetail() {
         {/* Section 1: Milestones */}
 
         <div className="flex flex-col h-full justify-center items-center w-1/3   ">
-          <Card className="flex flex-col items-center ju h-full w-full px-4 pb-2 pt-6    ">
+          <Card className="flex flex-col items-center ju h-full w-full px-4 pb-2     ">
             <Typography variant="h4" color="blue-gray">
               Milestones
             </Typography>
@@ -124,7 +124,7 @@ export function MilestonesDetail() {
 
         {/* Section 2: Milestone and deliverables info */}
 
-        <main className="flex flex-col justify-start w-2/3 h-full   ">
+        <main className="flex flex-col justify-start w-2/3    ">
           {milestones && milestones.length > 0 ? (
             <MilestonesInfo
               fetchMilestones={fetchMilestones}

@@ -1,10 +1,12 @@
 from rest_framework import serializers
 from app.models import Project, ProjectFreelancer, Milestone, ProjectSkill, Deliverable
 from django.core.exceptions import ValidationError
-from app.serializers import FreelancerSerializer, UserSerializer, ProjectSkillSerializer
+from app.serializers import FreelancerSerializer, UserSerializer, ProjectSkillSerializer, ProjectSerializer
 
 # Serializador para los freelancers asociados a un proyecto
 class ProjectFreelancerSerializer(serializers.ModelSerializer):
+    project = ProjectSerializer()
+
     class Meta:
         model = ProjectFreelancer
         fields = '__all__'
