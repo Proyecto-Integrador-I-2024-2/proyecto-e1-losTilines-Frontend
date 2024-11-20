@@ -85,7 +85,7 @@ function NavListMenu() {
 
 function NavList() {
   const navigate = useNavigate();
-
+  
   return (
     <List className="mb-6 mt-4 p-0 lg:mb-0 lg:mt-0 lg:flex-row lg:p-1">
       <ListItem className="flex items-center gap-2 py-2 pr-4" ripple={false} selected={false} onClick={() => navigate("/profile")}>

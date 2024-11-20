@@ -59,6 +59,17 @@ export function DashboardBusinessManager() {
     company: user.company,
   }); // Fetch areas
 
+  useEffect(()=> {
+
+    if(user){
+      setQueryParams({ company: user.company });
+      setParams({ company: user.company });
+    }
+
+
+ },[])
+
+
   //fetch workers based on query params from url.
 
   useEffect(() => {
