@@ -14,7 +14,12 @@ export const postFreelancerInterest = async (body) => {
     body["freelancer"] = id;
     console.log("Body", body);
     const url = `${route}/`;
-    const { data } = await apiClient.post(url, body);
+
+    try{
+        const { data } = await apiClient.post(url, body);
+    }catch(error){
+        console.error('Error al enviar datos:', error);
+    }
     return data;
 }
 

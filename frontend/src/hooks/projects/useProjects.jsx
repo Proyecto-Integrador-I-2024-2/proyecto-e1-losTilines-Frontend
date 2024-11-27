@@ -14,7 +14,7 @@ export const useProjects = (queryParams = {}) => {
         return data;
     }
 
-    return useQuery([Identifiers.project], fetchProjects, {
+    return useQuery([Identifiers.project, queryParams ], fetchProjects, {
         staleTime: 1000 * 60 * 3,
         cachetime: 1000 * 60 * 30,
         retry: 2,

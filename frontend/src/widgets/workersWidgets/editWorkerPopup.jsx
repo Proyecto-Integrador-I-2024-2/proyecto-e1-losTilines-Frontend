@@ -76,14 +76,11 @@ export function EditWorkerPopup({ open, setOpen, currentWorker, areas }) {
     }
 
     // Validate email
-    const emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+    
     if (!emailEdit.trim()) {
       tempErrors.email = "Email cannot be empty.";
       valid = false;
-    } else if (!emailRegex.test(emailEdit)) {
-      tempErrors.email = "Email is not valid.";
-      valid = false;
-    }
+    } 
 
     // Validate selected area
     if (!selectedArea) {
@@ -97,6 +94,8 @@ export function EditWorkerPopup({ open, setOpen, currentWorker, areas }) {
       valid = false;
     }
 
+
+    console.log("Errors from validate: ", tempErrors)
     setErrors(tempErrors);
     return valid;
   };
@@ -171,6 +170,13 @@ export function EditWorkerPopup({ open, setOpen, currentWorker, areas }) {
       console.log("No worker selected for editing.");
     }
   };
+
+
+  useEffect(() => {
+
+      console.log("Edit Worker Mutation: ", errorMessage)
+
+  }, [errorMessage])
 
   /*-----------------------------------------------------------------------------*/
 
