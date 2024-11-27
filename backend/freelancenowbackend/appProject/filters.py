@@ -15,6 +15,8 @@ class ProjectFilter(django_filters.FilterSet):
     company_user = django_filters.NumberFilter(method='filter_company_user', label="Business Manager")
     company = django_filters.NumberFilter(field_name='user__usercompany__company_id', label="Company")
 
+    freelancer = django_filters.NumberFilter(method='filter_freelancer', label="Freelancer")
+
     class Meta:
         model = Project
         fields = ['user', 'status', 'area_user', 'company_user', 'area', 'company']
@@ -38,6 +40,11 @@ class ProjectFilter(django_filters.FilterSet):
             )
         else:
             return queryset.none()
+        
+    def filter_freelancer(self, queryset, name, value):
+        return queryset.filter(
+            projectfreelancer__freelancer_id=value
+        )
 
 # class MilestoneFilter(django_filters.FilterSet):
 #     project = django_filters.NumberFilter()

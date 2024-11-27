@@ -48,6 +48,7 @@ export function DashboardFreelancer() {
     error: projectsError,
   } = useFreelancerProjectsFilter(user.user.id);
 
+
   const {
     data: milestones,
     isLoading: isLoadingMilestones,
@@ -65,7 +66,7 @@ export function DashboardFreelancer() {
       let total = 0;
 
       projects.forEach((project) => {
-        total += parseFloat(project.project.budget);
+        total += parseFloat(project.budget);
       });
 
       setTotalBudget(total);
@@ -102,11 +103,11 @@ export function DashboardFreelancer() {
                 projects.map((item) => {
                   return (
                     <ListRowStructure
-                      key={item.project.id}
-                      id={item.project.id}
-                      rowName={item.project.name}
-                      chipValue={item.status}
-                      setSelected={handleSelectedProject}
+
+                    key={item.id}
+                    rowName={item.name}
+                    chipValue={item.status}
+                     
                     />
                   );
                 })
