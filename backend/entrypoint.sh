@@ -16,6 +16,9 @@ python manage.py migrate
 
 echo "Pasó migrar"
 
+python manage.py cargar_datos
+
+echo "Pasó Data init"
 
 # Iniciar Daphne para servir la aplicación
 daphne -p 8000 -b 0.0.0.0 freelancenowbackend.asgi:application
