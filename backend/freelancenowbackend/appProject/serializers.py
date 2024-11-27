@@ -5,8 +5,6 @@ from app.serializers import FreelancerSerializer, UserSerializer, ProjectSkillSe
 
 # Serializador para los freelancers asociados a un proyecto
 class ProjectFreelancerSerializer(serializers.ModelSerializer):
-    project = ProjectSerializer()
-
     class Meta:
         model = ProjectFreelancer
         fields = '__all__'

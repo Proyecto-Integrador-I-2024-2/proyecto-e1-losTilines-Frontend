@@ -35,7 +35,7 @@ export function MilestonesInfo({
     setOpenCreateDeliverable(!openCreateDeliverable);
 
   return (
-    <div className="flex flex-col justify-center w-full h-full bg-black    ">
+    <div className="flex flex-col justify-center w-full h-full">
       {milestone && (
         <Card className="w-  h-full flex flex-col justify-start pb-2 relative  ">
           <Chip

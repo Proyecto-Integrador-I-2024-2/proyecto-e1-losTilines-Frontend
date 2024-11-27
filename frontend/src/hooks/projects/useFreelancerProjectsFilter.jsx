@@ -6,7 +6,7 @@ import { useFreelancerProjects } from '.';
 const fetchProject = async (id) => {
 
 
-  const { data } = await apiClient.get(`/projectsfreelancers/`, {params: {freelancer: id}} );
+  const { data } = await apiClient.get(`/projects/`, {params: {freelancer: id}} );
   console.log("Data from fetchProject", data, " id: ", id);
   return data;
 };
